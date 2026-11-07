@@ -125,7 +125,7 @@ CompilerIf #PB_Compiler_IsMainFile
                
             Case #__EVENT_Change
               Debug "             ["+*row\index+"] "+*g\class +" change "
-              *this = PropertiesButton_Create(*g2, *row)
+            ;  *this = PropertiesButton_Create(*g2, *row)
               ; Repaint()
                
             Case #__EVENT_StatusChange
@@ -133,7 +133,7 @@ CompilerIf #PB_Compiler_IsMainFile
                   Case *g1  : StatusChange( *g2, *row )
                   Case *g2  : StatusChange( *g1, *row )
                EndSelect
-               ; Debug "             ["+*row\index+"] "+*g\class +" status "
+               ;Debug "             ["+*row\index+"] "+*g\class +" status "
                
             Case #__EVENT_Up
                ;                ForEach *g\row\__s( ) : *row = @*g\row\__s( )
@@ -149,7 +149,7 @@ CompilerIf #PB_Compiler_IsMainFile
       EndIf
    EndProcedure
    
-   If Open(1, 100, 50, 330, 330, "demo items status", #PB_Window_SystemMenu)
+   If Open(1, 100, 50, 400, 330, "demo items status", #PB_Window_SystemMenu)
       *g1 = Tree(10, 10, 150, 310, #__flag_nolines ) : SetClass(*g1, "*g1")
       *g2 = Tree(170, 10, 150, 310, #__flag_nolines ) : SetClass(*g2, "*g2")
       
@@ -162,7 +162,7 @@ CompilerIf #PB_Compiler_IsMainFile
       
       ;  
      SetState(*g1, CountItems) : SetActive(*g1)
-     ;   SetState(*g2, CountItems): SetActive(*g2)
+     ; SetState(*g2, CountItems) : SetActive(*g2)
      
 ;      Define._s_ROW *row
 ;      ForEach *g1\row\__s( ) : *row = @*g1\row\__s( )
@@ -176,6 +176,9 @@ CompilerIf #PB_Compiler_IsMainFile
 ;         EndIf
 ;      Next
      
+     Button(330, 10, 60, 30,"multi")
+     Button(330, 50, 60, 30,"click")
+     Button(330, 90, 60, 30,"single")
       ;
       Bind(*g1, @all_events(), #__EVENT_LeftDown)
       Bind(*g2, @all_events(), #__EVENT_LeftDown)
@@ -192,8 +195,8 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.40 (Windows - x64)
-; CursorPosition = 131
-; FirstLine = 79
-; Folding = 0---
+; CursorPosition = 181
+; FirstLine = 131
+; Folding = 0----
 ; EnableXP
 ; DPIAware

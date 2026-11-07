@@ -8024,18 +8024,17 @@ Module widgets
       If _row_address_\mask & #__MASK_Press
          _row_address_\ColorState( ) = #__s_2 ; Цвет выделения/нажатия
       ElseIf _row_address_\mask & #__MASK_Active
-         ; Если строка активна (имеет фокус ввода)
-         If _row_address_ = _this_\RowFocused( ) And Not MousePress( )
-;             If  MousePress( )
-;                _row_address_\ColorState( ) = #__s_3 ; Неактивное выделение (блеклый цвет)
-;             Else
-               If _this_\mask & #__MASK_Active 
-                  _row_address_\ColorState( ) = #__s_2 ; Активное выделение (яркий цвет)
+         _row_address_\ColorState( ) = #__s_3 ; Неактивное выделение (блеклый цвет)
+             
+         ; Переключаем на яркий цвет только при выполнении всех условий активности
+         If _row_address_ = _this_\RowFocused()
+            If (_this_\mask & #__MASK_Active)
+               If Not (_this_\RowEntered() And (_this_\mask & #__MASK_Press)) 
+                  _row_address_\ColorState( ) = #__s_2
                EndIf
-;             EndIf
-         Else
-            _row_address_\ColorState( ) = #__s_3 ; Неактивное выделение (блеклый цвет)
+            EndIf
          EndIf
+       
       ElseIf _row_address_\mask & #__MASK_Hover
         _row_address_\ColorState( ) = #__s_1 ; Обычный цвет наведения (подсветка)
       Else
@@ -15997,7 +15996,7 @@ Module widgets
          EndIf
       EndIf
       
-      ; =========================================================================
+      ;\\
       If *this\RowEntered( ) <> *row_hovered
          
          ; --- ЛОГИКА LEAVE (Мышь покинула предыдущую строку) ---
@@ -16026,7 +16025,9 @@ Module widgets
             If *this\mask & #__MASK_Press
                DoEvent_Status( "status - press-leave-item", *this, *row_leaved\rindex, *row_leaved )
             Else
-               DoEvent_Status( "status - leave-item", *this, *row_leaved\rindex, *row_leaved )
+               If *row_actived <> *row_leaved
+                  DoEvent_Status( "status - leave-item", *this, *row_leaved\rindex, *row_leaved )
+               EndIf
             EndIf
          EndIf
          
@@ -16091,17 +16092,31 @@ Module widgets
                If *this\mask & #__MASK_Press
                   DoEvent_Status( "status - press-enter-item", *this, *row_hovered\rindex, *row_hovered )
                Else
-                  DoEvent_Status( "status - enter-item", *this, *row_hovered\rindex, *row_hovered )
+                  If *row_actived = *row_hovered
+                      If *row_actived <> *row_leaved
+                        ; If *row_leaved
+                            ; Debug 555
+                             repaint_set( *this )
+                            Post(*this, #__EVENT_StatusChange, *row_actived\rindex, *row_actived)
+                        ; EndIf
+                      EndIf
+                  Else
+                     DoEvent_Status( "status - enter-item", *this, *row_hovered\rindex, *row_hovered )
+                  EndIf
                EndIf
             EndIf
          Else
             ; Курсор вышел вообще за пределы всех строк
-            If MousePress( )
+            If *row_actived 
                If *row_actived <> *row_leaved
-                  If *row_actived And
-                     *row_actived\mask & #__MASK_Press = 0
-                     *row_actived\mask | #__MASK_Press  
-                     DoEvent_Status( "status - leave-focus", *this, *row_actived\rindex, *row_actived )
+                  If MousePress( )
+                     If *row_actived\mask & #__MASK_Press = 0
+                        *row_actived\mask | #__MASK_Press  
+                        DoEvent_Status( "status - leave-focus", *this, *row_actived\rindex, *row_actived )
+                     EndIf
+                  Else
+                      repaint_set( *this )
+                     Post(*this, #__EVENT_StatusChange, *row_actived\rindex, *row_actived)
                   EndIf
                EndIf
             EndIf
@@ -16109,6 +16124,7 @@ Module widgets
          
       EndIf
       
+      ;\\
       If event = #__EVENT_Focus
         ; Если включен мультивыбор или клик-выбор, возвращаем активность остальным выделенным строкам
          If *this\flagmask & #__FLAG_RowMultiSelect Or *this\flagmask & #__FLAG_RowClickSelect
@@ -16126,8 +16142,7 @@ Module widgets
          EndIf
          
          ; Возвращаем яркую подсветку текущей сфокусированной строке
-         If *row_actived And
-            *row_actived\mask & #__MASK_Active
+         If *row_actived And *row_actived\mask & #__MASK_Active
             DoEvent_Status( "status - focus-current", *this, *row_actived\rindex, *row_actived )
          EndIf
       EndIf
@@ -16150,8 +16165,7 @@ Module widgets
          EndIf
          
          ; Переводим текущую строку в состояние неактивного фокуса
-         If *row_actived And 
-            *row_actived\mask & #__MASK_Active
+         If *row_actived And *row_actived\mask & #__MASK_Active
             DoEvent_Status( "status - lostfocus-current", *this, *row_actived\rindex, *row_actived )
          EndIf
       EndIf
@@ -16175,27 +16189,24 @@ Module widgets
          EndIf
       EndIf
       
-      ; =========================================================================
-      ; 5. ЭТАП ОТПУСКАНИЯ КНОПКИ МЫШИ (#__EVENT_Up)
-      ; =========================================================================
       If event = #__EVENT_Up
          If MouseButtons( ) & #PB_Canvas_LeftButton
             If *row_pressed
                ; Снимаем маску нажатия, так как кнопка отпущена
                *row_pressed\mask &~ #__MASK_Press
                
-               ; Если мы отпустили кнопку над той же строкой (или вошедшей) — фиксируем выбор (Focus/Active)
-               If *row_hovered
+              If *row_hovered
                   *row_hovered\mask &~ #__MASK_Press
                   
-                  If *row_actived <> *row_hovered
+                 ; Если отпустили мышь над другой строкой — окончательно переносим фокус
+                If *row_actived <> *row_hovered
                      If *row_actived
                         *this\RowFocused( ) = #Null
                         *row_actived\mask &~ #__MASK_Active
                         DoEvent_Status( "status - up-lostfocused-item", *this, *row_actived\rindex, *row_actived )
                      EndIf
                      
-                     ; Даем строке статус активного фокуса
+                     ; Делаем новую строку активной
                      *row_actived = *row_hovered
                      *this\RowFocused( ) = *row_hovered
                      *row_hovered\mask | #__MASK_Active
@@ -16205,20 +16216,15 @@ Module widgets
                   EndIf
                EndIf
                
-               If *row_actived
-                  If *row_actived\ColorState( ) = #__s_3
-                     DoEvent_Status( "status - up-active-item", *this, *row_actived\rindex, *row_actived )
-                  EndIf
-               EndIf
-               
                ; Сбрасываем указатель нажатой строки
                *row_pressed = #Null
                *this\RowPressed( ) = #Null
             EndIf
          EndIf
       EndIf
+      
    EndProcedure
-
+   
    Procedure   DoEvent_BTNs( *this._s_WIDGET, event.l, *btn._s_BTN )
       Protected result.b
       Protected *bar._s_BAR = *this\bar
@@ -17863,7 +17869,6 @@ Module widgets
          ; 
          If Entered( )
             Pressed( )       = Entered( )
-            Pressed( )\mask | #__MASK_Press 
             ;
             If event = #__EVENT_LeftDown
                If Entered( )\anchors
@@ -17895,8 +17900,7 @@ Module widgets
                   EndIf
                EndIf
                ;
-               Protected._s_BTN *hoverBTN = EnteredButton( )
-               If *hoverBTN > 0
+               If EnteredButton( ) > 0
                   If Not Entered( )\anchors 
                      If Entered( )\bar 
                         MousePressX( ) - Entered( )\bar\thumb\pos
@@ -18023,7 +18027,6 @@ Module widgets
                EndIf
                ;
                ;\\ set active widget
-               ; Debug " \\ set active widget"
                If Entered( )\parent And Entered( )\parent\anchors
                   If is_integral_( Entered( )) 
                      a_set( Entered( )\parent )
@@ -18031,21 +18034,15 @@ Module widgets
                      a_set( Entered( ) )
                   EndIf
                Else
-                  ; reset all anchors
-                  ;                      If a_focused( )
-                  ;                         If Entered( )\FirstWidget( )
-                  ;                            If Entered( )\FirstWidget( )\anchors
-                  ;                               ; a_set( 0 )
-                  ;                            EndIf
-                  ;                         EndIf
-                  ;                      EndIf
-                  ;
                   If GetActive( ) <> Entered( )
                      SetActive( Entered( ))
                   EndIf
                EndIf
             EndIf
             ;
+            ; 2. ТОЛЬКО ТЕПЕРЬ ВЗВОДИМ МАСКУ НАЖАТИЯ НА ВИДЖЕТЕ
+            Pressed( )\mask | #__MASK_Press 
+            
             DoEvents( Entered( ), #__EVENT_Down )
             ;
             If MouseClick( ) = 1
@@ -26269,9 +26266,9 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.40 (Windows - x64)
-; CursorPosition = 24223
-; FirstLine = 22458
-; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+--P-j7--Pr--4-----------------------------------F----------------------------------------------------------------------t--------------------------------------------------------------------------------------------4------------------------448-----O-+-v-fv--4------0-------------444f-XP0f---8-+8-------------------------------------------------------------------------------------8-4------------------------------------------------------------------------------------------------------------------------------------------------------------
+; CursorPosition = 16097
+; FirstLine = 15005
+; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+--P-j7--Pr--4-----------------------------------F----------------------------------------------------------------------t--------------------------------------------------------------------------------------------4--------------------u---448-----O-+eff-z6e-------4-------------fff-0f01-0--v-8v--------------------v8+-v4-----------------------------------------------------------v-f------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe
