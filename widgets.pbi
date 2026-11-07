@@ -8014,6 +8014,45 @@ Module widgets
    EndProcedure
    
    ;-
+   ;Declare  DoEvent_Status( status$, *this._s_WIDGET, *btn = #PB_All, *data = #Null )
+   Macro  DoEvent_Status( _status_info_, _this_, _row_index_, _row_address_ )
+      ; 1. Логирование отладки
+      If test_StatusChange 
+         Debug "[" + Str(_row_index_) + "] " + _status_info_ 
+      EndIf
+      
+      If _row_address_\mask & #__MASK_Press
+         _row_address_\ColorState( ) = #__s_2 ; Цвет выделения/нажатия
+      ElseIf _row_address_\mask & #__MASK_Active
+         ; Если строка активна (имеет фокус ввода)
+         If _row_address_ = _this_\RowFocused( ) And Not MousePress( )
+;             If  MousePress( )
+;                _row_address_\ColorState( ) = #__s_3 ; Неактивное выделение (блеклый цвет)
+;             Else
+               If _this_\mask & #__MASK_Active 
+                  _row_address_\ColorState( ) = #__s_2 ; Активное выделение (яркий цвет)
+               EndIf
+;             EndIf
+         Else
+            _row_address_\ColorState( ) = #__s_3 ; Неактивное выделение (блеклый цвет)
+         EndIf
+      ElseIf _row_address_\mask & #__MASK_Hover
+        _row_address_\ColorState( ) = #__s_1 ; Обычный цвет наведения (подсветка)
+      Else
+         ; Дефолтное состояние (мыши нет, фокуса нет)
+          _row_address_\ColorState( ) = #__s_0 ; Обычный цвет строки
+      EndIf
+      
+      ; 3. Инвалидация (запрос на перерисовку виджета)
+      repaint_set( _this_ )
+      If  ListSize(__GUI\event\binds( ))
+         Post(_this_, #__EVENT_StatusChange, _row_index_, _row_address_ )
+      Else
+         AddEvents(_this_, #__EVENT_StatusChange, _row_index_, _row_address_ )
+      EndIf
+   EndMacro
+   
+   
    Procedure   StatusChange( *this._s_WIDGET, *row._s_ROW )
       If Not *row : ProcedureReturn : EndIf
       Protected._s_ROW *row_sel
@@ -8027,11 +8066,9 @@ Module widgets
          PushListPosition( *this\row\__s( ))
          *row_sel = SelectElement( *this\row\__s( ), *row\index )
          If *row_sel
-            *row_sel\ColorState( ) = *row\ColorState( )
             *row_sel\mask = *row\mask
-            ;             *row_sel\mask = *row\mask
-            ;             *row_sel\_press = *row\_press
-            If *row\mask & #__MASK_Active
+            *row_sel\ColorState( ) = *row\ColorState( )
+            If *row_sel\mask & #__MASK_Active
                *this\RowFocused( ) = *row_sel
             EndIf
          EndIf
@@ -8391,9 +8428,10 @@ Module widgets
       If *this\type = #__TYPE_Tree Or
          *this\type = #__TYPE_ListIcon Or
          *this\type = #__TYPE_ListView
-         
+         Protected._s_ROW *row_actived = *this\RowFocused( )
+      
          If *this\countitems
-            ;\\ min\max state
+            ; 1. ВАЛИДАЦИЯ ГРАНИЦ ИНДЕКСА (MIN/MAX)
             If State < 0
                State = - 1
             EndIf
@@ -8401,46 +8439,43 @@ Module widgets
                State = *this\countitems - 1
             EndIf
             
-            ;\\
+            ; 2. СБРОС ВЫДЕЛЕНИЯ (State = -1)
             If state = - 1
-               ;\\ reset all selected items
                If *this\RowFocused( ) And 
                   *this\RowFocused( )\mask & #__MASK_Active
                   *this\RowFocused( )\mask &~ #__MASK_Active
-                  *this\RowFocused( )\ColorState( ) = #__s_0
-                  If test_StatusChange : Debug "status -(-1)" : EndIf
-                  DoEvents( *this, #__EVENT_StatusChange, *this\RowFocused( )\rindex, *this\RowFocused( ))
+                  
+                  ; Диспетчер сам вернет строке цвет #__s_0, так как маска Active снята
+                  DoEvent_Status( "status - SetState(-1)", *this, *this\RowFocused( )\rindex, *this\RowFocused( ))
                   *this\RowFocused( ) = #Null
                   ProcedureReturn - 1
                EndIf
             Else
-               ;
+               ; 3. ПОЛУЧЕНИЕ ЭЛЕМЕНТА ПО ИНДЕКСУ
                If Not ( *this\RowFocused( ) And *this\RowFocused( )\rindex = state )
                   *row = SelectElement( *this\row\__s( ), State )
                EndIf
                
                If *row
-                  ;\\ example file "D&D-items"
+                  ; 4. ЛОГИКА DRAG & DROP ДЛЯ ДЕРЕВЬЕВ / СПИСКОВ
                   If Drag( ) And Drag( )\enter
                      If *this\drop
                         Protected._s_ROW *row_pressed = *this\RowPressed( )
                         
                         If *row_pressed
                            *row\rindex = State
-                           
                            Debug " SETSTATE ---------- *row_pressed\children's " + *row_pressed\childrens
                            
-                           ;\\
                            PushListPosition( *this\row\__s( ))
                            If *this\row\__s( )\rindex > *row_pressed\rindex
-                              ;\\ drag up and drop down
+                              ; Перетаскивание вверх, сброс вниз
                               While PreviousElement( *this\row\__s( ))
                                  If *this\row\__s( )\rindex > *row_pressed\rindex
                                     *this\row\__s( )\rindex - 1 - *row_pressed\childrens
                                  EndIf
                               Wend
                            ElseIf *this\row\__s( )\rindex < *row_pressed\rindex
-                              ;\\ drag down and drop up
+                              ; Перетаскивание вниз, сброс вверх
                               While NextElement( *this\row\__s( ))
                                  If *this\row\__s( )\rindex < *row_pressed\rindex
                                     *this\row\__s( )\rindex + 1 + *row_pressed\childrens
@@ -8449,7 +8484,6 @@ Module widgets
                            EndIf
                            PopListPosition( *this\row\__s( ))
                            
-                           ;\\
                            PushListPosition( *this\row\__s( ))
                            While NextElement( *this\row\__s( ))
                               If *this\row\__s( )\sublevel = *row_pressed\sublevel
@@ -8463,30 +8497,31 @@ Module widgets
                      EndIf
                   EndIf
                   
-                  ;\\
-                  If *this\RowFocused( ) <> *row
-                     ;\\ reset selected items
-                     If *this\RowFocused( ) And 
-                        *this\RowFocused( )\mask & #__MASK_Active
-                        *this\RowFocused( )\mask &~ #__MASK_Active
-                        *this\RowFocused( )\ColorState( ) = #__s_0
-                        If test_StatusChange :  Debug"status-remove" :EndIf
-                        DoEvents( *this, #__EVENT_StatusChange, *this\RowFocused( )\rindex, *this\RowFocused( ))
+                  ; 5. СМЕНА ФОКУСИРОВАННОГО ЭЛЕМЕНТА
+                  If *row_actived <> *row
+                     
+                     ; Сбрасываем активность у старого элемента
+                     If *row_actived
+                        If *row_actived\mask & #__MASK_Active
+                           *row_actived\mask &~ #__MASK_Active
+                           *this\RowFocused( ) = #Null
+                           ; Диспетчер полностью очищает цвета старой строки
+                           DoEvent_Status( "status - SetState(last-remove)", *this, *row_actived\rindex, *row_actived)
+                        EndIf
                      EndIf
                      
-                     ;
+                     ; Делаем активным новый элемент
+                     *row_actived = *row
                      *this\RowFocused( ) = *row
-                     
-                     ;                         ; click select mode
-                     ;                         If *this\flagmask & #__FLAG_RowClickSelect  
-                     ;                            *row\mask & #__MASK_Active ! 1
-                     ;                         Else
                      *row\mask | #__MASK_Active
-                     ;                         EndIf
                      
+                     ; Вызываем штатное обновление цвета для новой строки
+                     DoEvent_Status( "status - SetState(new-active)", *this, *row\rindex, *row )
+                     
+                     ; Генерируем событие изменения для виджета
                      DoEvents( *this, #__EVENT_Change, *row\rindex, *row)
                      
-                     ;
+                     ; 6. ПОДДЕРЖКА ИНТЕГРАЦИИ С COMBOBOX
                      If is_integral_( *this ) 
                         If is_root_( *this\parent )
                            If *this\parent\parent\type = #__TYPE_ComboBox
@@ -8502,6 +8537,7 @@ Module widgets
                            DoEvents( *this\parent, #__EVENT_Change, *row\rindex, *row)
                         EndIf 
                      Else
+                        ; 7. АВТОПРОКРУТКА К ВЫБРАННОЙ СТРОКЕ, ЕСЛИ ОНА ВНЕ ЭКРАНА
                         If Not *row\height
                            *this\WidgetChange( ) = - 5
                         EndIf
@@ -8519,7 +8555,6 @@ Module widgets
             EndIf
          EndIf
       EndIf
-      
       ;
       Protected *tabBox._s_WIDGET
       If *this\type = #__TYPE_Panel
@@ -12046,8 +12081,7 @@ Module widgets
                If *rowFocused = *row
                   *this\RowFocused( ) = 0
                   ;
-                  If test_StatusChange :  Debug "status-" :EndIf
-                  DoEvents( *this, #__EVENT_StatusChange, - 1, *rowFocused )
+                  DoEvent_Status( " status - RemoveItem( )", *this, - 1, *rowFocused )
                Else
                   If *rowFocused\parent 
                      If *rowFocused\parent\buttonbox  
@@ -12063,9 +12097,8 @@ Module widgets
                      *rowFocused\ColorState( ) = #__s_2
                   EndIf
                   ;
-                  If test_StatusChange :  Debug "status-2" :EndIf
-                  DoEvents( *this, #__EVENT_StatusChange, *row\rindex, *row)
-                  DoEvents( *this, #__EVENT_StatusChange, *rowFocused\rindex, *rowFocused)
+                  DoEvent_Status( " status - RemoveItem( 1)", *this, *row\rindex, *row)
+                  DoEvent_Status( " status - RemoveItem( 2)", *this, *rowFocused\rindex, *rowFocused)
                EndIf
             EndIf
             PopListPosition( *this\row\__s( ))
@@ -14085,7 +14118,7 @@ Module widgets
                   constants::BinaryFlag( Flag, #__FLAG_nobuttons ) Or
                   constants::BinaryFlag( Flag, #__FLAG_nolines ) 
                   
-                  Debug "["+*this\class+"] change Flag items"
+                  ; Debug "["+*this\class+"] change Flag items"
                   
                   If *this\countitems
                      PushListPosition( *this\row\__s( ))
@@ -14600,13 +14633,13 @@ Module widgets
       ProcedureReturn *rowLine
    EndProcedure
    
-   Procedure hover_row( *this._s_WIDGET, *row_howered._s_ROW,  mouse_x, mouse_y )
+   Procedure hover_row( *this._s_WIDGET, *row_hovered._s_ROW,  mouse_x, mouse_y )
       Protected._s_ROW *row
       Protected result
       
-      If *row_howered And
-         is_hover( *row_howered, mouse_x, mouse_y )
-         result = *row_howered
+      If *row_hovered And
+         is_hover( *row_hovered, mouse_x, mouse_y )
+         result = *row_hovered
       Else
          If StartNextRow(*row, *this\row)
             If *row\mask & #__MASK_Visible And is_hover( *row, mouse_x, mouse_y )
@@ -15489,10 +15522,10 @@ Module widgets
    EndProcedure
    
    
-   Procedure   DoEvent_Rows( *this._s_WIDGET, event.l, mouse_x.l = - 1, mouse_y.l = - 1 )
+   Procedure   _DoEvent_Rows( *this._s_WIDGET, event.l, mouse_x.l = - 1, mouse_y.l = - 1 )
       Protected Repaint, dragged = Bool( MouseDrag( ) And *this\mask & #__MASK_Press ) ; 
       Protected._s_ROW *row
-      Protected._s_ROW *row_howered
+      Protected._s_ROW *row_hovered
       Protected._s_ROW *row_visibled
       Protected._s_ROW *row_leaved
       Protected._s_ROW *row_pressed = *this\RowPressed( )
@@ -15512,7 +15545,7 @@ Module widgets
          ;\\ search at point entered items
          If Not Drag( ) Or *this\drop
             If MouseEnter( *this, 2 )
-               *row_howered = hover_row( *this, *this\RowEntered( ), mouse_x, mouse_y )
+               *row_hovered = hover_row( *this, *this\RowEntered( ), mouse_x, mouse_y )
             Else
                
                If dragged 
@@ -15523,13 +15556,13 @@ Module widgets
                   ;                                  ;
                   ;                                  If *this\row\_v_first And Not bar_in_start_( *this\scroll\v\bar )
                   ;                                     ChangeCurrentElement( *this\row\__s( ), *this\row\_v_first)
-                  ;                                     *row_howered = PreviousElement( *this\row\__s( ) )
+                  ;                                     *row_hovered = PreviousElement( *this\row\__s( ) )
                   ;                                     
-                  ;                                     If *row_howered
-                  ;                                        row_scroll_y_( *this, *row_howered )
+                  ;                                     If *row_hovered
+                  ;                                        row_scroll_y_( *this, *row_hovered )
                   ;                                     EndIf
                   ;                                  Else
-                  ;                                     *row_howered = *this\row\_v_first
+                  ;                                     *row_hovered = *this\row\_v_first
                   ;                                  EndIf
                   ;                               ElseIf CanvasMouseY( ) >= mouse( )\delta\y + *this\inner_y( ) And
                   ;                                      CanvasMouseY( ) >= *this\inner_y( ) + *this\inner_height( )
@@ -15537,13 +15570,13 @@ Module widgets
                   ;                                  If *this\row\_v_last And Not bar_in_stop_( *this\scroll\v\bar )
                   ;                                     ChangeCurrentElement( *this\row\__s( ), *this\row\_v_last)
                   ;                                     NextElement( *this\row\__s( ) )
-                  ;                                     ;*row_howered = *this\row\__s( )
-                  ;                                     If *row_howered And *this\scroll\v
-                  ;                                        Debug *row_howered\height
-                  ; ;                                      row_scroll_y_( *this, *row_howered )
+                  ;                                     ;*row_hovered = *this\row\__s( )
+                  ;                                     If *row_hovered And *this\scroll\v
+                  ;                                        Debug *row_hovered\height
+                  ; ;                                      row_scroll_y_( *this, *row_hovered )
                   ;                                     EndIf
                   ;                                  Else
-                  ;                                     *row_howered = *this\row\_v_last
+                  ;                                     *row_hovered = *this\row\_v_last
                   ;                                  EndIf
                   ;                               EndIf
                   ;                            EndIf
@@ -15554,7 +15587,7 @@ Module widgets
          EndIf
          
          ;\\ change enter/leave state
-         If *this\RowEntered( ) <> *row_howered
+         If *this\RowEntered( ) <> *row_hovered
             If MouseDrag( ) 
                If *this\drop
                   ;
@@ -15567,7 +15600,7 @@ Module widgets
                *row_leaved = *this\RowEntered( )
             EndIf
             ;
-            *this\RowEntered( ) = *row_howered
+            *this\RowEntered( ) = *row_hovered
             ; 
             ;\\ leave state
             ; not mouse button up event
@@ -15603,22 +15636,21 @@ Module widgets
                      EndIf
                   EndIf
                   
-                  If test_StatusChange : Debug " leave-item status change": EndIf
-                  DoEvents( *this, #__EVENT_StatusChange, *row_leaved\rindex, *row_leaved )
+                  DoEvent_Status( "status - leave-item", *this, *row_leaved\rindex, *row_leaved )
                EndIf
             EndIf
             
             ;
             ;\\ enter state
-            If *row_howered
+            If *row_hovered
                If *this\flagmask & #__FLAG_RowMultiSelect
                   If *row_pressed And *row_pressed\mask & #__MASK_Press
                      ; multi select rows
                      PushListPosition( *this\row\__s( ))
                      ForEach *this\row\__s( ) : *row = @*this\row\__s( )
                         If *row\mask & #__MASK_Visible
-                           If Bool(( *row_pressed\rindex >= *row\rindex And *row_howered\rindex <= *row\rindex ) Or ; верх
-                                   ( *row_pressed\rindex <= *row\rindex And *row_howered\rindex >= *row\rindex ))   ; вниз
+                           If Bool(( *row_pressed\rindex >= *row\rindex And *row_hovered\rindex <= *row\rindex ) Or ; верх
+                                   ( *row_pressed\rindex <= *row\rindex And *row_hovered\rindex >= *row\rindex ))   ; вниз
                               
                               If *row\ColorState( ) <> #__s_2
                                  *row\ColorState( ) = #__s_2
@@ -15642,36 +15674,35 @@ Module widgets
                EndIf
                
                ;\\
-               If *row_howered\mask & #__MASK_Hover = 0
-                  *row_howered\mask | #__MASK_Hover
+               If *row_hovered\mask & #__MASK_Hover = 0
+                  *row_hovered\mask | #__MASK_Hover
                   
                   If Not *hoverBTN And 
                      ( *this\mask & #__MASK_Press And Not Drag( ) ) And 
                      ( *this\flagmask & #__FLAG_RowClickSelect = 0 Or ( *this\flagmask & #__FLAG_RowClickSelect And *this\flagmask & #__FLAG_RowMultiSelect ))
                      
-                     If *row_howered\ColorState( ) <> #__s_2
-                        *row_howered\ColorState( ) = #__s_2
+                     If *row_hovered\ColorState( ) <> #__s_2
+                        *row_hovered\ColorState( ) = #__s_2
                      EndIf
                      
                   Else
-                     If *row_howered\ColorState( ) = #__s_0
-                        *row_howered\ColorState( ) = #__s_1
+                     If *row_hovered\ColorState( ) = #__s_0
+                        *row_hovered\ColorState( ) = #__s_1
                      EndIf
                      ;
-                     If *row_howered\mask & #__MASK_Active
-                        If *row_howered\ColorState( ) <> #__s_2
-                           *row_howered\ColorState( ) = #__s_1
+                     If *row_hovered\mask & #__MASK_Active
+                        If *row_hovered\ColorState( ) <> #__s_2
+                           *row_hovered\ColorState( ) = #__s_1
                         EndIf
                      EndIf
                   EndIf
                   
-                  If test_StatusChange :  Debug "status-enter-item" : EndIf ;;; Not ( Not *this\mask & #__MASK_Press And *row_howered = *this\RowFocused( ) )
-                  DoEvents( *this, #__EVENT_StatusChange, *row_howered\rindex, *row_howered )
+                  ;;; Not ( Not *this\mask & #__MASK_Press And *row_hovered = *this\RowFocused( ) )
+                  DoEvent_Status( "status - enter-item", *this, *row_hovered\rindex, *row_hovered )
                EndIf
             Else
                If *this\RowFocused( ) And Not MousePress( ) 
-                  If test_StatusChange :  Debug "status-leave-items" : EndIf
-                  DoEvents( *this, #__EVENT_StatusChange, *this\RowFocused( )\rindex, *this\RowFocused( ))
+                  DoEvent_Status( "status - leaves", *this, *this\RowFocused( )\rindex, *this\RowFocused( ))
                EndIf
             EndIf
             ;
@@ -15710,8 +15741,7 @@ Module widgets
                      If *row\ColorState( ) = #__s_3
                         *row\ColorState( ) = #__s_2
                         ;
-                        If test_StatusChange :  Debug "status-focus-others" : EndIf
-                        DoEvents( *this, #__EVENT_StatusChange, *row\rindex, *row)
+                        DoEvent_Status( "status - focus-others", *this, *row\rindex, *row)
                      EndIf
                   EndIf
                Next
@@ -15724,8 +15754,7 @@ Module widgets
                *this\RowFocused( )\ColorState( ) = #__s_3
                *this\RowFocused( )\ColorState( ) = #__s_2
                ;
-               If test_StatusChange :  Debug "status-focus-current" : EndIf
-               DoEvents( *this, #__EVENT_StatusChange, *this\RowFocused( )\rindex, *this\RowFocused( ))
+               DoEvent_Status( "status - focus-current", *this, *this\RowFocused( )\rindex, *this\RowFocused( ))
             EndIf
          EndIf
          
@@ -15739,8 +15768,7 @@ Module widgets
                      If *this\row\__s( )\ColorState( ) = #__s_2
                         *this\row\__s( )\ColorState( ) = #__s_3
                         ;
-                        If test_StatusChange :  Debug "status-lostfocus-others" : EndIf
-                        DoEvents( *this, #__EVENT_StatusChange, *this\row\__s( )\rindex, *this\row\__s( ))
+                        DoEvent_Status( "status - lostfocus-others", *this, *this\row\__s( )\rindex, *this\row\__s( ))
                      EndIf
                   EndIf
                Next
@@ -15752,8 +15780,7 @@ Module widgets
                If *this\RowFocused( )\ColorState( ) = #__s_2
                   *this\RowFocused( )\ColorState( ) = #__s_3
                   ;
-                  If test_StatusChange :  Debug "status-lostfocus-current" : EndIf
-                  DoEvents(*this, #__EVENT_StatusChange, *this\RowFocused( )\rindex, *this\RowFocused( ))
+                  DoEvent_Status( "status - lostfocus-current", *this, *this\RowFocused( )\rindex, *this\RowFocused( ))
                EndIf
             EndIf
             ;EndIf
@@ -15763,22 +15790,22 @@ Module widgets
          ;\\
          If event = #__EVENT_Down
             If MouseButtons( ) & #PB_Canvas_LeftButton
-               If *row_howered 
+               If *row_hovered 
                   *hoverBTN = EnteredButton( )
                   If *hoverBTN
                      ; change collapsed/expanded button state
                      If *this\flagmask & #__FLAG_nobuttons
-                        If *row_howered\buttonbox
-                           If *row_howered\buttonbox\mask & #__MASK_Hover
-                              If *row_howered\buttonbox\checked
+                        If *row_hovered\buttonbox
+                           If *row_hovered\buttonbox\mask & #__MASK_Hover
+                              If *row_hovered\buttonbox\checked
                                  ; развернул список
-                                 If SetItemState( *this, *row_howered\rindex, (GetItemState(*this, *row_howered\rindex) &~ #PB_Tree_Collapsed) | #PB_Tree_Expanded )
-                                    Post( *this, #__EVENT_StatusChange, *row_howered\rindex, *row_howered )
+                                 If SetItemState( *this, *row_hovered\rindex, (GetItemState(*this, *row_hovered\rindex) &~ #PB_Tree_Collapsed) | #PB_Tree_Expanded )
+                                    Post( *this, #__EVENT_StatusChange, *row_hovered\rindex, *row_hovered )
                                  EndIf
                               Else
                                  ; свернул список
-                                 If SetItemState( *this, *row_howered\rindex, (GetItemState(*this, *row_howered\rindex) &~ #PB_Tree_Expanded) | #PB_Tree_Collapsed )
-                                    Post( *this, #__EVENT_StatusChange, *row_howered\rindex, *row_howered )
+                                 If SetItemState( *this, *row_hovered\rindex, (GetItemState(*this, *row_hovered\rindex) &~ #PB_Tree_Expanded) | #PB_Tree_Collapsed )
+                                    Post( *this, #__EVENT_StatusChange, *row_hovered\rindex, *row_hovered )
                                  EndIf
                               EndIf
                            EndIf
@@ -15786,40 +15813,40 @@ Module widgets
                      EndIf
                      
                      ; change box ( option&check )
-                     If *row_howered\checkbox
-                        If *row_howered\checkbox\mask & #__MASK_Hover
+                     If *row_hovered\checkbox
+                        If *row_hovered\checkbox\mask & #__MASK_Hover
                            ;
                            ; change option box state
                            If *this\flagmask & #__FLAG_optionboxes
-                              If *row_howered\_groupbar
-                                 If *row_howered\parent 
-                                    If *row_howered\_groupbar\parent And
-                                       *row_howered\_groupbar\checkbox\checked
-                                       *row_howered\_groupbar\checkbox\checked = #PB_Checkbox_Unchecked
+                              If *row_hovered\_groupbar
+                                 If *row_hovered\parent 
+                                    If *row_hovered\_groupbar\parent And
+                                       *row_hovered\_groupbar\checkbox\checked
+                                       *row_hovered\_groupbar\checkbox\checked = #PB_Checkbox_Unchecked
                                     EndIf
                                  EndIf
                                  ;
-                                 If *row_howered\_groupbar\_groupbar <> *row_howered
-                                    If *row_howered\_groupbar\_groupbar
-                                       *row_howered\_groupbar\_groupbar\checkbox\checked = #PB_Checkbox_Unchecked
+                                 If *row_hovered\_groupbar\_groupbar <> *row_hovered
+                                    If *row_hovered\_groupbar\_groupbar
+                                       *row_hovered\_groupbar\_groupbar\checkbox\checked = #PB_Checkbox_Unchecked
                                     EndIf
-                                    *row_howered\_groupbar\_groupbar = *row_howered
+                                    *row_hovered\_groupbar\_groupbar = *row_hovered
                                  EndIf
                               EndIf
                            EndIf
                            ;
                            ; change checked box state
-                           set_check_state_( *row_howered\checkbox\checked, Bool(*this\flagmask & #__FLAG_threestate) )
+                           set_check_state_( *row_hovered\checkbox\checked, Bool(*this\flagmask & #__FLAG_threestate) )
                         EndIf
                      EndIf
                   Else
                      ;
                      If *this\flagmask & #__FLAG_RowClickSelect
                         ; Инвертируем (переключаем) состояние бита: если был 0 -> станет 1, если был 1 -> станет 0
-                        *row_howered\mask ! #__MASK_Press
+                        *row_hovered\mask ! #__MASK_Press
                      Else
                         ; Принудительно включаем бит нажатия
-                        *row_howered\mask | #__MASK_Press
+                        *row_hovered\mask | #__MASK_Press
                         
                         If *this\flagmask & #__FLAG_RowMultiSelect
                            PushListPosition( *this\row\__s( ) )
@@ -15839,31 +15866,29 @@ Module widgets
                         EndIf
                      EndIf
                      ;
-                     *row_pressed = *row_howered
-                     *this\RowPressed( ) = *row_howered
+                     *row_pressed = *row_hovered
+                     *this\RowPressed( ) = *row_hovered
                      ;
-                     If *row_howered\mask & #__MASK_Press
-                        If *row_howered\ColorState( ) <> #__s_2
-                           *row_howered\ColorState( ) = #__s_2
+                     If *row_hovered\mask & #__MASK_Press
+                        If *row_hovered\ColorState( ) <> #__s_2
+                           *row_hovered\ColorState( ) = #__s_2
                            
                            If *this\RowFocused( ) 
-                              If *this\RowFocused( ) <> *row_howered  
+                              If *this\RowFocused( ) <> *row_hovered  
                                  If *this\RowFocused( )\ColorState( ) = #__s_2
                                     *this\RowFocused( )\ColorState( ) = #__s_3
+                                     *this\RowFocused( )\mask &~ #__MASK_Active
                                     ;
-                                    If test_StatusChange :  Debug "status-press-lostfocus" : EndIf
-                                    DoEvents( *this, #__EVENT_StatusChange, *this\RowFocused( )\rindex, *this\RowFocused( ))
+                                    DoEvent_Status( "status - press-lostfocus", *this, *this\RowFocused( )\rindex, *this\RowFocused( ))
                                  EndIf
                               EndIf
                            EndIf
                            ;
-                           If test_StatusChange :  Debug "status-press-change" : EndIf
-                           DoEvents(*this, #__EVENT_StatusChange, *row_howered\rindex, *row_howered )
+                           DoEvent_Status( "status - press-change", *this, *row_hovered\rindex, *row_hovered )
                         EndIf
                      Else
-                        *row_howered\ColorState( ) = #__s_1
-                        If test_StatusChange :  Debug "status-press-change" : EndIf
-                        DoEvents(*this, #__EVENT_StatusChange, *row_howered\rindex, *row_howered )
+                        *row_hovered\ColorState( ) = #__s_1
+                        DoEvent_Status( "status - press-change2", *this, *row_hovered\rindex, *row_hovered )
                      EndIf
                   EndIf
                EndIf
@@ -15877,8 +15902,7 @@ Module widgets
             ; не уверен есть ли в этом польза))
             If *this\RowFocused( )
                If Not MousePress( ) 
-                  If test_StatusChange : Debug "lllll" : EndIf
-                  DoEvents( *this, #__EVENT_StatusChange, *this\RowFocused( )\rindex, *this\RowFocused( ))
+                  DoEvent_Status( "status -  MouseLeave", *this, *this\RowFocused( )\rindex, *this\RowFocused( ))
                EndIf
             EndIf
          EndIf
@@ -15907,16 +15931,14 @@ Module widgets
                   If Not *this\flagmask & #__FLAG_RowClickSelect
                      If *this\RowEntered( )
                         If SetState( *this, *this\RowEntered( )\rindex ) 
-                           If test_StatusChange :  Debug "up setstate" : EndIf
-                           DoEvents(*this, #__EVENT_StatusChange, *this\RowFocused( )\rindex, *this\RowFocused( ))
+                            DoEvent_Status( "status - up entered", *this, *this\RowFocused( )\rindex, *this\RowFocused( ))
                         EndIf
                      Else
                         If *this\RowFocused( ) And
                            *this\RowFocused( )\ColorState( ) = #__s_3
                            *this\RowFocused( )\ColorState( ) = #__s_2
                            ;
-                           If test_StatusChange :  Debug "status-focus" : EndIf
-                           DoEvents(*this, #__EVENT_StatusChange, *this\RowFocused( )\rindex, *this\RowFocused( ))
+                           DoEvent_Status( "status - up focused", *this, *this\RowFocused( )\rindex, *this\RowFocused( ))
                         EndIf
                      EndIf
                      ;
@@ -15944,6 +15966,259 @@ Module widgets
       
    EndProcedure
    
+   Procedure   DoEvent_Rows( *this._s_WIDGET, event.l, mouse_x.l = - 1, mouse_y.l = - 1 ) 
+      Protected Repaint
+      Protected dragged = Bool( MouseDrag( ) And *this\mask & #__MASK_Press ) 
+      Protected._s_ROW *row
+      Protected._s_ROW *row_leaved
+      Protected._s_ROW *row_hovered = *this\RowEntered( )
+      Protected._s_ROW *row_pressed = *this\RowPressed( )
+      Protected._s_ROW *row_actived = *this\RowFocused( )
+      Protected._s_BTN *hoverBTN = EnteredButton( )
+      
+      
+      ; 1. ТРАНСФОРМАЦИЯ КООРДИНАТ МЫШИ
+      If *this\type = #__TYPE_ListIcon
+         mouse_x - *this\inner_x( ) - *this\scroll_x( )
+      Else
+         mouse_x - *this\inner_x( )
+      EndIf
+      mouse_y - *this\inner_y( ) - *this\scroll_y( )
+      
+      ; Если у виджета вообще нет строк, прерываем обработку
+      If Not *this\row : ProcedureReturn 0 : EndIf
+      
+      ; 2. ОПРЕДЕЛЕНИЕ СТРОКИ ПОД КУРСОРМ (HOVER) ИМЕННО ВНУТРИ КЛИЕНТСКОЙ ОБЛАСТИ
+      If Not Drag( ) Or *this\drop
+         If MouseEnter( *this, 2 ) 
+            *row_hovered = hover_row( *this, *this\RowEntered( ), mouse_x, mouse_y )
+         Else
+            *row_hovered = #Null
+         EndIf
+      EndIf
+      
+      ; =========================================================================
+      If *this\RowEntered( ) <> *row_hovered
+         
+         ; --- ЛОГИКА LEAVE (Мышь покинула предыдущую строку) ---
+         If *this\RowEntered( )
+            *row_leaved = *this\RowEntered( )
+            
+            ; Снимаем маску наведения
+            If *row_leaved\mask & #__MASK_Hover
+               *row_leaved\mask &~ #__MASK_Hover
+            EndIf
+            
+            ; Дополнительно: Если кнопка зажата и это НЕ мультиселект/клик-селект, 
+            ; то при уходе мыши со строки временно убираем маску нажатия
+            If Not MouseRelease( )
+               If Not *hoverBTN And ( *this\mask & #__MASK_Press And Not Drag( ) ) And 
+                  *this\flagmask & #__FLAG_RowMultiSelect = 0 And 
+                  *this\flagmask & #__FLAG_RowClickSelect = 0
+                  
+                  If *row_leaved\mask & #__MASK_Press
+                     *row_leaved\mask &~ #__MASK_Press
+                  EndIf
+               EndIf
+            EndIf
+            
+            ; Автоматически обновляет цвет покинутой строки на основе снятой маски Hover
+            If *this\mask & #__MASK_Press
+               DoEvent_Status( "status - press-leave-item", *this, *row_leaved\rindex, *row_leaved )
+            Else
+               DoEvent_Status( "status - leave-item", *this, *row_leaved\rindex, *row_leaved )
+            EndIf
+         EndIf
+         
+         ; Обновляем указатель на текущую строку под курсором в структуре виджета
+         *this\RowEntered( ) = *row_hovered
+         
+         ; --- ЛОГИКА ENTER (Мышь зашла на новую строку) ---
+         If *row_hovered
+            
+            ; [Здесь начнется обработка MultiSelect при зажатой мыши из Части 2]
+            ; ВЫДЕЛЕНИЕ ПРОТЯГИВАНИЕМ (MultiSelect при зажатой мыши)
+            If dragged And (*this\flagmask & #__FLAG_RowMultiSelect) And *row_pressed
+               
+               PushListPosition(*this\row\__s())
+               ForEach *this\row\__s()
+                  *row = @*this\row\__s()
+                  
+                  If *row\mask & #__MASK_Visible
+                     ; Проверяем, находится ли строка между начальной (pressed) и текущей (hovered)
+                     If Bool((*row_pressed\rindex >= *row\rindex And *row_hovered\rindex <= *row\rindex) Or
+                             (*row_pressed\rindex <= *row\rindex And *row_hovered\rindex >= *row\rindex))
+                        
+                        ; Строка внутри диапазона протягивания — добавляем маску нажатия
+                        If (*row\mask & #__MASK_Press) = 0
+                           *row\mask | #__MASK_Press
+                           DoEvent_Status("status - multiselect-add", *this, *row\rindex, *row)
+                        EndIf
+                        
+                     Else
+                        ; Строка вышла из диапазона протягивания — снимаем маску нажатия
+                        If *row\mask & #__MASK_Press
+                           *row\mask &~ #__MASK_Press
+                           DoEvent_Status("status - multiselect-remove", *this, *row\rindex, *row)
+                        EndIf
+                     EndIf
+                  EndIf
+                  
+               Next
+               PopListPosition(*this\row\__s())
+            EndIf
+            
+            ; Выставляем маску наведения, если её ещё нет
+            If *row_hovered\mask & #__MASK_Hover = 0
+               *row_hovered\mask | #__MASK_Hover
+               
+               ; Если мышь зажата в процессе перемещения по спискам (и это разрешено флагами) — 
+               ; временно добавляем маску Press, чтобы строка подсветилась как при нажатии
+               If Not *hoverBTN And ( *this\mask & #__MASK_Press And Not Drag( ) ) And 
+                     *this\flagmask & #__FLAG_RowMultiSelect = 0 And 
+                     *this\flagmask & #__FLAG_RowClickSelect = 0
+                  
+                  If *row_actived And
+                     *row_actived\mask & #__MASK_Press
+                     *row_actived\mask &~ #__MASK_Press 
+                     DoEvent_Status( "status - leave-lostfocus", *this, *row_actived\rindex, *row_actived )
+                  EndIf
+                  
+                  *row_hovered\mask | #__MASK_Press
+               EndIf
+               
+               ; Автоматически рассчитывает и применяет нужный ColorState для новой строки
+               If *this\mask & #__MASK_Press
+                  DoEvent_Status( "status - press-enter-item", *this, *row_hovered\rindex, *row_hovered )
+               Else
+                  DoEvent_Status( "status - enter-item", *this, *row_hovered\rindex, *row_hovered )
+               EndIf
+            EndIf
+         Else
+            ; Курсор вышел вообще за пределы всех строк
+            If MousePress( )
+               If *row_actived <> *row_leaved
+                  If *row_actived And
+                     *row_actived\mask & #__MASK_Press = 0
+                     *row_actived\mask | #__MASK_Press  
+                     DoEvent_Status( "status - leave-focus", *this, *row_actived\rindex, *row_actived )
+                  EndIf
+               EndIf
+            EndIf
+         EndIf
+         
+      EndIf
+      
+      If event = #__EVENT_Focus
+        ; Если включен мультивыбор или клик-выбор, возвращаем активность остальным выделенным строкам
+         If *this\flagmask & #__FLAG_RowMultiSelect Or *this\flagmask & #__FLAG_RowClickSelect
+            PushListPosition( *this\row\__s( ) )
+            ForEach *this\row\__s( ) 
+               *row = @*this\row\__s( )
+               If *row <> *row_actived
+                  ; Если у строки была маска активности (она была выбрана), диспетчер вернет ей яркий цвет #__s_2
+                  If *row\mask & #__MASK_Active
+                     DoEvent_Status( "status - focus-others", *this, *row\rindex, *row )
+                  EndIf
+               EndIf
+            Next
+            PopListPosition( *this\row\__s( ) )
+         EndIf
+         
+         ; Возвращаем яркую подсветку текущей сфокусированной строке
+         If *row_actived And
+            *row_actived\mask & #__MASK_Active
+            DoEvent_Status( "status - focus-current", *this, *row_actived\rindex, *row_actived )
+         EndIf
+      EndIf
+      
+      If event = #__EVENT_LostFocus
+         ; При потере фокуса всем выделенным строкам диспетчер автоматически присвоит 
+         ; блеклый цвет неактивного выделения (#__s_3), так как маска Active сохраняется, 
+         ; но сам виджет фокус потерял.
+         If *this\flagmask & #__FLAG_RowMultiSelect Or *this\flagmask & #__FLAG_RowClickSelect
+            PushListPosition( *this\row\__s( ) )
+            ForEach *this\row\__s( )
+               *row = @*this\row\__s( )
+               If *row <> *row_actived
+                  If *row\mask & #__MASK_Active
+                     DoEvent_Status( "status - lostfocus-others", *this, *row\rindex, *row )
+                  EndIf
+               EndIf
+            Next
+            PopListPosition( *this\row\__s( ) )
+         EndIf
+         
+         ; Переводим текущую строку в состояние неактивного фокуса
+         If *row_actived And 
+            *row_actived\mask & #__MASK_Active
+            DoEvent_Status( "status - lostfocus-current", *this, *row_actived\rindex, *row_actived )
+         EndIf
+      EndIf
+      
+      If event = #__EVENT_Down
+         If MouseButtons( ) & #PB_Canvas_LeftButton
+            If *row_hovered 
+               *row_pressed = *row_hovered
+               *this\RowPressed( ) = *row_hovered
+               *row_hovered\mask | #__MASK_Press
+               
+               If *row_actived <> *row_hovered
+                  ; Ваша фишка: временно гасим старый фокус
+                  If *row_actived And *row_actived\mask & #__MASK_Active
+                     DoEvent_Status( "status - press-deactive-item", *this, *row_actived\rindex, *row_actived )
+                  EndIf
+                  
+                  DoEvent_Status( "status - press-item", *this, *row_hovered\rindex, *row_hovered )
+               EndIf
+            EndIf
+         EndIf
+      EndIf
+      
+      ; =========================================================================
+      ; 5. ЭТАП ОТПУСКАНИЯ КНОПКИ МЫШИ (#__EVENT_Up)
+      ; =========================================================================
+      If event = #__EVENT_Up
+         If MouseButtons( ) & #PB_Canvas_LeftButton
+            If *row_pressed
+               ; Снимаем маску нажатия, так как кнопка отпущена
+               *row_pressed\mask &~ #__MASK_Press
+               
+               ; Если мы отпустили кнопку над той же строкой (или вошедшей) — фиксируем выбор (Focus/Active)
+               If *row_hovered
+                  *row_hovered\mask &~ #__MASK_Press
+                  
+                  If *row_actived <> *row_hovered
+                     If *row_actived
+                        *this\RowFocused( ) = #Null
+                        *row_actived\mask &~ #__MASK_Active
+                        DoEvent_Status( "status - up-lostfocused-item", *this, *row_actived\rindex, *row_actived )
+                     EndIf
+                     
+                     ; Даем строке статус активного фокуса
+                     *row_actived = *row_hovered
+                     *this\RowFocused( ) = *row_hovered
+                     *row_hovered\mask | #__MASK_Active
+                     
+                     DoEvent_Status( "status - up-focused-item", *this, *row_hovered\rindex, *row_hovered )
+                     DoEvents( *this, #__EVENT_Change, *row_hovered\rindex, *row_hovered )
+                  EndIf
+               EndIf
+               
+               If *row_actived
+                  If *row_actived\ColorState( ) = #__s_3
+                     DoEvent_Status( "status - up-active-item", *this, *row_actived\rindex, *row_actived )
+                  EndIf
+               EndIf
+               
+               ; Сбрасываем указатель нажатой строки
+               *row_pressed = #Null
+               *this\RowPressed( ) = #Null
+            EndIf
+         EndIf
+      EndIf
+   EndProcedure
+
    Procedure   DoEvent_BTNs( *this._s_WIDGET, event.l, *btn._s_BTN )
       Protected result.b
       Protected *bar._s_BAR = *this\bar
@@ -16611,6 +16886,7 @@ Module widgets
       If *this\row
          If *this\type = #__TYPE_Tree Or
             *this\type = #__TYPE_ListView
+            
             If *this\RowEntered( ) And
                *this\RowEntered( )\mask & #__MASK_Hover
                ;
@@ -16643,7 +16919,10 @@ Module widgets
          EndIf
       EndIf
       
-      ;
+;      If *this\row And *this\RowFocused( )
+;          Debug "set "+*this\RowFocused( )\index +"  " + *this\RowFocused( )\ColorState( ) +" "+ EventString(event)
+;       EndIf
+       ;
       ;\\
       If Not (*this\mask & #__MASK_Disabled And Not *this\anchors)  
          
@@ -16834,27 +17113,6 @@ Module widgets
                
             Case #__TYPE_Tree, #__TYPE_ListView, #__TYPE_ListIcon
                If event = #__EVENT_Change
-                  If *this\RowFocused( )
-                     If *this\RowFocused( )\mask & #__MASK_Active
-                        If *this = GetActive( )
-                           If *this\RowFocused( )\ColorState( ) <> #__s_2
-                              *this\RowFocused( )\ColorState( ) = #__s_2
-                              repaint_set( *this ) ; 5
-                           EndIf
-                        Else
-                           If *this\RowFocused( )\ColorState( ) <> #__s_3
-                              *this\RowFocused( )\ColorState( ) = #__s_3
-                              repaint_set( *this ) ; 5
-                           EndIf
-                        EndIf
-                     Else
-                        If *this\RowFocused( )\ColorState( ) <> #__s_1
-                           *this\RowFocused( )\ColorState( ) = #__s_1
-                           repaint_set( *this ) ; 5
-                        EndIf
-                     EndIf
-                  EndIf
-                  
                EndIf
                
          EndSelect
@@ -19911,6 +20169,7 @@ Module widgets
          draw_font(*row, *row\txt(0), 0, *row\TextChange())
          
          state = *row\ColorState()
+         
          X = row_x_(*this, *row)
          Y = row_y_(*this, *row) - _scroll_y_
          
@@ -23958,10 +24217,16 @@ Module widgets
                   Else
                      PushListPosition(  __GUI\event\queues( ))
                      If __event = #__EVENT_StatusChange
-                       If test_StatusChange : Debug "status-RemoveEvents" : EndIf
+                       ; If test_StatusChange : Debug "status-RemoveEvents" : EndIf
+;                         Protected._s_WIDGET *g = __widget
+;                         If *g\mask & #__MASK_Status
+;                            *g\mask &~ #__MASK_Status
+                         Post( __widget, __event, __item, __data )
+;                         EndIf
+                     Else
+                        Post( __widget, __event, __item, __data )
                      EndIf
-                     Post( __widget, __event, __item, __data )
-                     PopListPosition(  __GUI\event\queues( ))
+                      PopListPosition(  __GUI\event\queues( ))
                   EndIf
                EndIf
             Else
@@ -23996,9 +24261,9 @@ Module widgets
       ;
       MouseMask( ) &~ (#__MASK_Update) 
       If Not MouseButtons( )
-         If MouseRelease()
-            Debug "last MouseRelease"
-         EndIf
+;          If MouseRelease()
+;             Debug "last MouseRelease"
+;          EndIf
          MouseMask( ) &~ (#__MASK_Release|#__MASK_Drag) 
       EndIf
       ProcedureReturn result
@@ -26004,9 +26269,9 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.40 (Windows - x64)
-; CursorPosition = 23960
-; FirstLine = 23188
-; Folding = ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------v--------------------------------------------------------------------------------------------------------------------------------0-----44f-----e+4---------------------+++8v7+-----f-4f-------------------------------------------------------------------------------------e--+------------------------------------------------------------------------------------------------------------------------------------------------------------
+; CursorPosition = 24223
+; FirstLine = 22458
+; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+--P-j7--Pr--4-----------------------------------F----------------------------------------------------------------------t--------------------------------------------------------------------------------------------4------------------------448-----O-+-v-fv--4------0-------------444f-XP0f---8-+8-------------------------------------------------------------------------------------8-4------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe

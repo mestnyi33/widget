@@ -367,6 +367,9 @@
       #__MASK_Minimize  = 1 << 19
       #__MASK_Maximize  = 1 << 20
       
+      #__MASK_Status  = 1 << 30
+      #__MASK_Focus  = 1 << 31
+      
       ;#__maskrow_edit      = 1 << 21        ; Выделение (Строка)
       ;#__maskrow_change    = 1 << 22        ; текст изменился, надо перепарсить токены.
       ;#__maskrow_node      = 1 << 23        ; Является узлом (Строка) / Деревом (Виджет)
@@ -682,8 +685,8 @@
       EndDeclareModule : Module Constants : EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 6.40 (Windows - x64)
-; CursorPosition = 88
-; FirstLine = 72
+; CursorPosition = 371
+; FirstLine = 361
 ; Folding = ----
 ; Optimizer
 ; EnableXP

@@ -562,23 +562,23 @@ EndProcedure
 Procedure   PropertiesButton_Resize( *this._s_WIDGET )
    If *this
       Protected *row._s_ROW
-      Protected *second._s_WIDGET = *this\parent
-      ; Debug *second\class
+      Protected *g2._s_WIDGET = *this\parent
+      ; Debug *g2\class
       
-      *row = *second\RowFocused( )
+      *row = *g2\RowFocused( )
       If *row
          Select *row\index
             Case #_pi_FONT, #_pi_COLOR, #_pi_IMAGE
                Resize(*this,
-                      (*row\x + *second\inner_width( )) -*this\width + *second\scroll_x( ),
-                      *row\y + *second\scroll_y( ), 
+                      (*row\x + *g2\inner_width( )) -*this\width + *g2\scroll_x( ),
+                      *row\y + *g2\scroll_y( ), 
                       #PB_Ignore, 
                       *row\height, 0 )
             Default
                Resize(*this,
-                      *row\x + *second\scroll_x( ),
-                      *row\y + *second\scroll_y( ),
-                      *second\inner_width( ),
+                      *row\x + *g2\scroll_x( ),
+                      *row\y + *g2\scroll_y( ),
+                      *g2\inner_width( ),
                       *row\height, 0 )
          EndSelect 
       EndIf
@@ -735,21 +735,21 @@ Procedure   PropertiesButton_Events( )
    Protected __item 
    Protected __event = WidgetEvent( )
    Protected._s_WIDGET *g = EventWidget( )
-   Protected._s_WIDGET *second = *g\parent
-   Protected._s_WIDGET *splitter = *second\parent
-   Protected._s_WIDGET *first = GetAttribute( *splitter, #PB_Splitter_FirstGadget )
+   Protected._s_WIDGET *g2 = *g\parent
+   Protected._s_WIDGET *splitter = *g2\parent
+   Protected._s_WIDGET *g1 = GetAttribute( *splitter, #PB_Splitter_FirstGadget )
    Protected._s_WIDGET *object = a_focused( )
    
    Select __event
       Case #__EVENT_LostFocus
          __item = GetData(*g) 
-         PropertiesButton_ChangeItemState( *first, __item, 3 )
-         PropertiesButton_ChangeItemState( *second, __item, 3 )
+         PropertiesButton_ChangeItemState( *g1, __item, 3 )
+         PropertiesButton_ChangeItemState( *g2, __item, 3 )
          
       Case #__EVENT_Focus
          __item = GetData(*g) 
-         PropertiesButton_ChangeItemState( *first, __item, 2 )
-         PropertiesButton_ChangeItemState( *second, __item, 2 )
+         PropertiesButton_ChangeItemState( *g1, __item, 2 )
+         PropertiesButton_ChangeItemState( *g2, __item, 2 )
          
       Case #__EVENT_LeftClick
          __item = GetData(*g) 
@@ -979,14 +979,14 @@ EndProcedure
 
 ;-
 Procedure   Properties_Change( *splitter._s_WIDGET )
-   Protected._s_WIDGET *second = GetAttribute( *splitter, #PB_Splitter_SecondGadget )
+   Protected._s_WIDGET *g2 = GetAttribute( *splitter, #PB_Splitter_SecondGadget )
    Protected._s_WIDGET *this
    Protected text$
    ;
-   *this = GetData( *second )
+   *this = GetData( *g2 )
    If *this
-      If *second\RowFocused( )
-         text$ = *second\RowFocused( )\txt(0)\string
+      If *g2\RowFocused( )
+         text$ = *g2\RowFocused( )\txt(0)\string
          ;
          Select Type( *this )
             Case #__type_Spin     
@@ -1014,8 +1014,8 @@ Procedure   Properties_Change( *splitter._s_WIDGET )
 EndProcedure
 
 Procedure   Properties_Status( *splitter._s_WIDGET, *this._s_WIDGET, item )
-   Protected._s_WIDGET *first = GetAttribute( *splitter, #PB_Splitter_FirstGadget )
-   Protected._s_WIDGET *second = GetAttribute( *splitter, #PB_Splitter_SecondGadget )
+   Protected._s_WIDGET *g1 = GetAttribute( *splitter, #PB_Splitter_FirstGadget )
+   Protected._s_WIDGET *g2 = GetAttribute( *splitter, #PB_Splitter_SecondGadget )
    Protected._s_ROW *row
    Protected state
    
@@ -1042,28 +1042,28 @@ Procedure   Properties_Status( *splitter._s_WIDGET, *this._s_WIDGET, item )
    ;
    If *row\data
       Select *this
-         Case *first 
-            If GetState( *second ) <> *row\index
-               PropertiesButton_ChangeItemState( *second, *row\index, *row\ColorState( ))
+         Case *g1 
+            If GetState( *g2 ) <> *row\index
+               PropertiesButton_ChangeItemState( *g2, *row\index, *row\ColorState( ))
             EndIf
-         Case *second 
-            If GetState( *first ) <> *row\index
-               PropertiesButton_ChangeItemState( *first, *row\index, *row\ColorState( ))
+         Case *g2 
+            If GetState( *g1 ) <> *row\index
+               PropertiesButton_ChangeItemState( *g1, *row\index, *row\ColorState( ))
             EndIf   
       EndSelect
       
    Else
       Select *this
-         Case *first 
-            If *second\RowFocused( )
-               item = *second\RowFocused( )\index
-               state = *second\RowFocused( )\ColorState( ) 
+         Case *g1 
+            If *g2\RowFocused( )
+               item = *g2\RowFocused( )\index
+               state = *g2\RowFocused( )\ColorState( ) 
             EndIf
             
-         Case *second 
-            If *first\RowFocused( )
-               item = *first\RowFocused( )\index
-               state = *first\RowFocused( )\ColorState( ) 
+         Case *g2 
+            If *g1\RowFocused( )
+               item = *g1\RowFocused( )\index
+               state = *g1\RowFocused( )\ColorState( ) 
             EndIf
       EndSelect
       
@@ -1078,18 +1078,18 @@ Procedure   Properties_Status( *splitter._s_WIDGET, *this._s_WIDGET, item )
 EndProcedure
 
 Procedure   Properties_Display( *splitter._s_WIDGET, *this._s_WIDGET, item )
-   Protected *first._s_WIDGET = GetAttribute( *splitter, #PB_Splitter_FirstGadget )
-   Protected *second._s_WIDGET = GetAttribute( *splitter, #PB_Splitter_SecondGadget )
+   Protected *g1._s_WIDGET = GetAttribute( *splitter, #PB_Splitter_FirstGadget )
+   Protected *g2._s_WIDGET = GetAttribute( *splitter, #PB_Splitter_SecondGadget )
    
-   If *first <> *this
-      PropertiesButton_ChangeItemState( *first, item, 2 )
+   If *g1 <> *this
+      PropertiesButton_ChangeItemState( *g1, item, 2 )
    EndIf
-   If *second <> *this
-      PropertiesButton_ChangeItemState( *second, item, 2 )
+   If *g2 <> *this
+      PropertiesButton_ChangeItemState( *g2, item, 2 )
    EndIf
    ;
-   PropertiesButton_Free( *second\data )  
-   *this = PropertiesButton_Create( *second, item )
+   PropertiesButton_Free( *g2\data )  
+   *this = PropertiesButton_Create( *g2, item )
    PropertiesButton_Resize( *this )
    PropertiesButton_Change( *this, item )
    Properties_Change( *splitter )
@@ -1113,8 +1113,8 @@ Procedure   Properties_SetItemText( *splitter._s_WIDGET, item, Text.s )
 EndProcedure
 
 Procedure   Properties_AddItem( *splitter._s_WIDGET, item, Text.s, Type=0, mode=0 )
-   Protected *first._s_WIDGET = GetAttribute( *splitter, #PB_Splitter_FirstGadget )
-   Protected *second._s_WIDGET = GetAttribute( *splitter, #PB_Splitter_SecondGadget )
+   Protected *g1._s_WIDGET = GetAttribute( *splitter, #PB_Splitter_FirstGadget )
+   Protected *g2._s_WIDGET = GetAttribute( *splitter, #PB_Splitter_SecondGadget )
    Protected *this._s_WIDGET
    Protected._s_ROW *row
    
@@ -1124,7 +1124,7 @@ Procedure   Properties_AddItem( *splitter._s_WIDGET, item, Text.s, Type=0, mode=
       ; first_text$ = UCase(first_text$)
    EndIf  
    ;
-   *row = AddItem( *first, item, first_text$, -1, mode )
+   *row = AddItem( *g1, item, first_text$, -1, mode )
    If *row\parent
       *row\color\back = - 1
       If *row\parent\data
@@ -1139,7 +1139,7 @@ Procedure   Properties_AddItem( *splitter._s_WIDGET, item, Text.s, Type=0, mode=
    EndIf
    *row\data = Type  
    ;
-   *row = AddItem( *second, item, second_text$, -1, mode )
+   *row = AddItem( *g2, item, second_text$, -1, mode )
    If *row\parent
       *row\color\back = - 1
       If *row\parent\data
@@ -1159,31 +1159,30 @@ EndProcedure
 Procedure   Properties_Create( X,Y,Width,Height, Flag=0 )
    Protected position = 90
    Protected tflag.q = #__FLAG_NoLines|#__FLAG_Transparent|#__FLAG_BorderLess;|#__FLAG_gridlines
-   Protected *first._s_WIDGET = Tree(0,0,0,0, tflag)
-   Protected *second._s_WIDGET = Tree(0,0,0,0, tflag|#__FLAG_NoButtons)
-   ;    *first\padding\x = 10
-   ;    *second\padding\x = 10
-   Protected *g._s_WIDGET
-   ;    *g = *first
+   Protected *g1._s_WIDGET = Tree(0,0,0,0, tflag)
+   Protected *g2._s_WIDGET = Tree(0,0,0,0, tflag|#__FLAG_NoButtons)
+   ;    *g1\padding\x = 10
+   ;    *g2\padding\x = 10
+   Protected._s_WIDGET *g = *g1
    ;    ;*g\padding\x = DPIScaled(20)
    ;     ;*g\fs[1] = DPIScaled(20)
    ;     ;Resize(*g, #PB_Ignore, #PB_Ignore, 100, #PB_Ignore )
    ;     SetColor(*g, #PB_Gadget_BackColor,  $D4C8C8C8)
    ;     
-   ;     *g = *second
+   ;     *g = *g2
    ;    ;*g\padding\x = DPIScaled(20)
    ;     ;*g\fs[1] = DPIScaled(20)
    ;     ;Resize(*g, #PB_Ignore, #PB_Ignore, 100, #PB_Ignore )
    ;     SetColor(*g, #PB_Gadget_BackColor,  $D4C8C8C8)
    
-   Protected *splitter._s_WIDGET = Splitter(X,Y,Width,Height, *first,*second, Flag|#__FLAG_Transparent|#PB_Splitter_Vertical|#PB_Splitter_Separator )
+   Protected *splitter._s_WIDGET = Splitter(X,Y,Width,Height, *g1,*g2, Flag|#__FLAG_Transparent|#PB_Splitter_Vertical|#PB_Splitter_Separator )
    SetAttribute(*splitter, #PB_Splitter_FirstMinimumSize, position )
    SetAttribute(*splitter, #PB_Splitter_SecondMinimumSize, position )
    Protected font = LoadFont( #PB_Any, "Helvetica", 9, #PB_Font_Bold | #PB_Font_Italic )
    If font
       ;SetFont(*splitter, font)
-      SetFont(*first, font)
-      SetFont(*second, font)
+      SetFont(*g1, font)
+      SetFont(*g2, font)
    EndIf
    ;
    *splitter\bar\btn\size = DPIScaled(1)
@@ -1193,29 +1192,29 @@ Procedure   Properties_Create( X,Y,Width,Height, Flag=0 )
    SetState(*splitter, DPIScaled(position) ) ; похоже ошибка DPI
    
    ;
-   SetClass(*first\scroll\v, "first_v")
-   SetClass(*first\scroll\h, "first_h")
-   SetClass(*second\scroll\v, "second_v")
-   SetClass(*second\scroll\h, "second_h")
+   SetClass(*g1\scroll\v, "first_v")
+   SetClass(*g1\scroll\h, "first_h")
+   SetClass(*g2\scroll\v, "second_v")
+   SetClass(*g2\scroll\h, "second_h")
    
    ;
-   Hide( *first\scroll\v, 1 )
-   Hide( *first\scroll\h, 1 )
-   Hide( *second\scroll\h, 1 )
+   Hide( *g1\scroll\v, 1 )
+   Hide( *g1\scroll\h, 1 )
+   Hide( *g2\scroll\h, 1 )
    
    ; CloseList( )
    
    SetColor( *splitter, #PB_Gadget_BackColor, -1, #PB_All )
-   SetColor( *first, #PB_Gadget_LineColor, $D4C8C8C8)
-   SetColor( *second, #PB_Gadget_LineColor, $D4C8C8C8)
+   SetColor( *g1, #PB_Gadget_LineColor, $D4C8C8C8)
+   SetColor( *g2, #PB_Gadget_LineColor, $D4C8C8C8)
    
    ;
-   Bind(*first, @Properties_Events( ))
-   Bind(*second, @Properties_Events( ))
+   Bind(*g1, @Properties_Events( ))
+   Bind(*g2, @Properties_Events( ))
    
    ; draw и resize отдельно надо включать пока поэтому вот так
-   Bind(*second, @Properties_Events( ), #__EVENT_Resize)
-   ;  Bind(*second, @Properties_Events( ), #__EVENT_Draw)
+   Bind(*g2, @Properties_Events( ), #__EVENT_Resize)
+   ;  Bind(*g2, @Properties_Events( ), #__EVENT_Draw)
    
    ProcedureReturn *splitter
 EndProcedure
@@ -1228,8 +1227,8 @@ Procedure   Properties_Events( )
    Protected __item = WidgetEventItem( )
    Protected __data = WidgetEventData( )
    
-   Protected *first._s_WIDGET = GetAttribute( *g\parent, #PB_Splitter_FirstGadget)
-   Protected *second._s_WIDGET = GetAttribute( *g\parent, #PB_Splitter_SecondGadget)
+   Protected *g1._s_WIDGET = GetAttribute( *g\parent, #PB_Splitter_FirstGadget)
+   Protected *g2._s_WIDGET = GetAttribute( *g\parent, #PB_Splitter_SecondGadget)
    
    Select WidgetEvent( )
       Case #__EVENT_FOCUS
@@ -1280,9 +1279,9 @@ Procedure   Properties_Events( )
          EndIf
          
       Case #__EVENT_StatusChange
-         If *first = *g
+         If *g1 = *g
             If EnteredButton( ) ; Expanded/Collapsed
-               If SetItemState( *second, WidgetEventItem( ), WidgetEventData( ))
+               If SetItemState( *g2, WidgetEventItem( ), WidgetEventData( ))
                   PropertiesButton_Hide( *test )
                EndIf
             EndIf
@@ -1292,20 +1291,20 @@ Procedure   Properties_Events( )
          
       Case #__EVENT_ScrollChange
          Select *g
-            Case *first 
-               If GetState( *second\scroll\v ) <> WidgetEventData( )
-                  SetState(*second\scroll\v, WidgetEventData( ) )
+            Case *g1 
+               If GetState( *g2\scroll\v ) <> WidgetEventData( )
+                  SetState(*g2\scroll\v, WidgetEventData( ) )
                EndIf
-            Case *second 
-               If GetState( *first\scroll\v ) <> WidgetEventData( )
-                  SetState(*first\scroll\v, WidgetEventData( ) )
+            Case *g2 
+               If GetState( *g1\scroll\v ) <> WidgetEventData( )
+                  SetState(*g1\scroll\v, WidgetEventData( ) )
                EndIf
                ;
                PropertiesButton_Resize( *test ) 
          EndSelect
          
       Case #__EVENT_Resize
-         If *second = *g
+         If *g = *g2
             PropertiesButton_Resize( *test )
          EndIf
          
@@ -2501,7 +2500,9 @@ Procedure.i ide_all_ELEMENTS_ADD_ITEMS( *id, Directory$, Type )
             Wend  
          EndIf
          
+         ;Debug 555
          SetState( *id, 0 )
+         ;Debug 666
          ClosePack( ZipFile )
       EndIf
    EndIf
@@ -3384,9 +3385,9 @@ DataSection
    image_group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.40 (Windows - x64)
-; CursorPosition = 2720
-; FirstLine = 2686
-; Folding = ---------------------0-+0---------------------------------------
+; CursorPosition = 2504
+; FirstLine = 2468
+; Folding = ---------------------0-+----------------------------------------
 ; EnableXP
 ; DPIAware
 ; Executable = ..\..\2_621.exe
