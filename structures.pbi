@@ -710,21 +710,19 @@ CompilerIf Not Defined(Structures, #PB_Module)
          *item             ; eventItem( )
          *data             ; eventData( )
       EndStructure
-      Structure _s_HOOK Extends _s_EVENTDATA
+      Structure _s_BINDDATA Extends _s_EVENTDATA
          *function.EventFunc
       EndStructure
       Structure _s_EVENT Extends _s_EVENTDATA
          loop.b
-         queuesmask.b
-         mask.q
-         List *binds._s_HOOk( )
-         List *queues._s_EVENTDATA( )  ; __events( )
+         List binds._s_BINDDATA( )
+         List queues._s_EVENTDATA( ) 
       EndStructure
       
       ;--     GUI
       Structure _s_GUI
-         fontID.i                       ; current drawing fontID
-                                        ;
+         fontID.i                         ; current drawing fontID
+                                              ;
          *drawingroot._s_ROOT
          *root._s_ROOT                 ; enumerate root
          *widget._s_WIDGET             ; enumerate widget
@@ -748,8 +746,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 6.40 (Windows - x64)
-; CursorPosition = 391
-; FirstLine = 372
+; CursorPosition = 718
+; FirstLine = 716
 ; Folding = ------------
 ; Optimizer
 ; EnableXP

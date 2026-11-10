@@ -144,7 +144,7 @@ Procedure.i MakeAlignPosition(alignFlags.l, contentSize.i, objectSize.i, Offset.
    EndIf
 EndProcedure
 
-Procedure ChromeBox(vertical.b, x, y, w, h, isactive, currentcolor.l, localslant, GradientDepth = 25, outerbordercolor.l = -1, innerhighlightcolor.l = -1)
+Procedure ChromeBox(vertical.b, X, Y, w, h, isactive, currentcolor.l, localslant, GradientDepth = 25, outerbordercolor.l = -1, innerhighlightcolor.l = -1)
    Protected dy, dh = h - 1, dw = w - 1
    ;Protected localslant = slant
    ; dh = h
@@ -205,10 +205,10 @@ Procedure ChromeBox(vertical.b, x, y, w, h, isactive, currentcolor.l, localslant
       ; Отрисовка линии в зависимости от направления
       If vertical
          ; Рисуем вертикальные полоски слева направо
-         Line(x + stepVar, y + currentSlantVal, 1, currentLength, color)
+         Line(X + stepVar, Y + currentSlantVal, 1, currentLength, color)
       Else
          ; Рисуем горизонтальные полоски сверху вниз
-         Line(x + currentSlantVal, y + stepVar, currentLength, 1, color)
+         Line(X + currentSlantVal, Y + stepVar, currentLength, 1, color)
       EndIf
       
       ColorAccum + ColorStepFixed
@@ -218,31 +218,31 @@ Procedure ChromeBox(vertical.b, x, y, w, h, isactive, currentcolor.l, localslant
    ; 4. Отрисовка контуров
    If vertical
       ; === ВЕРТИКАЛЬНЫЙ РЕЖИМ (Вкладка «смотрит» вверх, основание справа) ===
-      LineXY(x + dw, y, x, y + localslant, outerbordercolor)             
-      LineXY(x, y + localslant, x, y + h - 1 - localslant, outerbordercolor)         
-      LineXY(x, y + h - 1 - localslant, x + dw, y + h - 1, outerbordercolor)     
+      LineXY(X + dw, Y, X, Y + localslant, outerbordercolor)             
+      LineXY(X, Y + localslant, X, Y + h - 1 - localslant, outerbordercolor)         
+      LineXY(X, Y + h - 1 - localslant, X + dw, Y + h - 1, outerbordercolor)     
       
       If isactive
-         LineXY(x + dw, y + 1, x + 1, y + localslant + 1, innerhighlightcolor)
-         LineXY(x + 1, y + localslant + 1, x + 1, y + h - 1 - localslant - 1, innerhighlightcolor)
-         LineXY(x + 1, y + h - 1 - localslant - 1, x + dw, y + h - 2, innerhighlightcolor)
+         LineXY(X + dw, Y + 1, X + 1, Y + localslant + 1, innerhighlightcolor)
+         LineXY(X + 1, Y + localslant + 1, X + 1, Y + h - 1 - localslant - 1, innerhighlightcolor)
+         LineXY(X + 1, Y + h - 1 - localslant - 1, X + dw, Y + h - 2, innerhighlightcolor)
       Else
          ; Замыкающая линия справа (стык с панелью)
-         LineXY(x + dw, y, x + dw, y + h - 1, outerbordercolor)
+         LineXY(X + dw, Y, X + dw, Y + h - 1, outerbordercolor)
       EndIf
    Else
       ; === ГОРИЗОНТАЛЬНЫЙ РЕЖИМ (Классический Chrome) ===
-      LineXY(x, y + dh, x + localslant, y, outerbordercolor)             
-      LineXY(x + localslant, y, x + w - 1 - localslant, y, outerbordercolor)         
-      LineXY(x + w - 1 - localslant, y, x + w - 1, y + dh, outerbordercolor)     
+      LineXY(X, Y + dh, X + localslant, Y, outerbordercolor)             
+      LineXY(X + localslant, Y, X + w - 1 - localslant, Y, outerbordercolor)         
+      LineXY(X + w - 1 - localslant, Y, X + w - 1, Y + dh, outerbordercolor)     
       
       If isactive
-         LineXY(x + 1, y + dh, x + localslant + 1, y + 1, innerhighlightcolor)
-         LineXY(x + localslant + 1, y + 1, x + w - 1 - localslant - 1, y + 1, innerhighlightcolor)
-         LineXY(x + w - 1 - localslant - 1, y + 1, x + w - 2, y + dh, innerhighlightcolor)
+         LineXY(X + 1, Y + dh, X + localslant + 1, Y + 1, innerhighlightcolor)
+         LineXY(X + localslant + 1, Y + 1, X + w - 1 - localslant - 1, Y + 1, innerhighlightcolor)
+         LineXY(X + w - 1 - localslant - 1, Y + 1, X + w - 2, Y + dh, innerhighlightcolor)
       Else
          ; Замыкающая линия снизу
-         LineXY(x, y + dh, x + w - 1, y + dh, outerbordercolor)
+         LineXY(X, Y + dh, X + w - 1, Y + dh, outerbordercolor)
       EndIf
    EndIf
 EndProcedure
@@ -469,7 +469,7 @@ Procedure DrawTitleBar(*this._s_WIDGET, bgColor.l)
 EndProcedure
 
 ; Создание и инициализация заголовка окна
-Procedure CreateTitleBar(text.s, image.i = 0, flags.l = #_STYLE_Default)
+Procedure CreateTitleBar(Text.s, Image.i = 0, flags.l = #_STYLE_Default)
    Protected._s_TITLE *title = AllocateStructure(_s_TITLE)
    Protected._s_BTN *btn
    Protected round
@@ -477,7 +477,7 @@ Procedure CreateTitleBar(text.s, image.i = 0, flags.l = #_STYLE_Default)
    *title\mask | #__MASK_Left : Static i : If i = 1 :   *title\mask | #__MASK_Center :  EndIf :  If i = 2 :  *title\mask | #__MASK_Right :  EndIf :  i+1
    
    round = DesktopScaledX(20)
-   ;*title\slant = DesktopScaledX(20)
+   *title\slant = DesktopScaledX(20)
    *title\bar\indent = DesktopScaledX(4) ;+ DesktopScaledX(4)
    *title\bar\spacing = DesktopScaledX(4)
    
@@ -488,12 +488,12 @@ Procedure CreateTitleBar(text.s, image.i = 0, flags.l = #_STYLE_Default)
    
    *title\size = DesktopScaledX(10) 
    
-   If text
-      *title\txt\Text = text
+   If Text
+      *title\txt\Text = Text
       *title\txt\change = #True
    EndIf
    ;
-   If IsImage(image)
+   If IsImage(Image)
       *title\img\image = Image 
       *title\img\change = #True
    Else
@@ -530,9 +530,9 @@ Procedure Resize( *this._s_WIDGET, X.l, Y.l, Width.l, Height.l)
    *this\title\mask | #__MASK_Update
 EndProcedure
 
-Procedure Create( *this._s_WIDGET, X.l, Y.l, Width.l, Height.l, text.s, flags.l = #_STYLE_Default, image.i = 0)
+Procedure Create( *this._s_WIDGET, X.l, Y.l, Width.l, Height.l, Text.s, flags.l = #_STYLE_Default, Image.i = 0)
    *this\fontID = FontID(0)
-   *this\title = CreateTitleBar(text, image, flags)
+   *this\title = CreateTitleBar(Text, Image, flags)
    Resize( *this, X, Y, Width, Height)
 EndProcedure
 
@@ -694,8 +694,8 @@ If OpenWindow(0, 0, 0, 800, 230, "Light Titlebar Custom UI Demo", #PB_Window_Sys
 EndIf
 
 ; IDE Options = PureBasic 6.40 (Windows - x64)
-; CursorPosition = 268
-; FirstLine = 148
+; CursorPosition = 479
+; FirstLine = 332
 ; Folding = -f0--fN0--------
 ; EnableXP
 ; DPIAware

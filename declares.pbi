@@ -1910,6 +1910,7 @@ CompilerIf Not Defined( widgets, #PB_Module )
    Declare.i OpenList( *this, item.l = 0 )
    ;
    ;
+   Declare   RemoveEvents( *this, event.l )
    Declare   ResetEvents( *this )
    Declare   AddEvents( *this, event.l, *button = #PB_All, *data = #Null )
    Declare.i Post( *this, event.l, *button = #PB_All, *data = #Null )
@@ -1940,8 +1941,8 @@ CompilerIf Not Defined( DD, #PB_Module )
    XIncludeFile "include/DD.pbi"
 CompilerEndIf
 ; IDE Options = PureBasic 6.40 (Windows - x64)
-; CursorPosition = 264
-; FirstLine = 257
+; CursorPosition = 1912
+; FirstLine = 1745
 ; Folding = --------9-----------Mw-------------------
 ; EnableXP
 ; DPIAware

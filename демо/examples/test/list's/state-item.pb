@@ -43,7 +43,7 @@ CompilerIf #PB_Compiler_IsMainFile
    #_pi_colorred
 EndEnumeration
 
-   Global._s_widget *splitter, *second, *first
+   Global._s_widget *splitter, *g2, *g1
    Global a, *get, *remove, *focus, *reset, *item1, *item2, *item3, *item4, *g1, *g2, CountItems=20;99; количесвто итемов 
    
    ;- DECLARE
@@ -247,24 +247,24 @@ EndEnumeration
             
          Case #__event_Focus
             ; Debug "test focus"
-            _ChangeItemState( *first, GetData( EventWidget( )), 2 )
-            _ChangeItemState( *second, GetData( EventWidget( )), 2 )
+            _ChangeItemState( *g1, GetData( EventWidget( )), 2 )
+            _ChangeItemState( *g2, GetData( EventWidget( )), 2 )
             
          Case #__event_LostFocus
-            _ChangeItemState( *first, GetData( EventWidget( )), 3 )
-            _ChangeItemState( *second, GetData( EventWidget( )), 3 )
+            _ChangeItemState( *g1, GetData( EventWidget( )), 3 )
+            _ChangeItemState( *g2, GetData( EventWidget( )), 3 )
             
          Case #__event_MouseWheel
             If MouseDirection( ) > 0
-               SetState(*second\scroll\v, GetState( *second\scroll\v ) - WidgetEventData( ) )
+               SetState(*g2\scroll\v, GetState( *g2\scroll\v ) - WidgetEventData( ) )
             EndIf
       EndSelect
    EndProcedure
    
    ;-
    Procedure   Properties_Status( *splitter._s_WIDGET, *this._s_WIDGET, item )
-      Protected._s_WIDGET *first = GetAttribute(*splitter, #PB_Splitter_FirstGadget)
-      Protected._s_WIDGET *second = GetAttribute(*splitter, #PB_Splitter_SecondGadget)
+      Protected._s_WIDGET *g1 = GetAttribute(*splitter, #PB_Splitter_FirstGadget)
+      Protected._s_WIDGET *g2 = GetAttribute(*splitter, #PB_Splitter_SecondGadget)
       Protected._s_ROW *row
       Protected state
       
@@ -291,28 +291,28 @@ EndEnumeration
       ;
       If *row\data
          Select *this
-            Case *first 
-               If GetState( *second ) <> *row\index
-                  _ChangeItemState( *second, *row\index, *row\ColorState( ))
+            Case *g1 
+               If GetState( *g2 ) <> *row\index
+                  _ChangeItemState( *g2, *row\index, *row\ColorState( ))
                EndIf
-            Case *second 
-               If GetState( *first ) <> *row\index
-                  _ChangeItemState( *first, *row\index, *row\ColorState( ))
+            Case *g2 
+               If GetState( *g1 ) <> *row\index
+                  _ChangeItemState( *g1, *row\index, *row\ColorState( ))
                EndIf   
          EndSelect
          
       Else
          Select *this
-            Case *first 
-               If *second\RowFocused( )
-                  item = *second\RowFocused( )\index
-                  state = *second\RowFocused( )\ColorState( ) 
+            Case *g1 
+               If *g2\RowFocused( )
+                  item = *g2\RowFocused( )\index
+                  state = *g2\RowFocused( )\ColorState( ) 
                EndIf
                
-            Case *second 
-               If *first\RowFocused( )
-                  item = *first\RowFocused( )\index
-                  state = *first\RowFocused( )\ColorState( ) 
+            Case *g2 
+               If *g1\RowFocused( )
+                  item = *g1\RowFocused( )\index
+                  state = *g1\RowFocused( )\ColorState( ) 
                EndIf
          EndSelect
          
@@ -327,15 +327,15 @@ EndEnumeration
    EndProcedure
    
    Procedure   Properties_AddItem( *splitter._s_WIDGET, item, Text.s, Type=0, mode=0 )
-      Protected *first._s_WIDGET = GetAttribute(*splitter, #PB_Splitter_FirstGadget)
-      Protected *second._s_WIDGET = GetAttribute(*splitter, #PB_Splitter_SecondGadget)
+      Protected *g1._s_WIDGET = GetAttribute(*splitter, #PB_Splitter_FirstGadget)
+      Protected *g2._s_WIDGET = GetAttribute(*splitter, #PB_Splitter_SecondGadget)
       Protected *this._s_WIDGET
       Protected._s_ROW *row
       
       If mode
-         *row = AddItem( *first, item, StringField(Text.s, 1, Chr(10)), -1, mode )
+         *row = AddItem( *g1, item, StringField(Text.s, 1, Chr(10)), -1, mode )
       Else
-         *row = AddItem( *first, item, UCase(StringField(Text.s, 1, Chr(10))), -1 )
+         *row = AddItem( *g1, item, UCase(StringField(Text.s, 1, Chr(10))), -1 )
       EndIf
       ;
       If *row\parent
@@ -346,7 +346,7 @@ EndEnumeration
       EndIf
       *row\data = Type
       
-      *row = AddItem( *second, item, StringField(Text.s, 2, Chr(10)), -1, mode )
+      *row = AddItem( *g2, item, StringField(Text.s, 2, Chr(10)), -1, mode )
       ;
       If *row\parent
          *row\color\back = - 1
@@ -375,15 +375,15 @@ EndEnumeration
                   If *row
                      If SetState( *g, *row\index )
                         If *row\data
-                           If *first <> *g
-                              _ChangeItemState( *first, *row\index, 2 )
+                           If *g1 <> *g
+                              _ChangeItemState( *g1, *row\index, 2 )
                            EndIf
-                           If *second <> *g
-                              _ChangeItemState( *second, *row\index, 2 )
+                           If *g2 <> *g
+                              _ChangeItemState( *g2, *row\index, 2 )
                            EndIf
                            
                            PropertiesButton_Free( *test )
-                           *test = PropertiesButton_Create( *second, *row\index )
+                           *test = PropertiesButton_Create( *g2, *row\index )
                            PropertiesButton_Resize( *test )
                            SetState( *test, *row\index)
       
@@ -424,14 +424,14 @@ EndEnumeration
                   *row = *g\RowEntered( )
 ;                   If *row
 ;                      If  *row\data
-;                         If *first <> *g
-;                            _ChangeItemState( *first, *row\index, 2 )
+;                         If *g1 <> *g
+;                            _ChangeItemState( *g1, *row\index, 2 )
 ;                         EndIf
-;                         If *second <> *g
-;                            _ChangeItemState( *second, *row\index, 2 )
+;                         If *g2 <> *g
+;                            _ChangeItemState( *g2, *row\index, 2 )
 ;                         EndIf
 ;                         PropertiesButton_Free( *test )
-;                         *test = PropertiesButton_Create( *second, *row\index )
+;                         *test = PropertiesButton_Create( *g2, *row\index )
 ;                         PropertiesButton_Resize( *test )
 ;                         SetActive( *test )
 ;                      EndIf
@@ -441,9 +441,9 @@ EndEnumeration
             EndIf
             
          Case #__event_StatusChange
-            If *first = *g
+            If *g1 = *g
                If EnteredButton( ) ; Expanded/Collapsed
-                  If SetItemState(*second, WidgetEventItem( ), WidgetEventData( ))
+                  If SetItemState(*g2, WidgetEventItem( ), WidgetEventData( ))
                      PropertiesButton_Hide( *test )
                   EndIf
                EndIf
@@ -453,20 +453,20 @@ EndEnumeration
             
          Case #__event_ScrollChange
             Select *g
-               Case *first 
-                  If GetState( *second\scroll\v ) <> WidgetEventData( )
-                     SetState(*second\scroll\v, WidgetEventData( ) )
+               Case *g1 
+                  If GetState( *g2\scroll\v ) <> WidgetEventData( )
+                     SetState(*g2\scroll\v, WidgetEventData( ) )
                   EndIf
-               Case *second 
-                  If GetState( *first\scroll\v ) <> WidgetEventData( )
-                     SetState(*first\scroll\v, WidgetEventData( ) )
+               Case *g2 
+                  If GetState( *g1\scroll\v ) <> WidgetEventData( )
+                     SetState(*g1\scroll\v, WidgetEventData( ) )
                   EndIf
                   ;
                   PropertiesButton_Resize( *test ) 
             EndSelect
             
          Case #__event_Resize
-            If *second = *g
+            If *g2 = *g
                PropertiesButton_Resize( *test )
             EndIf
             
@@ -480,20 +480,20 @@ EndEnumeration
       Select WidgetEvent( )
          Case #__event_Up
             Select EventWidget( )
-               Case *get : Debug GetState(*second)
-               Case *focus : SetActive(GetParent(*second))
+               Case *get : Debug GetState(*g2)
+               Case *focus : SetActive(GetParent(*g2))
                Case *remove 
-                  If *second\RowFocused( )
-                     Protected item = *second\RowFocused( )\index
-                     RemoveItem(*second, item)
-                     ; RemoveItem(*second, item)
+                  If *g2\RowFocused( )
+                     Protected item = *g2\RowFocused( )\index
+                     RemoveItem(*g2, item)
+                     ; RemoveItem(*g2, item)
                   EndIf
                   
-               Case *reset : SetState(*second, - 1)
-               Case *item1 : SetState(*second, Val(GetText(EventWidget( ))))
-               Case *item2 : SetState(*second, Val(GetText(EventWidget( ))))
-               Case *item3 : SetState(*second, Val(GetText(EventWidget( ))))
-               Case *item4 : SetState(*second, Val(GetText(EventWidget( ))))
+               Case *reset : SetState(*g2, - 1)
+               Case *item1 : SetState(*g2, Val(GetText(EventWidget( ))))
+               Case *item2 : SetState(*g2, Val(GetText(EventWidget( ))))
+               Case *item3 : SetState(*g2, Val(GetText(EventWidget( ))))
+               Case *item4 : SetState(*g2, Val(GetText(EventWidget( ))))
             EndSelect
             
       EndSelect
@@ -503,24 +503,24 @@ EndEnumeration
    Define h = 418
    If Open(1, 100, 50, 370, h, "second ListView state", #PB_Window_SystemMenu)
       ;       ;Container(0, 0, 240, h)
-      *first = Tree(0,0,0,0) : SetClass(*first, "first")
-      *second = Tree(0,0,0,0, #__flag_nolines|#__flag_nobuttons) : SetClass(*second, "second")
+      *g1 = Tree(0,0,0,0) : SetClass(*g1, "first")
+      *g2 = Tree(0,0,0,0, #__flag_nolines|#__flag_nobuttons) : SetClass(*g2, "second")
       ;
-      Hide( HBar(*second), #True )
-      Hide( HBar(*first), #True )
-      ;Hide( VBar(*first), #True )
+      Hide( HBar(*g2), #True )
+      Hide( HBar(*g1), #True )
+      ;Hide( VBar(*g1), #True )
       
       
-      ;*first = ListView(10, 10, 220, 310)
-      ;*first = Panel(10, 10, 230, 310) 
-      ;Debug *second\scroll\v\hide 
-      *splitter = Splitter(10,10, 230, h-20, *first, *second, #PB_Splitter_Vertical )
-      ;Debug *second\scroll\v\hide 
+      ;*g1 = ListView(10, 10, 220, 310)
+      ;*g1 = Panel(10, 10, 230, 310) 
+      ;Debug *g2\scroll\v\hide 
+      *splitter = Splitter(10,10, 230, h-20, *g1, *g2, #PB_Splitter_Vertical )
+      ;Debug *g2\scroll\v\hide 
       
       Bind(*splitter, @Properties_Events(), #__event_Focus)
-      Bind(*second, @Properties_Events(), #__event_Resize)
-      Bind(*second, @Properties_Events())
-      Bind(*first, @Properties_Events())
+      Bind(*g2, @Properties_Events(), #__event_Resize)
+      Bind(*g2, @Properties_Events())
+      Bind(*g1, @Properties_Events())
       
 ;          Properties_AddItem(*splitter, -1, "collaps "+Str(0), -1, 0)
 ;          Properties_AddItem(*splitter, -1, "Item "+Str(1), -1, 1)
@@ -574,7 +574,7 @@ EndEnumeration
          EndIf
    
       
-      If IsContainer(*second)
+      If IsContainer(*g2)
          CloseList( ) 
       EndIf
       ; CloseList( ) 
@@ -606,10 +606,10 @@ EndEnumeration
       
       
       Debug "--------"
-      Hide( VBar(*first), #True )
+      Hide( VBar(*g1), #True )
       Repaint( )
-      ;Define._s_WIDGET *this = *first\scroll\h
-      Define._s_WIDGET *this = *second\scroll\h
+      ;Define._s_WIDGET *this = *g1\scroll\h
+      Define._s_WIDGET *this = *g2\scroll\h
       Define._s_BAR *bar = *this\bar
       Debug "["+ *this\class +"] "+;mode +" >< "+;*bar\PageChange( ) +" >< "+
             *bar\percent +" >< "+
@@ -634,7 +634,7 @@ EndEnumeration
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.40 (Windows - x64)
-; CursorPosition = 444
-; FirstLine = 430
+; CursorPosition = 360
+; FirstLine = 358
 ; Folding = ---0--------0
 ; EnableXP

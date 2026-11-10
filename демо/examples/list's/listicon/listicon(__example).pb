@@ -165,11 +165,11 @@ CompilerIf #PB_Compiler_IsMainFile
    
    Procedure AddCaption( *this._s_PARENT, Width, Height, Text.s, Flag.q = #__FLAG_AutoSize ) 
       Protected *g._s_WIDGET
-      *this\fs[2] = Height
       OpenList(*this, #PB_Ignore)
       *g = Button( 0,0,Width,Height, Text.s, #__flag_Left )
       CloseList( )
-      If Flag & #__FLAG_AutoSize
+       *this\fs[2] = *g\height
+     If Flag & #__FLAG_AutoSize
          SetAlign( *g, 0, #__FLAG_AutoSize,1,#__FLAG_AutoSize,0, 0 )              
       EndIf
       ProcedureReturn *g
@@ -314,8 +314,8 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.40 (Windows - x64)
-; CursorPosition = 122
-; FirstLine = 118
+; CursorPosition = 170
+; FirstLine = 165
 ; Folding = --------
 ; EnableXP
 ; DPIAware

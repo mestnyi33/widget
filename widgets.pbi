@@ -8753,7 +8753,7 @@ Module widgets
                            *row\mask &~ #__MASK_Hidden 
                         EndIf
                         
-                        Debug "Item: " + *row\txt(0)\text + " | Hidden: " + Bool( *row\mask & #__MASK_Hidden)
+                       ;  Debug "SetItemState: " + *this\class +" "+ *row\txt(0)\text + " | Hidden: " + Bool( *row\mask & #__MASK_Hidden)
                      EndIf
                   Wend
                   PopListPosition( *this\row\__s( ))
@@ -16172,18 +16172,67 @@ Module widgets
       
       If event = #__EVENT_Down
          If MouseButtons( ) & #PB_Canvas_LeftButton
-            If *row_hovered 
-               *row_pressed = *row_hovered
-               *this\RowPressed( ) = *row_hovered
-               *row_hovered\mask | #__MASK_Press
-               
-               If *row_actived <> *row_hovered
-                  ; Ваша фишка: временно гасим старый фокус
-                  If *row_actived And *row_actived\mask & #__MASK_Active
-                     DoEvent_Status( "status - press-deactive-item", *this, *row_actived\rindex, *row_actived )
+            If *hoverBTN
+               ; change collapsed/expanded button state
+               If *this\flagmask & #__FLAG_nobuttons
+                  If *row_hovered\buttonbox
+                     If *row_hovered\buttonbox\mask & #__MASK_Hover
+                        If *row_hovered\buttonbox\checked
+                           ; развернул список
+                           If SetItemState( *this, *row_hovered\rindex, (GetItemState(*this, *row_hovered\rindex) &~ #PB_Tree_Collapsed) | #PB_Tree_Expanded )
+                              Post( *this, #__EVENT_StatusChange, *row_hovered\rindex, *row_hovered )
+                           EndIf
+                        Else
+                           ; свернул список
+                           If SetItemState( *this, *row_hovered\rindex, (GetItemState(*this, *row_hovered\rindex) &~ #PB_Tree_Expanded) | #PB_Tree_Collapsed )
+                              Post( *this, #__EVENT_StatusChange, *row_hovered\rindex, *row_hovered )
+                           EndIf
+                        EndIf
+                     EndIf
                   EndIf
+               EndIf
+               
+               ; change box ( option&check )
+               If *row_hovered\checkbox
+                  If *row_hovered\checkbox\mask & #__MASK_Hover
+                     ;
+                     ; change option box state
+                     If *this\flagmask & #__FLAG_optionboxes
+                        If *row_hovered\_groupbar
+                           If *row_hovered\parent 
+                              If *row_hovered\_groupbar\parent And
+                                 *row_hovered\_groupbar\checkbox\checked
+                                 *row_hovered\_groupbar\checkbox\checked = #PB_Checkbox_Unchecked
+                              EndIf
+                           EndIf
+                           ;
+                           If *row_hovered\_groupbar\_groupbar <> *row_hovered
+                              If *row_hovered\_groupbar\_groupbar
+                                 *row_hovered\_groupbar\_groupbar\checkbox\checked = #PB_Checkbox_Unchecked
+                              EndIf
+                              *row_hovered\_groupbar\_groupbar = *row_hovered
+                           EndIf
+                        EndIf
+                     EndIf
+                     ;
+                     ; change checked box state
+                     set_check_state_( *row_hovered\checkbox\checked, Bool(*this\flagmask & #__FLAG_threestate) )
+                  EndIf
+               EndIf
+            Else
+               If *row_hovered 
+                  *row_pressed = *row_hovered
+                  *this\RowPressed( ) = *row_hovered
+                  *row_hovered\mask | #__MASK_Press
                   
-                  DoEvent_Status( "status - press-item", *this, *row_hovered\rindex, *row_hovered )
+                  If *row_actived <> *row_hovered
+                     ; Ваша фишка: временно гасим старый фокус
+                     If *row_actived And *row_actived\mask & #__MASK_Active
+                        DoEvent_Status( "status - press-deactive-item", *this, *row_actived\rindex, *row_actived )
+                     EndIf
+                     
+                     DoEvent_Status( "status - press-item", *this, *row_hovered\rindex, *row_hovered )
+                  EndIf
                EndIf
             EndIf
          EndIf
@@ -24195,17 +24244,23 @@ Module widgets
    
    ;-
    Procedure   RemoveEvents( *this._s_WIDGET, event.l )
+      Protected._s_EVENTDATA *event
+      
       If ListSize( __GUI\event\queues( ) )
-         ForEach __GUI\event\queues( )
-            Define __widget = __GUI\event\queues( )\widget
-            Define __event  = __GUI\event\queues( )\type
-            Define __item   = __GUI\event\queues( )\item
-            Define __data   = __GUI\event\queues( )\data
+         ForEach __GUI\event\queues( ) : *event = @__GUI\event\queues( )
+            Define __widget = *event\widget
+            Define __event  = *event\type
+            Define __item   = *event\item
+            Define __data   = *event\data
             
-            If GetRoot( __widget ) = GetRoot( *this ) Or __widget = *this
-               If __event = event Or event = #PB_All
-                  ; FreeStructure( __GUI\event\queues( ))
-                  DeleteElement( __GUI\event\queues( ));, 1 )
+            If __event = event 
+               DeleteElement( __GUI\event\queues( ), 1 )
+               Continue
+            EndIf
+              
+            If __widget = *this Or GetRoot( __widget ) = GetRoot( *this )
+                If event = #PB_All
+                  DeleteElement( __GUI\event\queues( ), 1 )
                                                        ;
                   If __event = #__EVENT_Free
                      If IsContainer( __widget )
@@ -24213,25 +24268,16 @@ Module widgets
                      EndIf
                   Else
                      PushListPosition(  __GUI\event\queues( ))
-                     If __event = #__EVENT_StatusChange
-                       ; If test_StatusChange : Debug "status-RemoveEvents" : EndIf
-;                         Protected._s_WIDGET *g = __widget
-;                         If *g\mask & #__MASK_Status
-;                            *g\mask &~ #__MASK_Status
-                         Post( __widget, __event, __item, __data )
-;                         EndIf
-                     Else
-                        Post( __widget, __event, __item, __data )
-                     EndIf
-                      PopListPosition(  __GUI\event\queues( ))
+                     Post( __widget, __event, __item, __data )
+                     PopListPosition(  __GUI\event\queues( ))
                   EndIf
                EndIf
-            Else
-               If GetClass( __widget ) = GetClass( *this )
-                  DeleteElement( __GUI\event\queues( ) )
-                  Debug "ERRORS event reset ["+GetClass( __widget ) +" "+ GetClass( *this) +"]"
-                  Break
-               EndIf
+;             Else
+;                If GetClass( __widget ) = GetClass( *this )
+;                   DeleteElement( __GUI\event\queues( ), 1 )
+;                   Debug "ERRORS event reset ["+GetClass( __widget ) +" "+ GetClass( *this) +"]"
+;                   Break
+;                EndIf
             EndIf
          Next
          ;
@@ -24239,7 +24285,7 @@ Module widgets
          ProcedureReturn #True
       EndIf
    EndProcedure
-   
+  
    Procedure   ResetEvents( *this._s_WIDGET )
       Protected result
       If ListSize( __GUI\event\queues( ))
@@ -24267,6 +24313,8 @@ Module widgets
    EndProcedure
    
    Procedure   AddEvents( *this._s_ROOT, event.l, *btn = #PB_All, *data = #Null )
+      Protected._s_EVENTDATA *event
+      
       If *this > 0
          If test_event_add
             Static test
@@ -24288,51 +24336,27 @@ Module widgets
          
          ;
          ; 
-         If AddElement( __GUI\event\queues( ) )
-            __GUI\event\queues.allocate( EVENTDATA, ( ) )
-            __GUI\event\queues( )\widget = *this
-            __GUI\event\queues( )\type   = event
-            __GUI\event\queues( )\item   = *btn
-            __GUI\event\queues( )\data   = *data
-            
-            ;                If event = #__EVENT_focus
-            ;                   ; Debug  "ADD events "+EventString( event ) +" "+ *this\class 
-            ;                   PostRepaint( *this\root )
-            ;                EndIf
-            ;                If event = #__EVENT_StatusChange
-            ;                   PostRepaint( *this\root )
-            ;                EndIf
-            ;                If event = #__EVENT_Change
-            ;                   PostRepaint( *this\root )
-            ;                EndIf
-            ProcedureReturn __GUI\event\queues( )
+         *event = AddElement( __GUI\event\queues( ))
+         If *event
+            *event\widget = *this
+            *event\type   = event
+            *event\item   = *btn
+            *event\data   = *data
+            ProcedureReturn *event
          EndIf
       EndIf
    EndProcedure
    
    Procedure.i Post( *this._s_ROOT, event.l, *btn = #PB_All, *data = #Null )
       Protected result, __widget = #Null, __event = #PB_All, __item = #PB_All, __data = #Null
+      Protected._s_BINDDATA *bind
       
       If *this > 0 
          If *this\parent
             Protected *hoverTAB._s_TAB = parentTabEntered( *this )
          EndIf
-         ;             If Not __GUI\event\queuesmask
-         ;                ; If *this\type <> #__TYPE_Scroll
-         ;                ;    Debug " post add events"+ *this\class +" "+ EventString(event) +" "+ *btn +" "+ *data
-         ;                ; EndIf
-         ;                If AddEvents( *this, event, *btn, *data )
-         ;                  If event = #__EVENT_Free 
-         ;                     ProcedureReturn #False
-         ;                  EndIf
-         ;                  ProcedureReturn #True
-         ;               EndIf
-         ;             Else
-         ;                ;                If event = #__EVENT_focus
-         ;                ;                   Debug  " POST events "+EventString( event ) +" "+ *this\class 
-         ;                ;                EndIf
+         
          If is_bar_( *this )
-            ;
             If event = #__EVENT_LeftClick Or
                event = #__EVENT_Change
                If *hoverTAB
@@ -24345,18 +24369,7 @@ Module widgets
             EndIf
          EndIf
          
-         
-         ;             If event = #__EVENT_Change
-         ;                If is_integral_( *this )
-         ;                   Debug *this\parent\class
-         ;                   ;                               If is_root_( *this\parent )
-         ;                   ;                                  Debug *this\parent\parent\class
-         ;                   ;                                  SetState( *this\parent\parent\ComboBar( ), *this\RowEntered( )\rindex ) 
-         ;                   ;                               EndIf
-         ;                EndIf
-         ;             EndIf
-         
-         ;\\ 
+          ;\\ 
          __widget = EventWidget( )
          __event  = WidgetEvent( )
          __item   = WidgetEventItem( )
@@ -24399,26 +24412,20 @@ Module widgets
                widgets::__GUI\DrawingRoot = 0
             EndIf
          EndIf    
-         
-         ;                Debug " "+EventString(event) +" "+ *this\class +" "+ ListSize(__GUI\event\binds( ))
-         ; ;                
-         ;                ForEach __GUI\event\binds( )
-         ;                   Debug "         binds - "+EventString(__GUI\event\binds( )\type) ;+" "+ __GUI\event\binds( )\item
-         ;                Next
-         ;                
+                        
          ;\\
          If Not is_root_( *this )
             ;\\ 1 call (current-widget) bind event function
-            ForEach __GUI\event\binds( )
-               If __GUI\event\binds( )\widget = *this 
-                  If __GUI\event\binds( )\type = event 
-                     ; Debug ""+EventString(__GUI\event\binds( )\type)+" "+ListSize(__GUI\event\binds( ))
-                     If Not ( __GUI\event\binds( )\item >= 0 And __GUI\event\binds( )\item <> *btn )
-                        If __GUI\event\binds( )\data
-                           WidgetEventData( ) = __GUI\event\binds( )\data
+            ForEach __GUI\event\binds( ) : *bind = @__GUI\event\binds( )
+               If *bind\widget = *this 
+                  If *bind\type = event 
+                     ; Debug ""+EventString(*bind\type)+" "+ListSize(*bind)
+                     If Not ( *bind\item >= 0 And *bind\item <> *btn )
+                        If *bind\data
+                           WidgetEventData( ) = *bind\data
                         EndIf
                         
-                        result = __GUI\event\binds( )\function( )
+                        result = *bind\function( )
                         If result = #PB_Ignore
                            Break
                         EndIf
@@ -24432,11 +24439,11 @@ Module widgets
             If *this\window 
                If result <> #PB_Ignore
                   If Not is_root_( *this\window )
-                     ForEach __GUI\event\binds( )
-                        If __GUI\event\binds( )\widget = *this\window  
-                           If __GUI\event\binds( )\type = event And
-                              Not ( __GUI\event\binds( )\item >= 0 And __GUI\event\binds( )\item <> *btn )
-                              result = __GUI\event\binds( )\function( )
+                     ForEach __GUI\event\binds( ) : *bind = @__GUI\event\binds( )
+                        If *bind\widget = *this\window  
+                           If *bind\type = event And
+                              Not ( *bind\item >= 0 And *bind\item <> *btn )
+                              result = *bind\function( )
                               If result = #PB_Ignore
                                  Break
                               EndIf
@@ -24451,11 +24458,11 @@ Module widgets
          ;\\ 3 call (current-widget-root) bind event function
          If *this\root
             If result <> #PB_Ignore
-               ForEach __GUI\event\binds( )
-                  If __GUI\event\binds( )\widget = *this\root 
-                     If __GUI\event\binds( )\type = event And
-                        Not ( __GUI\event\binds( )\item >= 0 And __GUI\event\binds( )\item <> *btn )
-                        result = __GUI\event\binds( )\function( )
+               ForEach __GUI\event\binds( ) : *bind = @__GUI\event\binds( )
+                  If *bind\widget = *this\root 
+                     If *bind\type = event And
+                        Not ( *bind\item >= 0 And *bind\item <> *btn )
+                        result = *bind\function( )
                         If result = #PB_Ignore
                            Break
                         EndIf
@@ -24525,6 +24532,7 @@ Module widgets
    EndProcedure
    
    Procedure.i Bind( *this._s_WIDGET, *callback, event.l = #PB_All, item.l = #PB_All, *data = 0 )
+      Protected._s_BINDDATA *bind
       ;
       If *this < 0
          ;
@@ -24581,14 +24589,14 @@ Module widgets
             
             If *callback
                LastElement( __GUI\event\binds( ))
-               AddElement( __GUI\event\binds( ))
-               __GUI\event\binds.allocate( HOOK, ( ))
-               
-               __GUI\event\binds( )\function = *callback
-               __GUI\event\binds( )\widget   = *this
-               __GUI\event\binds( )\type     = event
-               __GUI\event\binds( )\item     = item
-               __GUI\event\binds( )\data     = *data
+               *bind =  AddElement( __GUI\event\binds( ))
+               If *bind
+                  *bind\function = *callback
+                  *bind\widget   = *this
+                  *bind\type     = event
+                  *bind\item     = item
+                  *bind\data     = *data
+               EndIf
             EndIf
             
             ; RemoveEvents( *this, event )
@@ -24598,7 +24606,8 @@ Module widgets
    EndProcedure
    
    Procedure.i Unbind( *this._s_WIDGET, *callback, event.l = #PB_All, item.l = #PB_All )
-      If *this < 0
+        Protected._s_BINDDATA *bind
+        If *this < 0
          ; 1. Сохраняем в локальную переменную
          Protected._s_ROOT *root = Root( )
          
@@ -24616,10 +24625,8 @@ Module widgets
          ResetList( __GUI\event\binds( ) )
          
          If *callback = #PB_All
-            While NextElement( __GUI\event\binds( ) )
-               If __GUI\event\binds( )\widget = *this
-                  ; --- [ИСПРАВЛЕНО: Освобождаем память структуры HOOK] ---
-                  FreeStructure( __GUI\event\binds( ) ) 
+            While NextElement( __GUI\event\binds( ))
+               If *this = @__GUI\event\binds( )\widget
                   DeleteElement( __GUI\event\binds( ), 1 )
                EndIf
             Wend
@@ -24630,13 +24637,12 @@ Module widgets
                   Unbind( *this, *callback, i, item )
                Next
             Else
-               While NextElement( __GUI\event\binds( ) )
-                  If __GUI\event\binds( )\widget = *this And 
-                     __GUI\event\binds( )\type = event And 
-                     __GUI\event\binds( )\item = item
+               While NextElement( __GUI\event\binds( )) 
+                  *bind = @__GUI\event\binds( )
+                  If *bind\widget = *this And 
+                     *bind\type = event And 
+                     *bind\item = item
                      
-                     ; --- [ИСПРАВЛЕНО: Освобождаем память структуры HOOK] ---
-                     FreeStructure( __GUI\event\binds( ) )
                      DeleteElement( __GUI\event\binds( ), 1 )
                   EndIf
                Wend
@@ -26266,9 +26272,9 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.40 (Windows - x64)
-; CursorPosition = 16097
-; FirstLine = 15005
-; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+--P-j7--Pr--4-----------------------------------F----------------------------------------------------------------------t--------------------------------------------------------------------------------------------4--------------------u---448-----O-+eff-z6e-------4-------------fff-0f01-0--v-8v--------------------v8+-v4-----------------------------------------------------------v-f------------------------------------------------------------------------------------------------------------------------------------------------------------
+; CursorPosition = 24643
+; FirstLine = 22547
+; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+--P-j7--Pr--4-----------------------------------F----------------------------------------------------------------------t--------------------------------------------------------------------------------------------4-------------------4u---448-++--O-+aff-z8---v-------+-------------888v-rn+v---0f-0--------------------d4--0+-----------------------------------------------------------0-8----------------------------------------------------------------------------------------------------------------------0-------------------------------------
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe

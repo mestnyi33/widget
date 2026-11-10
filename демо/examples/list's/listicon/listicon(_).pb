@@ -163,14 +163,14 @@ CompilerIf #PB_Compiler_IsMainFile
       
    EndProcedure
    
-   Procedure AddCaption( *this._s_PARENT, Width, Height, Text.s, Flag.q = #__FLAG_auto ) 
+   Procedure AddCaption( *this._s_PARENT, Width, Height, Text.s, Flag.q = #__FLAG_AutoSize ) 
       Protected *g._s_WIDGET
-      *this\fs[2] = Height
       OpenList(*this, #PB_Ignore)
       *g = Button( 0,0,Width,Height, Text.s, #__FLAG_Left )
       CloseList( )
-      If Flag & #__FLAG_auto
-         SetAlign( *g, 0, #__FLAG_auto,1,#__FLAG_auto,0, 0 )              
+      *this\fs[2] = *g\height ; DPIScaledY(Height)
+      If Flag & #__FLAG_AutoSize
+         SetAlign( *g, 0, #__FLAG_AutoSize,1,#__FLAG_AutoSize,0, 0 )              
       EndIf
       ProcedureReturn *g
    EndProcedure
@@ -419,8 +419,8 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.40 (Windows - x64)
-; CursorPosition = 122
-; FirstLine = 118
+; CursorPosition = 170
+; FirstLine = 164
 ; Folding = ---------
 ; EnableXP
 ; DPIAware
