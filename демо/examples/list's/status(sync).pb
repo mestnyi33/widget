@@ -523,9 +523,6 @@ EndEnumeration
       *g1 = Tree(0,0,0,0) : SetClass(*g1, "first")
       *g2 = Tree(0,0,0,0, #__flag_nolines|#__flag_nobuttons) : SetClass(*g2, "second")
       ;
-      Hide( HBar(*g2), #True )
-      Hide( HBar(*g1), #True )
-      ;Hide( VBar(*g1), #True )
       
       
       ;*g1 = ListView(10, 10, 220, 310)
@@ -623,7 +620,9 @@ EndEnumeration
       
       
       Debug "--------"
-      Hide( VBar(*g1), #True )
+     Hide( HBar(*g2), #True )
+      Hide( HBar(*g1), #True )
+       Hide( VBar(*g1), #True )
       Repaint( )
       ;Define._s_WIDGET *this = *g1\scroll\h
       Define._s_WIDGET *this = *g2\scroll\h
@@ -818,8 +817,8 @@ CompilerEndIf
 ;    EndIf
 ; CompilerEndIf
 ; IDE Options = PureBasic 6.40 (Windows - x64)
-; CursorPosition = 368
-; FirstLine = 362
+; CursorPosition = 624
+; FirstLine = 605
 ; Folding = -----------
 ; EnableXP
 ; DPIAware

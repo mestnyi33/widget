@@ -68,7 +68,7 @@ Module widgets
    
    Procedure.i CatchImageDPI(ImageNumber, *MemoryAddress, MemorySize = #PB_Default)
       Protected Image
-      Protected.d DPI = DesktopResolutionX()
+      Protected.d DPI = DesktopResolutionX( )
       
       ; Корректный вызов CatchImage в зависимости от наличия размера
       If MemorySize = #PB_Default
@@ -98,7 +98,7 @@ Module widgets
    
    Procedure.i LoadImageDPI(ImageNumber, FileName$, Flags = 0)
       Protected Image
-      Protected.d DPI = DesktopResolutionX()
+      Protected.d DPI = DesktopResolutionX( )
       
       ; Корректный вызов LoadImage в зависимости от наличия размера
       If Flags = 0
@@ -1252,7 +1252,7 @@ Module widgets
    EndMacro
    
    Procedure a_grid_image( Steps = 5, line = 0, Color = 0, startx = 0, starty = 0 )
-      If mouse()\steps < 2
+      If mouse( )\steps < 2
          ProcedureReturn 0
       EndIf
       
@@ -2534,11 +2534,11 @@ Module widgets
       *BB1 = *bar\BTN[1]
       *BB2 = *bar\BTN[2]
       ; Если мышь физически находится над этим конкретным виджетом (*this)
-      If Entered() = *this 
+      If Entered( ) = *this 
          ; Только тогда мы разрешаем подсвечивать айтем из глобального стека
          *hoverTAB = parentTabEntered( *this )
       EndIf
-      ;If GetActive() = *this 
+      ;If GetActive( ) = *this 
       *activeTAB = *this\parentTabSelected( )
       ;EndIf
       
@@ -3317,9 +3317,13 @@ Module widgets
    ;-
    Procedure.b bar_update_scroll( *this._s_WIDGET, *bar._s_BAR, *SB._s_BTN, *BB1._s_BTN, *BB2._s_BTN )
       Protected ThumbPos.i
-      ;          
+            ;          
       If is_integral_( *this ) And (Not *bar\max )
          ProcedureReturn 0
+      EndIf
+      
+      If *bar\vertical 
+         Debug "bar_update_scroll( )  ["+ *this\class +"]"
       EndIf
       
       ; scroll-bar default button size
@@ -3622,7 +3626,7 @@ Module widgets
                            UpdateWindow_(GadgetID(*this\parent\scroll\gadget[2]))
                         CompilerEndIf
                      Else
-                        If StartEnum( *this\parent ) : *e = widget()
+                        If StartEnum( *this\parent ) : *e = widget( )
                            If *this\parent = *e\parent 
                               If *this\parent\scroll\v <> *e And
                                  *this\parent\scroll\h <> *e And Not *e\align
@@ -3660,7 +3664,7 @@ Module widgets
                            UpdateWindow_(GadgetID(*this\parent\scroll\gadget[2]))
                         CompilerEndIf
                      Else
-                        If StartEnum( *this\parent ) : *e = widget()
+                        If StartEnum( *this\parent ) : *e = widget( )
                            If *this\parent = *e\parent 
                               If *this\parent\scroll\v <> *e And
                                  *this\parent\scroll\h <> *e And Not *e\align
@@ -3679,16 +3683,10 @@ Module widgets
                EndIf
             EndIf
             
-            ; Debug "scroll CHANGE "+*this\class
+           ; Debug "scroll CHANGE "+*this\class
             If is_scrollbars_( *this )
                If *this\type = #__TYPE_Scroll
-                  ;                      If *this\parent\type = #__TYPE_Tree Or 
-                  ;                         *this\parent\type = #__TYPE_ListIcon Or 
-                  ;                         *this\parent\type = #__TYPE_ListView
-                  ;                         ; *this\parent\WidgetChange( ) = 1
-                  ;                         ; *this\parent\text\change = - 3
-                  ;                      EndIf
-                  Post( *this\parent, #__EVENT_ScrollChange, *this, *bar\page\pos ) 
+                   Post( *this\parent, #__EVENT_ScrollChange, *this, *bar\page\pos ) 
                EndIf
             Else
                DoEvents( *this, #__EVENT_Change, *this\Stringbar, *bar\PageChange( ) )
@@ -4692,7 +4690,8 @@ Module widgets
    ;-
    Procedure.b bar_PageChange( *this._s_WIDGET, ScrollPos.l, mode.b = 1 )
       Protected result.l, *bar._s_BAR = *this\bar
-      
+       Debug "bar_PageChange( ) "+*this\class +" "+ *bar\page\pos +" "+ ScrollPos +" "+ Bool(*bar\BTN\mask & #__MASK_Disabled)
+     ;ScrollPos + 1
       If *bar\area\len
          If Not *bar\max
             ; example ide.pb
@@ -4715,8 +4714,10 @@ Module widgets
          EndIf
       EndIf
       
-      If Not *bar\BTN\mask & #__MASK_Disabled 
-         If ScrollPos < *bar\min
+      If *bar\BTN\mask & #__MASK_Disabled : ProcedureReturn 0 : EndIf
+        
+      
+      If ScrollPos < *bar\min
             If *bar\max > *bar\page\len
                ScrollPos = *bar\min
             EndIf
@@ -4732,8 +4733,8 @@ Module widgets
             EndIf
          EndIf
          ; 
-         If *bar\page\pos <> ScrollPos
-            If *bar\page\pos > ScrollPos
+       If *bar\page\pos <> ScrollPos
+         If *bar\page\pos > ScrollPos
                *bar\direction =- 1
             Else
                *bar\direction = 1
@@ -4744,7 +4745,7 @@ Module widgets
             *bar\PageChange( ) = result
             *bar\page\pos = ScrollPos
          EndIf
-         
+            
          If result
             If bar_update( *this, mode )
                If *this\type = #__TYPE_Scroll Or
@@ -4755,7 +4756,6 @@ Module widgets
                EndIf   
             EndIf
          EndIf
-      EndIf
       
       ProcedureReturn result
    EndProcedure
@@ -6215,7 +6215,7 @@ Module widgets
                
                If *this\edit_text_2( )\len
                   If *this\caret\stop > *this\row\active[0]\txt(0)\pos
-                     Debug "edit_key_change_text() bug insert "
+                     Debug "edit_key_change_text( ) bug insert "
                      *this\LineIndex( ) - CountString( *this\edit_text_2( )\string, #LF$) 
                   EndIf
                EndIf
@@ -7104,7 +7104,7 @@ Module widgets
          
          ; 3. Если есть дочерние элементы — каскадно обновляем их видимость
          If *this\haschildren
-            If StartEnum( *this ) : *e = widget()
+            If StartEnum( *this ) : *e = widget( )
                HideState( *e, *e\parent )
                StopEnum( )
             EndIf
@@ -7140,7 +7140,7 @@ Module widgets
          
          ; Если есть дочерние элементы — каскадно обновляем их
          If *this\haschildren
-            If StartEnum( *this ) : *e = widget()
+            If StartEnum( *this ) : *e = widget( )
                DisableState( *e, *e\parent )
                StopEnum( )
             EndIf
@@ -7596,12 +7596,12 @@ Module widgets
             SetLayeredWindowAttributes_(WindowID(Window), RGBA( Red(Color), Green(Color), Blue(Color), Alpha(color)), 0, #LWA_COLORKEY)
             
          CompilerCase #PB_OS_Linux
-            ;XShapeCombineMask_()
+            ;XShapeCombineMask_( )
             Protected *Widget.GtkWidget
             *Widget = WindowID(Window)
             *Widget = *Widget\object
             ;       Protected *screen.GdkScreen = gtk_widget_get_screen_(*Widget)
-            ;       Protected *colormap.GdkColormap = gdk_screen_get_default_colormap_(*screen);gdk_screen_get_rgba_colormap_(gdk_screen_get_default_())
+            ;       Protected *colormap.GdkColormap = gdk_screen_get_default_colormap_(*screen);gdk_screen_get_rgba_colormap_(gdk_screen_get_default_( ))
             
             ;       gtk_widget_set_colormap_(*Widget, *colormap)
             ;       gtk_widget_shape_combine_mask_(*Widget, 0,0,0)
@@ -7609,8 +7609,8 @@ Module widgets
             ;                
             ;                ;Protected FixedBox = g_list_nth_data_(gtk_container_get_children_(gtk_bin_get_child_(WindowID(Window))), 0) ; виджет привязанный к окну
             ;                Debug FixedBox
-            ;                g_signal_connect(FixedBox, "expose-event", @RedrawWidget(), 0)                                              ; обработчик сигнала
-            ;                                                                                                                            ; time = g_timeout_add_(60, @movie(), #Null)                                                           ; таймер движение окна
+            ;                g_signal_connect(FixedBox, "expose-event", @RedrawWidget( ), 0)                                              ; обработчик сигнала
+            ;                                                                                                                            ; time = g_timeout_add_(60, @movie( ), #Null)                                                           ; таймер движение окна
             ;                gtk_widget_set_app_paintable_(FixedBox, #True)                                                              ; разрешаем отрисовку в виджете
             ;                
             ;                
@@ -8027,9 +8027,9 @@ Module widgets
          _row_address_\ColorState( ) = #__s_3 ; Неактивное выделение (блеклый цвет)
              
          ; Переключаем на яркий цвет только при выполнении всех условий активности
-         If _row_address_ = _this_\RowFocused()
+         If _row_address_ = _this_\RowFocused( )
             If (_this_\mask & #__MASK_Active)
-               If Not (_this_\RowEntered() And (_this_\mask & #__MASK_Press)) 
+               If Not (_this_\RowEntered( ) And (_this_\mask & #__MASK_Press)) 
                   _row_address_\ColorState( ) = #__s_2
                EndIf
             EndIf
@@ -8189,7 +8189,7 @@ Module widgets
       If *this\type = #__TYPE_Splitter
          ProcedureReturn DPIUnScaled( *this\bar\thumb\pos )
       ElseIf *this\bar
-         ProcedureReturn *this\bar\page\pos
+         ProcedureReturn *this\bar\page\pos 
       EndIf
    EndProcedure
    
@@ -8595,7 +8595,7 @@ Module widgets
             
             If is_integral_( *this )
                If *this\parent\haschildren
-                  If StartEnum( *this\parent ) : *e = widget()
+                  If StartEnum( *this\parent ) : *e = widget( )
                      ; hide all children's except those whose parent-item is selected
                      HideState( *e, *e\parent )
                      DisableState( *e, *e\parent )
@@ -8617,6 +8617,7 @@ Module widgets
          *this\type = #__TYPE_Scroll Or 
          *this\type = #__TYPE_Track Or
          *this\type = #__TYPE_Spin
+         
          result = bar_PageChange( *this, state, 2 )
       EndIf
       ;
@@ -9920,7 +9921,7 @@ Module widgets
             ;                EndIf
          Else
             If test_focus_set > 1
-               Debug "setactive()-------"+ *this\class +" "+ *Active\class +"-------"
+               Debug "setactive( )-------"+ *this\class +" "+ *Active\class +"-------"
             EndIf
             If *this = *Active
                ; activate canvas
@@ -11377,10 +11378,10 @@ Module widgets
    
    Procedure Column_UpdateLayout(*this._s_WIDGET)
       Protected cur_x = 0
-      ForEach *this\__Columns()
-         If Not *this\__Columns()\mask & #__MASK_Hidden
-            *this\__Columns()\pos = cur_x
-            cur_x + *this\__Columns()\size
+      ForEach *this\__Columns( )
+         If Not *this\__Columns( )\mask & #__MASK_Hidden
+            *this\__Columns( )\pos = cur_x
+            cur_x + *this\__Columns( )\size
          EndIf
       Next
       ProcedureReturn cur_x
@@ -11388,7 +11389,7 @@ Module widgets
    
    Procedure Column_AddItem(*this._s_WIDGET, item, Text$, Level=0, isgroup=#False)
       AddElement(*this\row\__s( )) 
-      Protected i, TotalCols = ListSize(*this\__columns()) - 1
+      Protected i, TotalCols = ListSize(*this\__columns( )) - 1
       ;    
       ;    ; 1. Выделяем массив СРАЗУ (используем заранее известное число)
       ;    ReDim *this\row\__s( )\title(TotalCols) 
@@ -11621,7 +11622,7 @@ Module widgets
 ;                ; Если мы добавляем элемент в самый конец дерева (обычный случай),
 ;                ; либо если старый _last этого родителя совпадает с предыдущим шагом цепочки,
 ;                ; значит данный новый элемент *row становится НОВЫМ концом ветки для этого предка.
-;                If *updateParent\_last = #Null Or *updateParent\_last = *prevChild Or position >= ListSize(rows()) - 1
+;                If *updateParent\_last = #Null Or *updateParent\_last = *prevChild Or position >= ListSize(rows( )) - 1
 ;                   *updateParent\_last = *row
 ;                EndIf
 ;                
@@ -11704,7 +11705,7 @@ Module widgets
       If IsImage( img )
          ;Debug ""+*this\class +" "+ *this\picturesize
          
-         *this\picturesize = ImageWidth( img ) ;* DPIResolution()
+         *this\picturesize = ImageWidth( img ) ;* DPIResolution( )
       EndIf
       ;          ;CompilerEndIf
       
@@ -11801,7 +11802,7 @@ Module widgets
                   ; (начиная с выбранного индекса)
                   If is_integral_( *tabBox )
                      Protected._s_WIDGET *e
-                     If StartEnum( *tabBox\parent ) : *e = widget()
+                     If StartEnum( *tabBox\parent ) : *e = widget( )
                         If *e\parent = *tabBox\parent 
                            If *e\tabindex >= Item
                               *e\tabindex + 1
@@ -11887,7 +11888,7 @@ Module widgets
             
             *this\parent\align = 0 
             
-            If StartEnum( *this\parent ) : *e = widget()
+            If StartEnum( *this\parent ) : *e = widget( )
                If *e\tabindex = #PB_Ignore
                   SetAlign( *e, 0, 0,1,#__FLAG_AutoSize,0, 0 )          
                EndIf
@@ -13826,7 +13827,7 @@ Module widgets
          EndIf
       EndIf
       
-      ;                ;ClearDebugOutput()
+      ;                ;ClearDebugOutput( )
       ;                If *this\Type = #__TYPE_Image
       ;                   Debug ""+*this\area_align\left +" "+ *this\area_align\top +" "+ *this\area_align\right +" "+ *this\area_align\bottom
       ;                EndIf
@@ -14451,7 +14452,7 @@ Module widgets
       
       ;\\ do events entered & leaved
       If Entered( ) <> *this
-         mouse()\item[0] = 0   ; Обнуляем текущую вкладку
+         mouse( )\item[0] = 0   ; Обнуляем текущую вкладку
          
          ; Debug ""+*root +" "+ Entered( ) +" "+ *this +" "+ Leaved( )
          Protected *parent._s_WIDGET 
@@ -14715,7 +14716,7 @@ Module widgets
             
             If StartDrawing(CanvasOutput(*root\canvas\gadget))
                *root\canvas\snap\img[0] = GrabDrawingImage(#PB_Any, *root\x, *root\y, *root\width, *root\height)
-               StopDrawing()
+               StopDrawing( )
             EndIf
          EndIf
          
@@ -16041,9 +16042,9 @@ Module widgets
             ; ВЫДЕЛЕНИЕ ПРОТЯГИВАНИЕМ (MultiSelect при зажатой мыши)
             If dragged And (*this\flagmask & #__FLAG_RowMultiSelect) And *row_pressed
                
-               PushListPosition(*this\row\__s())
-               ForEach *this\row\__s()
-                  *row = @*this\row\__s()
+               PushListPosition(*this\row\__s( ))
+               ForEach *this\row\__s( )
+                  *row = @*this\row\__s( )
                   
                   If *row\mask & #__MASK_Visible
                      ; Проверяем, находится ли строка между начальной (pressed) и текущей (hovered)
@@ -16066,7 +16067,7 @@ Module widgets
                   EndIf
                   
                Next
-               PopListPosition(*this\row\__s())
+               PopListPosition(*this\row\__s( ))
             EndIf
             
             ; Выставляем маску наведения, если её ещё нет
@@ -16605,31 +16606,31 @@ Module widgets
                   ;
                Else
                   ; 
-                  If ToolBar And PopupBar() And *activeTAB And *activeTAB\childrens
+                  If ToolBar And PopupBar( ) And *activeTAB And *activeTAB\childrens
                      ; Проверяем, что попап не принадлежит ComboBox
-                     If Not (PopupBar()\parent\parent And PopupBar()\parent\parent\type = #__TYPE_ComboBox)
+                     If Not (PopupBar( )\parent\parent And PopupBar( )\parent\parent\type = #__TYPE_ComboBox)
                         
                         ; Вычисляем экранные координаты только тогда, когда попап реально открыт
                         Protected GadgetY = DPIScaledY(GadgetY(*this\root\canvas\gadget, #PB_Gadget_ScreenCoordinate))
                         Protected GadgetX = DPIScaledX(GadgetX(*this\root\canvas\gadget, #PB_Gadget_ScreenCoordinate))
                         
                         ; Если мышь ВЫШЛА за пределы зоны панели и попапа
-                        If Not (is_inside_(GadgetY + *this\y, *this\height + PopupBar()\height, DesktopMouseY()) And
-                                is_inside_(GadgetX + *this\x, *activeTAB\x + *activeTAB\width, DesktopMouseX()))
+                        If Not (is_inside_(GadgetY + *this\y, *this\height + PopupBar( )\height, DesktopMouseY( )) And
+                                is_inside_(GadgetX + *this\x, *activeTAB\x + *activeTAB\width, DesktopMouseX( )))
                            
                            ; Сбрасываем состояния и закрываем бары
                            *activeTAB\mask &~ #__MASK_Active
                            *activeTAB\checked = 0
                            *activeTAB = 0
-                           *this\parentTabSelected() = 0
+                           *this\parentTabSelected( ) = 0
                            
                            If test_display
-                              Debug "3?   " + HidePopupBar(PopupBar())
+                              Debug "3?   " + HidePopupBar(PopupBar( ))
                            Else
-                              HidePopupBar(PopupBar())
+                              HidePopupBar(PopupBar( ))
                            EndIf
                            
-                           PopupBar() = 0
+                           PopupBar( ) = 0
                         EndIf
                         
                      EndIf
@@ -16651,7 +16652,7 @@ Module widgets
                      Protected GadgetY1 = DPIScaledY(GadgetY( *this\root\canvas\gadget, #PB_Gadget_ScreenCoordinate ))
                      Protected GadgetX1 = DPIScaledX(GadgetX( *this\root\canvas\gadget, #PB_Gadget_ScreenCoordinate ))
                      If PopupBar( ) And Not ( PopupBar( )\parent\parent And PopupBar( )\parent\parent\type = #__TYPE_ComboBox )
-                        If is_inside_( GadgetY1 +*this\y, *this\height + PopupBar()\height , DesktopMouseY( ) ) And
+                        If is_inside_( GadgetY1 +*this\y, *this\height + PopupBar( )\height , DesktopMouseY( ) ) And
                            is_inside_( GadgetX1 +*this\x, *activeTAB\x+*activeTAB\width, DesktopMouseX( ) )
                         Else
                            *activeTAB\mask &~ #__MASK_Active
@@ -16829,11 +16830,11 @@ Module widgets
    ;       exit(1);  
    ;     }  
    ;     If (self.shortcutEnabled) {  
-   ;       CFRunLoopAddSource(CFRunLoopGetCurrent(), RunLoopSource, kcfrunloopcommon modes);  
+   ;       CFRunLoopAddSource(CFRunLoopGetCurrent( ), RunLoopSource, kcfrunloopcommon modes);  
    ;       CGEventTapEnable(EventTap, true);  
-   ;       CFRunLoopRun();  
+   ;       CFRunLoopRun( );  
    ;     } Else {  
-   ;       CFRunLoopRemoveSource(CFRunLoopGetCurrent(), RunLoopSource, kcfrunloopcommon modes);  
+   ;       CFRunLoopRemoveSource(CFRunLoopGetCurrent( ), RunLoopSource, kcfrunloopcommon modes);  
    ;       CGEventTapEnable(EventTap, false);  
    ;       CFMachPortInvalidate(EventTap);  
    ;       CFRelease(EventTap);  
@@ -16845,7 +16846,7 @@ Module widgets
    ;          CGEventTapCreate(tap.i, place.i, options.i, eventsOfInterest.q, callback.i, refcon)
    ;       EndImport
    ;       Procedure eventTapFunction( )
-   ;          PostQuit()
+   ;          PostQuit( )
    ;          Debug 88888
    ;       EndProcedure
    
@@ -18205,7 +18206,7 @@ Module widgets
       ;       ;
       ;       MouseMask( ) &~ (#__MASK_Update) 
       ;       If Not MouseButtons( )
-      ;          If MouseRelease()
+      ;          If MouseRelease( )
       ;             Debug "MouseRelease"
       ;          EndIf
       ;          MouseMask( ) &~ (#__MASK_Release|#__MASK_Drag) 
@@ -18710,7 +18711,7 @@ Module widgets
                   If current_pos >= *line\txt(0)\pos And current_pos <= (*line\txt(0)\pos + *line\txt(0)\len)
                      ;  Debug ""+current_pos +" "+ *line\txt(0)\pos +" "+ Str(*line\txt(0)\pos + *line\txt(0)\len)
                      *this\row\active[0] = *line
-                     *this\LineState() = *line\lindex ; Обновляем индекс для порядка, но не базируемся на нем
+                     *this\LineState( ) = *line\lindex ; Обновляем индекс для порядка, но не базируемся на нем
                   EndIf
                EndIf
                
@@ -18924,11 +18925,11 @@ Module widgets
       Protected *skip._s_ROW = #Null ; Обязательно объявляем переменную!
       
       If Not *this\mask & #__MASK_Hidden ;\\ if the item list has changed
-         If ListSize(*this\__columns())
-            *this\scroll_height() = *this\ColumnsHeight
+         If ListSize(*this\__columns( ))
+            *this\scroll_height( ) = *this\ColumnsHeight
          Else
-            *this\scroll_width() = 0
-            *this\scroll_height() = 0
+            *this\scroll_width( ) = 0
+            *this\scroll_height( ) = 0
          EndIf
          
          Protected padding_size = *this\padding\x
@@ -18938,10 +18939,10 @@ Module widgets
          Protected scroll_width
          Protected button_pos = (*this\row\sublevelsize - DPIScaled(11))
          
-         PushListPosition(*this\row\__s())
+         PushListPosition(*this\row\__s( ))
          
-         ForEach *this\row\__s()
-            *row = @*this\row\__s()
+         ForEach *this\row\__s( )
+            *row = @*this\row\__s( )
             
           ; Сбрасываем карту прыжков перед расчетом
             *row\skip_next = #Null
@@ -19107,16 +19108,16 @@ Module widgets
          ForEach *this\row\__s( )
             *tmp_row = @*this\row\__s( )
             If *tmp_row\buttonbox And *tmp_row\buttonbox\checked ; Если папка свернута
-               PushListPosition(*this\row\__s())
+               PushListPosition(*this\row\__s( ))
                *next_valid = #Null
-               While NextElement(*this\row\__s())
+               While NextElement(*this\row\__s( ))
                   *row = @*this\row\__s( )
                   If *row\sublevel <= *tmp_row\sublevel
                      *next_valid = *row
                      Break
                   EndIf
                Wend
-               PopListPosition(*this\row\__s())
+               PopListPosition(*this\row\__s( ))
                If *next_valid
                   *tmp_row\skip_next = *next_valid ; Запоминаем точку прыжка
                EndIf
@@ -19354,17 +19355,17 @@ Module widgets
       Protected._s_BTN *miniBTN = *title\bar\btn[#__BTN_Minimize]
       
       ; 1. Ограничиваем и сразу записываем финальные размеры самого заголовка
-      If Height > *this\frame_height() - *this\fs 
-         Height = *this\frame_height() - *this\fs 
+      If Height > *this\frame_height( ) - *this\fs 
+         Height = *this\frame_height( ) - *this\fs 
       EndIf
       
-      *title\x = *this\frame_x() + *this\fs
-      *title\y = *this\frame_y() + *this\fs
+      *title\x = *this\frame_x( ) + *this\fs
+      *title\y = *this\frame_y( ) + *this\fs
       *title\height = Height - *this\fs * 2
       
       ; 2. Базовые переменные для расчета кнопок (вычисляются ОДИН раз)
-      Protected right_edge.i = *title\x + (*this\frame_width() - *this\fs * 2)
-      Protected base_y.i = *this\frame_y() + *this\fs
+      Protected right_edge.i = *title\x + (*this\frame_width( ) - *this\fs * 2)
+      Protected base_y.i = *this\frame_y( ) + *this\fs
       
       ; caption close button 
       If Not (*closeBTN\mask & #__MASK_Hidden)
@@ -20212,9 +20213,9 @@ Module widgets
       ; ====================================================================
       If StartNextRow(*row, *this\row)
          ;\\ init real drawing font
-         draw_font(*row, *row\txt(0), 0, *row\TextChange())
+         draw_font(*row, *row\txt(0), 0, *row\TextChange( ))
          
-         state = *row\ColorState()
+         state = *row\ColorState( )
          
          X = row_x_(*this, *row)
          Y = row_y_(*this, *row) - _scroll_y_
@@ -20275,16 +20276,16 @@ Module widgets
         If *this\flagmask & #__FLAG_nolines
             draw_mode_alpha_(#PB_2DDrawing_Default)
             
-            PushListPosition(*this\row\__s())
+            PushListPosition(*this\row\__s( ))
             Protected skip_next = 0
             ; Использованием быструю итерацию по элементам структуры с прыжками
-            ForEach *this\row\__s()
+            ForEach *this\row\__s( )
                ; ИДЕАЛЬНЫЙ ПРЫЖОК: переставляем указатель списка на нужную позицию, минуя скрытые строки.
                If skip_next
-                  ChangeCurrentElement(*this\row\__s(), skip_next)
+                  ChangeCurrentElement(*this\row\__s( ), skip_next)
                   skip_next = 0
                EndIf
-               *row = @*this\row\__s()
+               *row = @*this\row\__s( )
                If *row\skip_next : skip_next = *row\skip_next : EndIf
                
                ; Дополнительная проверка на скрытие внешней логикой
@@ -20318,12 +20319,12 @@ Module widgets
                      iy + *row\_last\height / 2
                      iheight - *row\_last\height / 2
                   EndIf
-                  If iy < *this\inner_y()
-                     iheight + (iy - *this\inner_y())
-                     iy = *this\inner_y()
+                  If iy < *this\inner_y( )
+                     iheight + (iy - *this\inner_y( ))
+                     iy = *this\inner_y( )
                   EndIf
-                  If iheight > (*this\inner_y() + *this\inner_height()) - iy
-                     iheight = (*this\inner_y() + *this\inner_height()) - iy
+                  If iheight > (*this\inner_y( ) + *this\inner_height( )) - iy
+                     iheight = (*this\inner_y( ) + *this\inner_height( )) - iy
                   EndIf
                   If iheight < 0 
                      iheight = 0
@@ -20343,11 +20344,11 @@ Module widgets
             ; Первая вертикальная линия дерева (корневая)
             If Not display_mode_linux
                If *this\row\first And *this\row\last And *this\row\first\buttonbox
-                  Line((*this\inner_x() + *this\padding\x + *this\row\first\buttonbox\x) - _scroll_x_, (row_y_(*this, *this\row\first) + *this\row\first\height / 2) - _scroll_y_, 1, (*this\row\last\y - *this\row\first\y), $FF000000) ; *this\LineColor
+                  Line((*this\inner_x( ) + *this\padding\x + *this\row\first\buttonbox\x) - _scroll_x_, (row_y_(*this, *this\row\first) + *this\row\first\height / 2) - _scroll_y_, 1, (*this\row\last\y - *this\row\first\y), $FF000000) ; *this\LineColor
                EndIf
             EndIf
             
-            PopListPosition(*this\row\__s())
+            PopListPosition(*this\row\__s( ))
          EndIf
          
          ; ====================================================================
@@ -20385,9 +20386,9 @@ Module widgets
                      Y + *row\buttonbox\y
                      
                      ; Передаем флаг checked (раскрыто/свернуто) для изменения направления стрелки
-                     If *row\ColorState() = 1
+                     If *row\ColorState( ) = 1
                         Draw_Arrow(#__bottom - Bool(*row\buttonbox\checked), X - DPIScaled(1), Y - Bool(*row\buttonbox\checked = 0) * DPIScaled(2), DPIScaled(10), 1)
-                     ElseIf *row\ColorState() = 2
+                     ElseIf *row\ColorState( ) = 2
                         Draw_Arrow(#__bottom - Bool(*row\buttonbox\checked), X + Bool(*row\buttonbox\checked) * DPIScaled(2), Y + DPIScaled(Bool(*row\buttonbox\checked = 0)), DPIScaled(8), 1, 2)
                      Else
                         Draw_Arrow(#__bottom - Bool(*row\buttonbox\checked), X + DPIScaled(1), Y + DPIScaled(1), DPIScaled(6), 1)
@@ -20417,7 +20418,7 @@ Module widgets
                   make_scrollbar_max( *this )
                   
                   If row_scroll_y_( *this, *this\RowFocused( ))
-                     Debug "  [" + *this\class + "] scroll change " + *this\RowFocused( )\txt(0)\string
+                     ; Debug " [" + *this\class + "] scroll visible " +Chr( )+ *this\RowFocused( )\txt(0)\string +" --- Draw_Tree( )"
                      UpdateDraw_VisibleRows( *this )
                   EndIf
                EndIf
@@ -20486,8 +20487,8 @@ Module widgets
          ; update visible lines 
          *row_line\mask = ( *row_line\mask & ~#__MASK_Visible ) |
                           ( Bool( Not ( *row_line\mask & #__MASK_Hidden ) And
-                                  (( *row_line\y + *this\scroll_y() ) < visible_y + visible_height ) And 
-                                  ( *row_line\y + *row_line\height + *this\scroll_y() ) > visible_y ) * #__MASK_Visible )
+                                  (( *row_line\y + *this\scroll_y( ) ) < visible_y + visible_height ) And 
+                                  ( *row_line\y + *row_line\height + *this\scroll_y( ) ) > visible_y ) * #__MASK_Visible )
          
          
          ; Draw selections
@@ -21056,7 +21057,7 @@ Module widgets
                         VectorSourceColor( GetSysColor_( #COLOR_BTNFACE ) & $FFFFFF | 255 << 24 )
                      CompilerEndIf
                      
-                     ; FillVectorOutput()
+                     ; FillVectorOutput( )
                   EndIf
                   Post( *this, #__EVENT_Draw )
                   If *this\root\drawmode & 1<<1
@@ -21195,7 +21196,7 @@ Module widgets
                EndIf
                If *root\root\drawmode & 1<<2
                   ; Box( 0,0, OutputWidth( ), OutputHeight( ), *root\color\back )
-                  Protected BufferSize = DrawingBufferPitch() * OutputHeight()
+                  Protected BufferSize = DrawingBufferPitch( ) * OutputHeight( )
                   Protected FillByte.b = 0 ; Изначально 0 (чистая прозрачность, идеальная для macOS)
                   
                   CompilerIf #PB_Compiler_OS <> #PB_OS_MacOS
@@ -21219,7 +21220,7 @@ Module widgets
                   CompilerEndIf
                   
                   ; Мгновенное заполнение памяти
-                  FillMemory(DrawingBuffer(), BufferSize, FillByte)
+                  FillMemory(DrawingBuffer( ), BufferSize, FillByte)
                EndIf
                
                Draw( *root )
@@ -21239,7 +21240,7 @@ Module widgets
                   EndIf
                   
                   ;If Start( *e, *Root ) 
-                  If 0=1 And StartEnum( *Root ) : *e = widget()
+                  If 0=1 And StartEnum( *Root ) : *e = widget( )
                      If *e\parent And 
                         *e\parent\mask & #__MASK_Hidden 
                         Continue
@@ -22732,7 +22733,7 @@ Module widgets
       
       ;\\
       If Directory.s = ""
-         Directory.s = GetHomeDirectory() ; Lists all files and folder in the home directory
+         Directory.s = GetHomeDirectory( ) ; Lists all files and folder in the home directory
       EndIf
       Protected Size$, Type$, Modified$
       
@@ -22956,7 +22957,7 @@ Module widgets
          If Canvas = #PB_Ignore
             Canvas = #PB_Any
          EndIf   
-         g = CanvasGadget( Canvas, X, Y, Width, Height, canvasflag);|#PB_Canvas_Container ) : CloseGadgetList()
+         g = CanvasGadget( Canvas, X, Y, Width, Height, canvasflag);|#PB_Canvas_Container ) : CloseGadgetList( )
          If IsGadget(g) : Canvas = g : g = PB(GadgetID)(Canvas) : EndIf
          
          If constants::BinaryFlag( canvasflag, #PB_Canvas_Container )
@@ -22976,7 +22977,7 @@ Module widgets
             *root\PrevRoot( ) = Root( )
             Root( )\NextRoot( ) = *root
          EndIf
-         Root() = *root
+         Root( ) = *root
          
          ;
          *root\type      = #__TYPE_Root
@@ -23320,10 +23321,10 @@ Module widgets
       Protected *parent._s_PARENT
       ;
       If is_root_( *this )
-         *this\clip_x() = *this\screen_x() : *this\clip_width() = *this\screen_width()
-         *this\clip_y() = *this\screen_y() : *this\clip_height() = *this\screen_height()
-         *this\clip_ix() = *this\inner_x() : *this\clip_iwidth() = *this\inner_width()
-         *this\clip_iy() = *this\inner_y() : *this\clip_iheight() = *this\inner_height()
+         *this\clip_x( ) = *this\screen_x( ) : *this\clip_width( ) = *this\screen_width( )
+         *this\clip_y( ) = *this\screen_y( ) : *this\clip_height( ) = *this\screen_height( )
+         *this\clip_ix( ) = *this\inner_x( ) : *this\clip_iwidth( ) = *this\inner_width( )
+         *this\clip_iy( ) = *this\inner_y( ) : *this\clip_iheight( ) = *this\inner_height( )
       Else
          If *this\bounds\attach
             *parent = *this\bounds\attach\parent
@@ -23392,54 +23393,54 @@ Module widgets
             ;
             ; Расчет пересечения (Clipping)
             ; x&y clip frame coordinate
-            x1 = *this\screen_x()
-            y1 = *this\screen_y()
-            x2 = *this\screen_x() + *this\screen_width()
-            y2 = *this\screen_y() + *this\screen_height()
+            x1 = *this\screen_x( )
+            y1 = *this\screen_y( )
+            x2 = *this\screen_x( ) + *this\screen_width( )
+            y2 = *this\screen_y( ) + *this\screen_height( )
             
             If p_x1 > x1 : x1 = p_x1 : EndIf
             If p_y1 > y1 : y1 = p_y1 : EndIf
             
-            If *parent\clip_x() > x1 : x1 = *parent\clip_x() : EndIf
-            If *parent\clip_y() > y1 : y1 = *parent\clip_y() : EndIf
+            If *parent\clip_x( ) > x1 : x1 = *parent\clip_x( ) : EndIf
+            If *parent\clip_y( ) > y1 : y1 = *parent\clip_y( ) : EndIf
             
-            If *parent\clip_x() + *parent\clip_width() < x2 : x2 = *parent\clip_x() + *parent\clip_width() : EndIf
-            If *parent\clip_y() + *parent\clip_height() < y2 : y2 = *parent\clip_y() + *parent\clip_height() : EndIf
+            If *parent\clip_x( ) + *parent\clip_width( ) < x2 : x2 = *parent\clip_x( ) + *parent\clip_width( ) : EndIf
+            If *parent\clip_y( ) + *parent\clip_height( ) < y2 : y2 = *parent\clip_y( ) + *parent\clip_height( ) : EndIf
             
             If p_x2 < x2 : x2 = p_x2 : EndIf
             If p_y2 < y2 : y2 = p_y2 : EndIf
             
-            If x1 < 0 : x1 = 0 : EndIf : *this\clip_x() = x1
-            If y1 < 0 : y1 = 0 : EndIf : *this\clip_y() = y1
+            If x1 < 0 : x1 = 0 : EndIf : *this\clip_x( ) = x1
+            If y1 < 0 : y1 = 0 : EndIf : *this\clip_y( ) = y1
             
             ; width&height clip frame coordinate
-            If x2 > x1 : *this\clip_width() = x2 - x1 : Else : *this\clip_width() = 0 : EndIf
-            If y2 > y1 : *this\clip_height() = y2 - y1 : Else : *this\clip_height() = 0 : EndIf
+            If x2 > x1 : *this\clip_width( ) = x2 - x1 : Else : *this\clip_width( ) = 0 : EndIf
+            If y2 > y1 : *this\clip_height( ) = y2 - y1 : Else : *this\clip_height( ) = 0 : EndIf
             
             ; x&y clip inner coordinate
-            y1 = *this\inner_y()
-            x1 = *this\inner_x()
-            y2 = *this\inner_y() + *this\inner_height()
-            x2 = *this\inner_x() + *this\inner_width()
+            y1 = *this\inner_y( )
+            x1 = *this\inner_x( )
+            y2 = *this\inner_y( ) + *this\inner_height( )
+            x2 = *this\inner_x( ) + *this\inner_width( )
             
             If p_x1 > x1 : x1 = p_x1 : EndIf
             If p_y1 > y1 : y1 = p_y1 : EndIf
             
-            If *parent\clip_ix() > x1 : x1 = *parent\clip_ix() : EndIf
-            If *parent\clip_iy() > y1 : y1 = *parent\clip_iy() : EndIf
+            If *parent\clip_ix( ) > x1 : x1 = *parent\clip_ix( ) : EndIf
+            If *parent\clip_iy( ) > y1 : y1 = *parent\clip_iy( ) : EndIf
             
-            If *parent\clip_ix() + *parent\clip_iwidth() < x2 : x2 = *parent\clip_ix() + *parent\clip_iwidth() : EndIf
-            If *parent\clip_iy() + *parent\clip_iheight() < y2 : y2 = *parent\clip_iy() + *parent\clip_iheight() : EndIf
+            If *parent\clip_ix( ) + *parent\clip_iwidth( ) < x2 : x2 = *parent\clip_ix( ) + *parent\clip_iwidth( ) : EndIf
+            If *parent\clip_iy( ) + *parent\clip_iheight( ) < y2 : y2 = *parent\clip_iy( ) + *parent\clip_iheight( ) : EndIf
             
             If p_x2 < x2 : x2 = p_x2 : EndIf
             If p_y2 < y2 : y2 = p_y2 : EndIf
             
-            If x1 < 0 : x1 = 0 : EndIf : *this\clip_ix() = x1
-            If y1 < 0 : y1 = 0 : EndIf : *this\clip_iy() = y1
+            If x1 < 0 : x1 = 0 : EndIf : *this\clip_ix( ) = x1
+            If y1 < 0 : y1 = 0 : EndIf : *this\clip_iy( ) = y1
             
             ; width&height clip inner coordinate
-            If x2 > x1 : *this\clip_iwidth() = x2 - x1 : Else : *this\clip_iwidth() = 0 : EndIf
-            If y2 > y1 : *this\clip_iheight() = y2 - y1 : Else : *this\clip_iheight() = 0 : EndIf
+            If x2 > x1 : *this\clip_iwidth( ) = x2 - x1 : Else : *this\clip_iwidth( ) = 0 : EndIf
+            If y2 > y1 : *this\clip_iheight( ) = y2 - y1 : Else : *this\clip_iheight( ) = 0 : EndIf
             
          EndIf
       EndIf
@@ -23852,7 +23853,7 @@ Module widgets
                      If make_area_max( *this\parent, 0, 0, *this\parent\container_width( ), *this\parent\container_height( ) )
                         ;\\
                         If StartEnum( *this\parent )
-                           *e = widget()
+                           *e = widget( )
                            If *this\parent = *e\parent And *this <> *e
                               ; Reclip( *e )
                               Resize( *e, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore, 0 )
@@ -24304,7 +24305,7 @@ Module widgets
       ;
       MouseMask( ) &~ (#__MASK_Update) 
       If Not MouseButtons( )
-;          If MouseRelease()
+;          If MouseRelease( )
 ;             Debug "last MouseRelease"
 ;          EndIf
          MouseMask( ) &~ (#__MASK_Release|#__MASK_Drag) 
@@ -24347,7 +24348,8 @@ Module widgets
       EndIf
    EndProcedure
    
-   Procedure.i Post( *this._s_ROOT, event.l, *btn = #PB_All, *data = #Null )
+   
+   Procedure.i _Post( *this._s_ROOT, event.l, *btn = #PB_All, *data = #Null )
       Protected result, __widget = #Null, __event = #PB_All, __item = #PB_All, __data = #Null
       Protected._s_BINDDATA *bind
       
@@ -24369,7 +24371,7 @@ Module widgets
             EndIf
          EndIf
          
-          ;\\ 
+         ;\\ 
          __widget = EventWidget( )
          __event  = WidgetEvent( )
          __item   = WidgetEventItem( )
@@ -24398,7 +24400,9 @@ Module widgets
             ; Debug ""+ *btn +" "+ *this\class +" POSTMENU "
          EndIf
          
-         ; Debug "send - "+*this\class +" "+ EventString(event) +" "+ *btn +" "+ *data
+         ;          If event = #__EVENT_ScrollChange
+         ;             Debug "send - "+*this\class +" "+ EventString(event) +" "+ *btn +" "+ *data
+         ;          EndIf
          If event = #__EVENT_Free 
             result = #False
          Else
@@ -24412,7 +24416,7 @@ Module widgets
                widgets::__GUI\DrawingRoot = 0
             EndIf
          EndIf    
-                        
+         
          ;\\
          If Not is_root_( *this )
             ;\\ 1 call (current-widget) bind event function
@@ -24434,6 +24438,9 @@ Module widgets
                EndIf
             Next
             ;
+            If event = #__EVENT_ScrollChange
+               Debug "send - "+*this\class +" "+ EventString(event) +" "+ *btn +" "+ *data
+            EndIf
             
             ;\\ 2 call (current-widget-window) bind event function
             If *this\window 
@@ -24515,8 +24522,8 @@ Module widgets
          ;                EndIf
          
          ;\\ если это оставить то после вызова функции напр setState( ) получается EventWidget( ) будеть равно #Null
-         EventWidget( )       = __widget
-         WidgetEvent( )       = __event
+         EventWidget( )           = __widget
+         WidgetEvent( )           = __event
          WidgetEventItem( )   = __item
          WidgetEventData( )   = __data
          
@@ -24531,7 +24538,7 @@ Module widgets
       ProcedureReturn result
    EndProcedure
    
-   Procedure.i Bind( *this._s_WIDGET, *callback, event.l = #PB_All, item.l = #PB_All, *data = 0 )
+   Procedure.i _Bind( *this._s_WIDGET, *callback, event.l = #PB_All, item.l = #PB_All, *data = 0 )
       Protected._s_BINDDATA *bind
       ;
       If *this < 0
@@ -24605,7 +24612,7 @@ Module widgets
       
    EndProcedure
    
-   Procedure.i Unbind( *this._s_WIDGET, *callback, event.l = #PB_All, item.l = #PB_All )
+   Procedure.i _Unbind( *this._s_WIDGET, *callback, event.l = #PB_All, item.l = #PB_All )
         Protected._s_BINDDATA *bind
         If *this < 0
          ; 1. Сохраняем в локальную переменную
@@ -24649,6 +24656,250 @@ Module widgets
             EndIf
          EndIf
       EndIf
+   EndProcedure
+   
+   
+   Procedure.i Post( *this._s_WIDGET, event.l, *btn = #PB_All, *data = #Null )
+      Protected result = #True
+      Protected *target._s_WIDGET, *root._s_ROOT, *nextRoot._s_ROOT
+      Protected *hoverTAB._s_TAB
+      
+      If Not *this
+         ProcedureReturn 0
+      EndIf
+      
+      ; 1. Предварительная обработка баров и вкладок
+      If *this\parent
+         *hoverTAB = parentTabEntered( *this )
+      EndIf
+      
+      If is_bar_( *this )
+         If event = #__EVENT_LeftClick Or event = #__EVENT_Change
+            If *hoverTAB
+               *btn = *hoverTAB\ID
+            EndIf
+         EndIf
+         
+         If *btn < 0
+            ProcedureReturn 0
+         EndIf
+      EndIf
+      
+      ; 2. Определяем получателя события (всплытие меню к корневому родителю)
+      *target = *this
+      If is_bar_( *this )
+         If *this\menu\parent
+            While *this\menu\parent
+               *target = *this\menu\parent
+               *this = *target
+            Wend
+         ElseIf *hoverTAB And *hoverTAB\childrens
+            ProcedureReturn 0
+         EndIf
+      EndIf
+      
+      ; 3. Сохраняем предыдущий контекст и устанавливаем текущий
+      Protected __widget = EventWidget( )
+      Protected __event  = WidgetEvent( )
+      Protected __item   = WidgetEventItem( )
+      Protected __data   = WidgetEventData( )
+      
+      EventWidget( )     = *target
+      WidgetEvent( )     = event
+      WidgetEventItem( ) = *btn
+      WidgetEventData( ) = *data
+      
+      If event = #__EVENT_Free
+         result = #False
+      EndIf
+      
+      If event = #__EVENT_MouseMove And 
+         widgets::__GUI\DrawingRoot
+         StopDraw( )
+         widgets::__GUI\DrawingRoot = 0
+      EndIf
+      
+      ; 4. Проверка общей битовой маски и единственный проход по привязкам
+      If event >= 0 And event <= 63
+         If ( __GUI\event\mask & ( 1 << event ) ) <> 0
+            Protected._s_BINDDATA *bind, *nextBind
+            
+            *bind = FirstElement( __GUI\event\binds( ) )
+            While *bind
+               ChangeCurrentElement( __GUI\event\binds( ), *bind )
+               *nextBind = NextElement( __GUI\event\binds( ) )
+               
+               If *bind\type = #PB_All Or *bind\type = event
+                  If *bind\widget = #PB_All Or
+                     ( Not is_root_( *target ) And ( *bind\widget = *target Or ( *target\window And Not is_root_( *target\window ) And *bind\widget = *target\window ) ) ) Or
+                     ( *target\root And *bind\widget = *target\root )
+                     
+                     If Not ( *bind\item >= 0 And *bind\item <> *btn )
+                        If *bind\data
+                           WidgetEventData( ) = *bind\data
+                        Else
+                           WidgetEventData( ) = *data
+                        EndIf
+                        
+                        result = *bind\function( )
+                        WidgetEventData( ) = *data
+                        
+                        If result = #PB_Ignore
+                           Break
+                        EndIf
+                     EndIf
+                  EndIf
+               EndIf
+               
+               *bind = *nextBind
+            Wend
+         EndIf
+      EndIf
+      
+      If result = #PB_Ignore
+         result = #True
+      EndIf
+      
+      ; 5. Системная обработка закрытия
+      If event = #__EVENT_Close And result
+         If is_root_( *target )
+            If result = #PB_All
+               Close( #PB_All )
+            Else
+               Close( *target\root )
+            EndIf
+         Else
+            If result = #PB_All
+               If Not PostQuit( )
+                  *root = *target\root
+                  While *root\PrevRoot( ) : *root = *root\PrevRoot( ) : Wend
+                  
+                  While *root
+                     *nextRoot = *root\NextRoot( )
+                     PostFree( *root )
+                     *root = *nextRoot
+                  Wend
+               EndIf
+            Else
+               PostFree( *target )
+            EndIf
+         EndIf
+      EndIf
+      
+      If event = #__EVENT_Change
+         repaint_set( *this )
+      EndIf
+      
+      ; 6. Восстановление предыдущего контекста
+      EventWidget( )     = __widget
+      WidgetEvent( )     = __event
+      WidgetEventItem( ) = __item
+      WidgetEventData( ) = __data
+      
+      ProcedureReturn result
+   EndProcedure
+   
+   Procedure.i Bind( *this._s_WIDGET, *callback, event.l = #PB_All, item.l = #PB_All, *data = 0 )
+      Protected newLevel.b, currLevel.b, inserted.b = #False
+      
+      If Not *this Or Not *callback Or ( event <> #PB_All And ( event < 0 Or event > 63 ) )
+         ProcedureReturn #False
+      EndIf
+      
+      ; 1. Определяем уровень приоритета для сортировки при вставке
+      If *this = #PB_All Or *this < 0
+         *this = #PB_All
+         newLevel = 4 ; Глобальный перехватчик всегда срабатывает в самом конце
+      Else
+         Select *this\type
+            Case #__TYPE_Root
+               newLevel = 3
+            Case #__TYPE_Window
+               newLevel = 2
+            Default
+               newLevel = 1
+         EndSelect
+      EndIf
+      
+      ; 2. Ищем место в списке перед первым элементом с более высоким уровнем
+      ForEach __GUI\event\binds( )
+         If __GUI\event\binds( )\widget = #PB_All
+            currLevel = 4
+         Else
+            Select __GUI\event\binds( )\widget\type
+               Case #__TYPE_Root
+                  currLevel = 3
+               Case #__TYPE_Window
+                  currLevel = 2
+               Default
+                  currLevel = 1
+            EndSelect
+         EndIf
+         
+         If currLevel > newLevel
+            InsertElement( __GUI\event\binds( ) )
+            inserted = #True
+            Break
+         EndIf
+      Next
+      
+      If Not inserted
+         LastElement( __GUI\event\binds( ) )
+         AddElement( __GUI\event\binds( ) )
+      EndIf
+      
+      ; 3. Заполняем привязку и включаем бит в общей маске
+      __GUI\event\binds( )\widget   = *this
+      __GUI\event\binds( )\type     = event
+      __GUI\event\binds( )\item     = item
+      __GUI\event\binds( )\data     = *data
+      __GUI\event\binds( )\function = *callback
+      
+      If event = #PB_All
+         __GUI\event\mask = -1
+      Else
+         __GUI\event\mask | ( 1 << event )
+      EndIf
+      
+      ProcedureReturn #True
+   EndProcedure
+   
+   Procedure.i Unbind( *this._s_WIDGET, *callback, event.l = #PB_All, item.l = #PB_All )
+      Protected._s_BINDDATA *bind
+      Protected newMask.q = 0, isGlobal.b = #False
+      
+      If Not *this
+         ProcedureReturn #False
+      EndIf
+      
+      If *this = #PB_All Or *this < 0
+         *this = #PB_All
+         isGlobal = #True
+      EndIf
+      
+      ; Удаляем подходящие привязки и за один проход пересчитываем общую маску из оставшихся
+      ResetList( __GUI\event\binds( ) )
+      While NextElement( __GUI\event\binds( ) )
+         *bind = @__GUI\event\binds( )
+         
+         If ( isGlobal Or *bind\widget = *this ) And
+            ( *callback = #PB_All Or *bind\function = *callback ) And
+            ( event = #PB_All Or *bind\type = event ) And
+            ( item = #PB_All Or *bind\item = item )
+            
+            DeleteElement( __GUI\event\binds( ), 1 )
+         Else
+            If *bind\type = #PB_All
+               newMask = -1
+            ElseIf *bind\type >= 0 And *bind\type <= 63
+               newMask | ( 1 << *bind\type )
+            EndIf
+         EndIf
+      Wend
+      
+      __GUI\event\mask = newMask
+      
+      ProcedureReturn #True
    EndProcedure
    
    ;-
@@ -25608,11 +25859,11 @@ CompilerIf #PB_Compiler_IsMainFile
    ;\\ Open root0
    Define *root0._s_WIDGET = Open(#window_1, 10, 10, 300 - 20, 300 - 20): *root0\class = "root0": SetText(*root0, "root0")
    ;BindWidgetEvent( *root2, @HandlerEvents( ) )
-   Procedure TestHandler()
+   Procedure TestHandler( )
       Debug "Test menu event"
    EndProcedure
    
-   Procedure QuitHandler()
+   Procedure QuitHandler( )
       Debug "Quit menu event"
       ; End
    EndProcedure
@@ -25661,8 +25912,8 @@ CompilerIf #PB_Compiler_IsMainFile
       BarItem(9, "title-4-item-1")
       BarItem(10, "title-4-item-2")
       
-      Bind(*menu, @TestHandler(), -1, 7)
-      Bind(*menu, @QuitHandler(), -1, 8)
+      Bind(*menu, @TestHandler( ), -1, 7)
+      Bind(*menu, @QuitHandler( ), -1, 8)
    EndIf
    
    *toolbar = CreateBar( *root0, #__BAR_Small|#__BAR_Text |#__FLAG_TextInLine)
@@ -25704,8 +25955,8 @@ CompilerIf #PB_Compiler_IsMainFile
       CloseSubBar( )
    EndIf
    
-   Bind(*popupmenu, @TestHandler(), #__EVENT_LeftClick, 6)
-   Bind(*popupmenu, @QuitHandler(), #__EVENT_LeftClick, 4)
+   Bind(*popupmenu, @TestHandler( ), #__EVENT_LeftClick, 6)
+   Bind(*popupmenu, @QuitHandler( ), #__EVENT_LeftClick, 4)
    
    
    ;\\
@@ -25888,8 +26139,8 @@ CompilerIf #PB_Compiler_IsMainFile
       BarItem(10, "title-4-item-2")
       CloseSubBar( )
       
-      Bind(*ToolBar, @TestHandler(), -1, 7)
-      Bind(*ToolBar, @QuitHandler(), -1, 8)
+      Bind(*ToolBar, @TestHandler( ), -1, 7)
+      Bind(*ToolBar, @QuitHandler( ), -1, 8)
    EndIf
    
    ;\\Close( )
@@ -25983,7 +26234,7 @@ CompilerIf #PB_Compiler_IsMainFile
                         EndIf
                      EndIf 
                      StopEnum( )
-                     ; PostRepaint(Root())
+                     ; PostRepaint(Root( ))
                      
                   EndIf
                Default
@@ -26272,9 +26523,9 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.40 (Windows - x64)
-; CursorPosition = 24643
-; FirstLine = 22547
-; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+--P-j7--Pr--4-----------------------------------F----------------------------------------------------------------------t--------------------------------------------------------------------------------------------4-------------------4u---448-++--O-+aff-z8---v-------+-------------888v-rn+v---0f-0--------------------d4--0+-----------------------------------------------------------0-8----------------------------------------------------------------------------------------------------------------------0-------------------------------------
+; CursorPosition = 26236
+; FirstLine = 24316
+; Folding = ---------------------------------------------------------------------------------------------------------------------------------------4-----------------------------------------------------------------------------------------0--f+H2--XW--v-4---------------------------------P+---------------------------------------------------------------------b--------------------------------------------------------------------------------------------v-------------------td---vv4-00--d+00+-+n4---f---------------------444f-XP0f---8-+8--------------------8u--80-----------------------------------------------------------8-4----------------------------------------------------------------------------------------------------------------------8-f------8--+-------------------------------
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe

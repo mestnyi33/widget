@@ -6,6 +6,7 @@ CompilerIf #PB_Compiler_IsMainFile
    EnableExplicit
    UseWidgets( )
    
+   test_focus_draw = 1
    ;test_StatusChange  = 1
    
    Global a, CountItems = 20
@@ -132,9 +133,9 @@ CompilerIf #PB_Compiler_IsMainFile
             Case #__EVENT_LeftDown
                If  Not *btn
                   If *row\childrens
-                      *r = *g\RowFocused( )
+                     *r = *g\RowFocused( )
                   Else 
-                      SetState( *g, *row\index)
+                     SetState( *g, *row\index)
                   EndIf
                EndIf
                
@@ -148,10 +149,10 @@ CompilerIf #PB_Compiler_IsMainFile
                   RemoveEvents( *g, #__EVENT_Change)
                EndIf
                
-             Case #__EVENT_Change
+            Case #__EVENT_Change
                Debug "             ["+*row\index+"] "+*g\class +" change "
                ;If Not *row\childrens
-                  *this = PropertiesButton_Create(*g2, *row)
+               *this = PropertiesButton_Create(*g2, *row)
                ;EndIf
                
             Case #__EVENT_StatusChange
@@ -186,7 +187,7 @@ CompilerIf #PB_Compiler_IsMainFile
                         Case *g1 : SetItemState(*g2, *row\rindex, GetItemState(*g, *row\rindex))
                         Case *g2 : SetItemState(*g1, *row\rindex, GetItemState(*g, *row\rindex))
                      EndSelect
-;                      
+                     ;                      
                      Repaint( )
                      PropertiesButton_Display( *g2)
                   EndIf
@@ -200,115 +201,144 @@ CompilerIf #PB_Compiler_IsMainFile
                
                ;Debug "             ["+*row\index+"] "+*g\class +" status "
                
-               Case #__EVENT_ScrollChange
-               Select *g
-                  Case *g2 
-                     If GetState( *g1\scroll\v ) <> WidgetEventData( )
-                        If SetState( *g1\scroll\v, WidgetEventData( ))
-                           PropertiesButton_Resize( GetData( *g2 ), *g\RowFocused( ) )
-                        EndIf
-                     EndIf
-                     ;
-                  Case *g1 
-                     If GetState( *g2\scroll\v ) <> WidgetEventData( )
-                        SetState( *g2\scroll\v, WidgetEventData( ))
-                     EndIf
-               EndSelect
-               
-            Case #__EVENT_Resize
-               If *g = *g2
-                  PropertiesButton_Resize( GetData( *g2 ),  *g\RowFocused( ))
-               EndIf
-              
-               ;                ForEach *g\row\__s( ) : *row = @*g\row\__s( )
-               ;                   If *row\mask & #__MASK_Active
-               ;                      Debug ""+*row\index +" Active" 
-               ;                   EndIf
-               ;                   If *row\mask & #__MASK_Press
-               ;                      Debug ""+*row\index +" Press" 
-               ;                   EndIf
-               ;                Next
-               
          EndSelect
       EndIf
+      
+      Select WidgetEvent( )
+         Case #__EVENT_ScrollChange
+            
+            ; Debug ""+GetClass(*g)+" "+GetState( *g\scroll\v ) +" "+ WidgetEventData( )
+            Select *g
+               Case *g2 
+                  If GetState( *g1\scroll\v ) <> WidgetEventData( )
+                     If SetState( *g1\scroll\v, WidgetEventData( ))
+                        PropertiesButton_Resize( GetData( *g2 ), *g\RowFocused( ) )
+                     EndIf
+                  EndIf
+                  ;
+               Case *g1 
+                  If GetState( *g2\scroll\v ) <> WidgetEventData( )
+                     ; Debug ">>>"
+                     If SetState( *g2\scroll\v, WidgetEventData( ))
+                        PropertiesButton_Resize( GetData( *g2 ), *g\RowFocused( ) )
+                     EndIf
+                     ; Debug "<<<"
+                  EndIf
+            EndSelect
+            
+         Case #__EVENT_Resize
+            If *g = *g2
+               PropertiesButton_Resize( GetData( *g2 ),  *g\RowFocused( ))
+            EndIf
+            
+            
+      EndSelect
+      
    EndProcedure
    
-   If Open(1, 100, 50, 400, 330, "demo items status", #PB_Window_SystemMenu)
-      *g1 = Tree(10, 10, 150, 310, #__flag_nolines ) : SetClass(*g1, "*g1")
-      *g2 = Tree(170, 10, 150, 310, #__flag_nolines ) : SetClass(*g2, "*g2")
-      Splitter( 10,10, 310, 310, *g1, *g2, #PB_Splitter_Vertical)
-      
-      For a = 0 To CountItems
-         If a % 5 = 0
-            AddItem(*g1, a, "--- ["+Str(a) +"] ---", -1, 0)
-         EndIf
-      Next
-      For a = 0 To CountItems + 5
-         If a % 5
-            AddItem(*g1, a, "item "+Str(a), -1, 1)
-         EndIf
-      Next
-      For a = 0 To CountItems
-         If a % 5 = 0
-            AddItem(*g2, a, "--- ["+Str(a) +"] ---", -1, 0)
-         EndIf
-      Next
-      For a = 0 To CountItems + 5
-         If a % 5
-            AddItem(*g2, a, "item "+Str(a), -1, 1)
-         EndIf
-      Next
-      
-      ;       For a = 0 To CountItems
-      ;          AddItem(*g2, -1, "item "+Str(a), -1, 1)
-      ;       Next
-      ;       For a = 0 To CountItems
-      ;          If a % 5 = 0
-      ;             AddItem(*g2, a, "--- ["+Str(a) +"] ---", -1, 0)
-      ;          EndIf
-      ;       Next
-      
-      ;  
-      ;SetState(*g1, CountItems+4) : SetActive(*g1)
-      ; SetState(*g2, CountItems) : SetActive(*g2)
-      
-      ;      Define._s_ROW *row
-      ;      ForEach *g1\row\__s( ) : *row = @*g1\row\__s( )
-      ;            Debug ""+*row\index +"  " + *row\ColorState( )
-      ;            
-      ;            If *row\mask & #__MASK_Active
-      ;            Debug ""+*row\index +" Active" 
-      ;         EndIf
-      ;         If *row\mask & #__MASK_Press
-      ;            Debug ""+*row\index +" Press" 
-      ;         EndIf
-      ;      Next
-      
-      Button(330, 10, 60, 30,"multi")
-      Button(330, 50, 60, 30,"click")
-      Button(330, 90, 60, 30,"single")
-      
-      Bind(*g2, @all_events(), #__EVENT_Resize)
-      ;
-      Bind(*g1, @all_events(), #__EVENT_LeftDown)
-      Bind(*g2, @all_events(), #__EVENT_LeftDown)
-      Bind(*g1, @all_events(), #__EVENT_Up)
-      Bind(*g2, @all_events(), #__EVENT_Up)
-      
-      Bind(*g1, @all_events(), #__EVENT_ScrollChange)
-      Bind(*g2, @all_events(), #__EVENT_ScrollChange)
-      
-      Bind(*g1, @all_events(), #__EVENT_StatusChange)
-      Bind(*g2, @all_events(), #__EVENT_StatusChange)
-      
-      Bind(*g1, @all_events(), #__EVENT_Change)
-      Bind(*g2, @all_events(), #__EVENT_Change)
-      
-      WaitClose()
-   EndIf
+   Open(1, 100, 50, 400, 330, "demo items status", #PB_Window_SystemMenu)
+   *g1 = Tree(10, 10, 150, 310, #__flag_nolines ) : SetClass(*g1, "*g1") : Hide( HBar(*g1), #True ) ;: Hide( VBar(*g1), #True )
+   *g2 = Tree(170, 10, 150, 310, #__flag_nolines ) : SetClass(*g2, "*g2") : Hide( HBar(*g2), #True )
+   Splitter( 10,10, 310, 310, *g1, *g2, #PB_Splitter_Vertical)
+   
+   For a = 0 To CountItems
+      If a % 5 = 0
+         AddItem(*g1, a, "--- ["+Str(a) +"] ---", -1, 0)
+      EndIf
+   Next
+   For a = 0 To CountItems + 5
+      If a % 5
+         AddItem(*g1, a, "item "+Str(a), -1, 1)
+      EndIf
+   Next
+   For a = 0 To CountItems
+      If a % 5 = 0
+         AddItem(*g2, a, "--- ["+Str(a) +"] ---", -1, 0)
+      EndIf
+   Next
+   For a = 0 To CountItems + 5
+      If a % 5
+         AddItem(*g2, a, "item "+Str(a), -1, 1)
+      EndIf
+   Next
+   
+   ;       For a = 0 To CountItems
+   ;          AddItem(*g2, -1, "item "+Str(a), -1, 1)
+   ;       Next
+   ;       For a = 0 To CountItems
+   ;          If a % 5 = 0
+   ;             AddItem(*g2, a, "--- ["+Str(a) +"] ---", -1, 0)
+   ;          EndIf
+   ;       Next
+   
+   ; 
+   Repaint( )
+   
+   ;
+   SetState(*g1, CountItems+4) : SetActive(*g1)
+   ; SetState(*g2, CountItems+4) : SetActive(*g2)
+   
+   ;       ForEach *g1\row\__s( ) : Define._s_ROW *row = @*g1\row\__s( )
+   ;          Debug ""+*row\index +"  " + *row\ColorState( )
+   ;          
+   ;          If *row\mask & #__MASK_Active
+   ;             Debug ""+*row\index +" Active" 
+   ;          EndIf
+   ;          If *row\mask & #__MASK_Press
+   ;             Debug ""+*row\index +" Press" 
+   ;          EndIf
+   ;       Next
+   
+   Button(330, 10, 60, 30,"multi")
+   Button(330, 50, 60, 30,"click")
+   Button(330, 90, 60, 30,"single")
+   
+   Procedure event_first_item()
+      Debug"---->>>---"
+      SetState( *g1, 0)
+      SetActive(*g1)
+      Repaint( )
+      Debug"----<<<---"
+   EndProcedure
+   Bind(Button(330, 130, 20, 30,"<"), @event_first_item(), #__EVENT_Down)
+   Procedure event_reset_item()
+      Debug"---->>>---"
+      SetState( *g1,  -1)
+      SetActive(*g1)
+      Repaint( )
+      Debug"----<<<---"
+   EndProcedure
+   Bind(Button(350, 130, 20, 30,"|"), @event_reset_item(), #__EVENT_Down)
+   Procedure event_last_item()
+      Debug"---->>>---"
+      SetState( *g1, CountItems(*g1))
+      SetActive(*g1)
+      Repaint( )
+      Debug"----<<<---"
+   EndProcedure
+   Bind(Button(370, 130, 20, 30,">"), @event_last_item(), #__EVENT_Down)
+   
+   Bind(*g2, @all_events(), #__EVENT_Resize)
+   ;
+   Bind(*g1, @all_events(), #__EVENT_LeftDown)
+   Bind(*g2, @all_events(), #__EVENT_LeftDown)
+   Bind(*g1, @all_events(), #__EVENT_Up)
+   Bind(*g2, @all_events(), #__EVENT_Up)
+   
+   Bind(*g1, @all_events(), #__EVENT_ScrollChange)
+   Bind(*g2, @all_events(), #__EVENT_ScrollChange)
+   
+   Bind(*g1, @all_events(), #__EVENT_StatusChange)
+   Bind(*g2, @all_events(), #__EVENT_StatusChange)
+   
+   Bind(*g1, @all_events(), #__EVENT_Change)
+   Bind(*g2, @all_events(), #__EVENT_Change)
+   
+   WaitClose()
 CompilerEndIf
 ; IDE Options = PureBasic 6.40 (Windows - x64)
-; CursorPosition = 10
-; Folding = --------
+; CursorPosition = 337
+; FirstLine = 318
+; Folding = ---------
 ; EnableXP
 ; DPIAware

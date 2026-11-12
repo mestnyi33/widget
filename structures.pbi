@@ -715,6 +715,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
       EndStructure
       Structure _s_EVENT Extends _s_EVENTDATA
          loop.b
+         mask.q
          List binds._s_BINDDATA( )
          List queues._s_EVENTDATA( ) 
       EndStructure
@@ -746,8 +747,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 6.40 (Windows - x64)
-; CursorPosition = 718
-; FirstLine = 716
+; CursorPosition = 501
+; FirstLine = 499
 ; Folding = ------------
 ; Optimizer
 ; EnableXP

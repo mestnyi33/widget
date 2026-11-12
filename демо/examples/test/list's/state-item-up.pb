@@ -327,7 +327,7 @@ CompilerIf #PB_Compiler_IsMainFile
       Splitter(10,10, 230, 310, *first, *second, #PB_Splitter_Vertical )
       ;Debug *second\scroll\v\hide 
       
-      Bind(Widget( ), @Properties_Events(), #__event_Focus)
+      Bind(widget( ), @Properties_Events(), #__event_Focus)
       Bind(*second, @Properties_Events(), #__event_Resize)
       Bind(*second, @Properties_Events())
       Bind(*first, @Properties_Events())
@@ -386,8 +386,8 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.40 (Windows - x64)
-; CursorPosition = 255
-; FirstLine = 248
+; CursorPosition = 283
+; FirstLine = 283
 ; Folding = -----------
 ; EnableXP
 ; DPIAware
