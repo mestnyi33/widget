@@ -1673,6 +1673,8 @@ CompilerIf Not Defined( widgets, #PB_Module )
    ;-  
    ;-\\  DECLARE_globals
    ;-  
+   Declare.i ExpandRow(*this, *row, mode.b = #PB_Default )
+   
    Declare a_grid_image( Steps = 5, line = 0, Color = 0, startx = 0, starty = 0 )
    Declare a_init( *this, grid_size.a = 7, grid_type.b = 0 )
    Declare a_set( *this, mode.i = #PB_Default, size.l = #PB_Default, position.l = #PB_Default )
@@ -1941,8 +1943,8 @@ CompilerIf Not Defined( DD, #PB_Module )
    XIncludeFile "include/DD.pbi"
 CompilerEndIf
 ; IDE Options = PureBasic 6.40 (Windows - x64)
-; CursorPosition = 1912
-; FirstLine = 1745
+; CursorPosition = 1676
+; FirstLine = 1514
 ; Folding = --------9-----------Mw-------------------
 ; EnableXP
 ; DPIAware

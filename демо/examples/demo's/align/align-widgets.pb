@@ -1,4 +1,4 @@
-
+﻿
 IncludePath "../../../../"
 XIncludeFile "widgets.pbi"
 
@@ -13,7 +13,7 @@ CompilerIf #PB_Compiler_IsMainFile
    Global *root._S_widget
    Global NewMap wlist.i()
    Global.i Canvas_0, gEvent, gQuit, X=10,Y=10
-   Global state, direction = 1, Width, Height, window, defWidth, defHeight
+   Global state, direction = 1, Width, Height, Window, defWidth, defHeight
    
    
    Procedure all_events()
@@ -89,7 +89,7 @@ CompilerIf #PB_Compiler_IsMainFile
    Procedure example_1( )
       *root = Open( 1, 30, 465, 190, 200, #PB_Compiler_Procedure+"(proportional-alignment (alexample_1))", #PB_Window_SizeGadget)
       Canvas_0 = GetCanvasGadget(*root)
-      window = GetCanvasWindow(*root)
+      Window = GetCanvasWindow(*root)
       SetColor(*root, #PB_Gadget_BackColor, $FFACE3FF )
       
       wlist(Hex(2)) = Button(55, 5, 80, 20, "center")   ; center \2     align_proportional_horizontal
@@ -126,13 +126,13 @@ CompilerIf #PB_Compiler_IsMainFile
       SetAlign(wlist(Hex(11)), 0, 0,0,1,1 )
       SetAlign(wlist(Hex(12)), 0, 0,0,1,1 )
       
-      ResizeWindow(window, #PB_Ignore, #PB_Ignore, 260,260)
+      ResizeWindow(Window, #PB_Ignore, #PB_Ignore, 260,260)
    EndProcedure
    
    Procedure example_2( )
       *root = Open( 2, 310, 30, 190, 200, #PB_Compiler_Procedure+"(alignment-auto-indent)", #PB_Window_SizeGadget)
       Canvas_0 = GetCanvasGadget(*root)
-      window = GetCanvasWindow(*root)
+      Window = GetCanvasWindow(*root)
       
       wlist(Hex(10)) = Button(0, 0, 90, 50, "left&center&right")      
       wlist(Hex(11)) = Button(0, 0, 90, 50, "top&center&bottom")      
@@ -149,8 +149,8 @@ CompilerIf #PB_Compiler_IsMainFile
       wlist(Hex(8)) = Button(0, 0, 80, 40, "left&bottom") ; right         #right
       wlist(Hex(9)) = Button(0, 0, 80, 40, "right&bottom"); right         #right
       
-      Define position = 1;#__FLAG_auto
-      Define mode = #__FLAG_auto
+      Define position = 1;#__FLAG_AutoSize
+      Define mode = #__FLAG_AutoSize
       SetAlign( wlist(Hex(1)), mode, position,0,0,0 )
       SetAlign( wlist(Hex(2)), mode, 0,position,0,0 )
       SetAlign( wlist(Hex(3)), mode, 0,0,position,0 )
@@ -167,13 +167,13 @@ CompilerIf #PB_Compiler_IsMainFile
       SetAlign( wlist(Hex(5)), #__FLAG_center ) ; , 0,0,0,0 )
       
       
-      ResizeWindow(window, #PB_Ignore, #PB_Ignore, 249,129)
+      ResizeWindow(Window, #PB_Ignore, #PB_Ignore, 249,129)
    EndProcedure
    
    Procedure example_3( )
       *root = Open( 3, 310, 200, 390, 200, #PB_Compiler_Procedure+"(gadget-auto-dock)", #PB_Window_SizeGadget)
       Canvas_0 = GetCanvasGadget(*root)
-      window = GetCanvasWindow(*root)
+      Window = GetCanvasWindow(*root)
       
       wlist(Hex(1)) = Button(0, 0, 60, 20, "left1")  
       wlist(Hex(2)) = Button(0, 0, 80, 40, "top1")   
@@ -223,14 +223,14 @@ CompilerIf #PB_Compiler_IsMainFile
       
       SetAlign(wlist(Hex(55)), #__FLAG_full )
       
-      ResizeWindow(window, #PB_Ignore, #PB_Ignore, 370,229) ;460,360)
+      ResizeWindow(Window, #PB_Ignore, #PB_Ignore, 370,229) ;460,360)
    EndProcedure
    
    Procedure example_4( )
       ;ProcedureReturn 
       *root = Open( 4, 450, 460, 390, 200, #PB_Compiler_Procedure+"(window-auto-dock)", #PB_Window_SizeGadget)
       Canvas_0 = GetCanvasGadget(*root)
-      window = GetCanvasWindow(*root)
+      Window = GetCanvasWindow(*root)
       
       wlist(Hex(1)) = Window(0, 0, 60, 20, "left1", #__FLAG_nogadgets)  
       wlist(Hex(2)) = Window(0, 0, 80, 40, "top1", #__FLAG_nogadgets)   
@@ -279,13 +279,13 @@ CompilerIf #PB_Compiler_IsMainFile
       
       SetAlign(wlist(Hex(55)), #__FLAG_full )
       
-      ResizeWindow(window, #PB_Ignore, #PB_Ignore, 460,360)
+      ResizeWindow(Window, #PB_Ignore, #PB_Ignore, 460,360)
    EndProcedure
    
    Procedure example_5( )
       *root = Open( 5, 700, 200, 390, 200, #PB_Compiler_Procedure+"(auto-alignment)", #PB_Window_SizeGadget)
       Canvas_0 = GetCanvasGadget(*root)
-      window = GetCanvasWindow(*root)
+      Window = GetCanvasWindow(*root)
       
       wlist(Hex(1)) = Button(0, 0, 60, 20, "left1")  
       wlist(Hex(2)) = Button(0, 0, 80, 40, "top1")   
@@ -308,31 +308,31 @@ CompilerIf #PB_Compiler_IsMainFile
       
       CloseList()
       
-      SetAlign(wlist(Hex(1)), #__FLAG_auto|#__FLAG_left ) 
-      SetAlign(wlist(Hex(2)), #__FLAG_auto|#__FLAG_top ) 
-      SetAlign(wlist(Hex(3)), #__FLAG_auto|#__FLAG_right )              
-      SetAlign(wlist(Hex(4)), #__FLAG_auto|#__FLAG_bottom )      
-      ;     SetAlign(wlist(Hex(1)), #__FLAG_auto, 1,0,0,0 ) 
-      ;     SetAlign(wlist(Hex(2)), #__FLAG_auto, 0,1,0,0 ) 
-      ;     SetAlign(wlist(Hex(3)), #__FLAG_auto, 0,0,1,0 )              
-      ;     SetAlign(wlist(Hex(4)), #__FLAG_auto, 0,0,0,1 )      
+      SetAlign(wlist(Hex(1)), #__FLAG_AutoSize|#__FLAG_left ) 
+      SetAlign(wlist(Hex(2)), #__FLAG_AutoSize|#__FLAG_top ) 
+      SetAlign(wlist(Hex(3)), #__FLAG_AutoSize|#__FLAG_right )              
+      SetAlign(wlist(Hex(4)), #__FLAG_AutoSize|#__FLAG_bottom )      
+      ;     SetAlign(wlist(Hex(1)), #__FLAG_AutoSize, 1,0,0,0 ) 
+      ;     SetAlign(wlist(Hex(2)), #__FLAG_AutoSize, 0,1,0,0 ) 
+      ;     SetAlign(wlist(Hex(3)), #__FLAG_AutoSize, 0,0,1,0 )              
+      ;     SetAlign(wlist(Hex(4)), #__FLAG_AutoSize, 0,0,0,1 )      
       
-      SetAlign(wlist(Hex(11)), #__FLAG_auto, 1,0,0,0 ) 
-      SetAlign(wlist(Hex(22)), #__FLAG_auto, 0,1,0,0 ) 
-      SetAlign(wlist(Hex(33)), #__FLAG_auto, 0,0,1,0 )              
-      SetAlign(wlist(Hex(44)), #__FLAG_auto, 0,0,0,1 )      
+      SetAlign(wlist(Hex(11)), #__FLAG_AutoSize, 1,0,0,0 ) 
+      SetAlign(wlist(Hex(22)), #__FLAG_AutoSize, 0,1,0,0 ) 
+      SetAlign(wlist(Hex(33)), #__FLAG_AutoSize, 0,0,1,0 )              
+      SetAlign(wlist(Hex(44)), #__FLAG_AutoSize, 0,0,0,1 )      
       
       
-      SetAlign(wlist(Hex(5)), #__FLAG_auto )
+      SetAlign(wlist(Hex(5)), #__FLAG_AutoSize )
       
-      SetAlign(wlist(Hex(51)), #__FLAG_auto, 1,0,0,0 ) 
-      SetAlign(wlist(Hex(52)), #__FLAG_auto, 0,1,0,0 ) 
-      SetAlign(wlist(Hex(53)), #__FLAG_auto, 0,0,1,0 )              
-      SetAlign(wlist(Hex(54)), #__FLAG_auto, 0,0,0,1 )      
+      SetAlign(wlist(Hex(51)), #__FLAG_AutoSize, 1,0,0,0 ) 
+      SetAlign(wlist(Hex(52)), #__FLAG_AutoSize, 0,1,0,0 ) 
+      SetAlign(wlist(Hex(53)), #__FLAG_AutoSize, 0,0,1,0 )              
+      SetAlign(wlist(Hex(54)), #__FLAG_AutoSize, 0,0,0,1 )      
       ;     
-      SetAlign(wlist(Hex(55)), #__FLAG_auto )
+      SetAlign(wlist(Hex(55)), #__FLAG_AutoSize )
       
-      ResizeWindow(window, #PB_Ignore, #PB_Ignore, 370,229) ;460,360)
+      ResizeWindow(Window, #PB_Ignore, #PB_Ignore, 370,229) ;460,360)
    EndProcedure
    
    Procedure example_6( )
@@ -341,7 +341,7 @@ CompilerIf #PB_Compiler_IsMainFile
       
       *root = Open( 6, 570, 30, Width, Height, #PB_Compiler_Procedure+"(Proportional)", #PB_Window_SizeGadget)
       Canvas_0 = GetCanvasGadget(*root)
-      window = GetCanvasWindow(*root)
+      Window = GetCanvasWindow(*root)
       
       ;\\
       wlist(Hex(6)) = Button(10, 10, 120, 40, "left&top") 
@@ -408,7 +408,7 @@ CompilerIf #PB_Compiler_IsMainFile
       ;     SetAlign( wlist(Hex(4)), #__FLAG_proportional, 0,0,0,-5 )
       ;     SetAlign( wlist(Hex(9)), #__FLAG_proportional, 0,0,-5,-5 )
       
-      ResizeWindow(window, #PB_Ignore, #PB_Ignore, 249,129);490,390)
+      ResizeWindow(Window, #PB_Ignore, #PB_Ignore, 249,129);490,390)
    EndProcedure
    
    Procedure example_7( )
@@ -417,7 +417,7 @@ CompilerIf #PB_Compiler_IsMainFile
       
       *root = Open( 7, 830, 30, Width, Height, #PB_Compiler_Procedure+"(indent-auto-alignment (example_2))", #PB_Window_SizeGadget)
       Canvas_0 = GetCanvasGadget(*root)
-      window = GetCanvasWindow(*root)
+      Window = GetCanvasWindow(*root)
       
       ;\\
       wlist(Hex(6)) = Button(10, 10, 120, 40, "left&top") 
@@ -452,17 +452,31 @@ CompilerIf #PB_Compiler_IsMainFile
       SetAlign( wlist(Hex(4)), 0, 0,#__FLAG_proportional,0,1 )
       SetAlign( wlist(Hex(9)), 0, #__FLAG_proportional,#__FLAG_proportional,1,1 )
       
-      ResizeWindow(window, #PB_Ignore, #PB_Ignore, 249,129) ;690,490)
+      ResizeWindow(Window, #PB_Ignore, #PB_Ignore, 249,129) ;690,490)
+   EndProcedure
+   
+   Procedure example_8( )
+      *root = Open( 9, 100, 100, 300, 200, "test full + AutoSize", #PB_Window_SizeGadget)
+      Window = GetCanvasWindow(*root)
+      
+      wlist(Hex(101)) = Button(10, 10, 80, 30, "top (full|AutoSize)")
+      wlist(Hex(102)) = Button(10, 50, 80, 30, "left (full|AutoSize)")
+      
+      ; Передаем оба взаимоисключающих флага одновременно
+      SetAlign( wlist(Hex(101)), #__FLAG_full | #__FLAG_AutoSize | #__FLAG_top )
+      SetAlign( wlist(Hex(102)), #__FLAG_full | #__FLAG_AutoSize | #__FLAG_left )
+      
+      ResizeWindow(Window, #PB_Ignore, #PB_Ignore, 400, 250)
    EndProcedure
    
    ;
    Procedure example_demo()
       *root = Open( 8, 30, 30, 250, 410, "test", #PB_Window_SizeGadget)
       Canvas_0 = GetCanvasGadget(*root)
-      window = GetCanvasWindow(*root)
+      Window = GetCanvasWindow(*root)
       
       ;     ;\\
-      ;     tree_view = Tree(0, 0, 0, 0, #__FLAG_autosize)   
+      ;     tree_view = Tree(0, 0, 0, 0, #__FLAG_AutoSize)   
       
       ;\\
       Define tree_button1 = Button( 5,   345, 240,  25, "")
@@ -479,7 +493,7 @@ CompilerIf #PB_Compiler_IsMainFile
       SetAlign(tree_button1, 0, 1,0,1,1 )
       SetAlign(tree_button2, 0, 1,0,1,1 )
       
-      ResizeWindow(window, #PB_Ignore, #PB_Ignore, 260,400)
+      ResizeWindow(Window, #PB_Ignore, #PB_Ignore, 260,400)
    EndProcedure
    
    example_1()
@@ -489,6 +503,7 @@ CompilerIf #PB_Compiler_IsMainFile
    example_5()
    example_6()
    example_7()
+   ; example_8()
    
    example_demo( )
    
@@ -511,7 +526,7 @@ CompilerIf #PB_Compiler_IsMainFile
             Width + direction
             Height + direction
             
-            If ResizeWindow(window, #PB_Ignore, #PB_Ignore, Width, Height)
+            If ResizeWindow(Window, #PB_Ignore, #PB_Ignore, Width, Height)
             EndIf
             
             ;          Case #PB_Event_Gadget
@@ -537,8 +552,8 @@ CompilerIf #PB_Compiler_IsMainFile
    Until gQuit
 CompilerEndIf
 ; IDE Options = PureBasic 6.40 (Windows - x64)
-; CursorPosition = 464
-; FirstLine = 441
-; Folding = ----
+; CursorPosition = 505
+; FirstLine = 427
+; Folding = ---7-
 ; EnableXP
 ; DPIAware

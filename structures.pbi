@@ -369,20 +369,20 @@ CompilerIf Not Defined(Structures, #PB_Module)
          wrap._s_WRAPS
          List tokens._s_TOKEN()    ; Список раскрашенных сегментов
          edit._s_TEXTINFO[3]
+         ; edit
+         margin._s_TEXTINFO
+         
          
          
          *checkBox._s_BOX  ;  checkbox\
          *buttonBox._s_BOX ;  buttonbox\
-         
-         ; edit
-         margin._s_TEXTINFO
+         *groupRow._s_ROW ; option group row
          
          StructureUnion
             *_last._s_ROW            
             *last._s_ROW             ; if parent - \last\child ; if child - \parent\last\child
          EndStructureUnion
          
-         *_groupbar._s_ROW ; option group row
          
          *skip_prev._s_ROW         ; <-- Сюда запишем адрес строки, на которую прыгнуть назад
          *skip_next._s_ROW         ; <-- Сюда запишем адрес строки, на которую прыгнуть вперед
@@ -747,8 +747,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 6.40 (Windows - x64)
-; CursorPosition = 501
-; FirstLine = 499
+; CursorPosition = 382
+; FirstLine = 372
 ; Folding = ------------
 ; Optimizer
 ; EnableXP

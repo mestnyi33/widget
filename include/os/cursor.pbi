@@ -80,7 +80,7 @@ DeclareModule Cursor
    Declare   Move( X.l, Y.l )
    Declare   Change( GadgetID.i, state.b )
    Declare.i Create( ImageID.i, X.l = 0, Y.l = 0 )
-   
+   Declare   SetPos(Gadget, X, Y)
    
    ;\\
    Macro DI_Up(X, Y, size, bcolor, fcolor)
@@ -272,8 +272,66 @@ Module Cursor
       
       
    CompilerEndIf
+   CompilerIf #PB_Compiler_OS = #PB_OS_Linux
+      ImportC ""
+         gdk_display_get_default()
+         gdk_display_get_default_seat(*display)
+         gdk_seat_get_pointer(*seat)
+         gdk_device_warp(*device, *screen, X.l, Y.l)
+         gdk_display_get_default_screen(*display)
+         gdk_window_get_origin(*window, *x, *y)
+         gtk_widget_get_window(*widget)
+      EndImport
+   CompilerElseIf #PB_Compiler_OS = #PB_OS_MacOS
+      ImportC ""
+         CGWarpMouseCursorPosition(X.d, Y.d)
+      EndImport
+   CompilerEndIf
    
    ;-
+   Procedure   SetPos(Gadget, X, Y)
+      CompilerSelect #PB_Compiler_OS
+            
+         CompilerCase #PB_OS_Windows
+            Protected pt.POINT
+            pt\x = X
+            pt\y = Y
+            ClientToScreen_(GadgetID(Gadget), @pt)
+            SetCursorPos_(pt\x, pt\y)
+            
+         CompilerCase #PB_OS_Linux
+            Protected *display = gdk_display_get_default()
+            Protected *seat = gdk_display_get_default_seat(*display)
+            Protected *pointer = gdk_seat_get_pointer(*seat)
+            Protected *screen = gdk_display_get_default_screen(*display)
+            Protected *gdkWin = gtk_widget_get_window(GadgetID(Gadget))
+            Protected winX.l, winY.l
+            
+            If *gdkWin
+               gdk_window_get_origin(*gdkWin, @winX, @winY)
+               gdk_device_warp(*pointer, *screen, winX + X, winY + Y)
+            EndIf
+            
+         CompilerCase #PB_OS_MacOS
+            ; Вычисляем экранные координаты для macOS через Cocoa
+            Protected *view = GadgetID(Gadget)
+            Protected *window = CocoaMessage(0, *view, "window")
+            Protected pt.NSPoint, winPt.NSPoint, screenPt.NSPoint
+            
+            pt\x = X
+            ; В Cocoa ось Y внутри View направлена снизу вверх, переворачиваем её
+            pt\y = GadgetHeight(Gadget) - Y
+            
+            CocoaMessage(@winPt, *view, "convertPoint:@", @pt, "toView:", 0)
+            CocoaMessage(@screenPt, *window, "convertBaseToScreen:", @winPt)
+            
+            ; В Quartz (CGWarp) начало координат в левом верхнем углу главного экрана
+            Protected screenHeight.d = DesktopHeight(0)
+            CGWarpMouseCursorPosition(screenPt\x, screenHeight - screenPt\y)
+            
+      CompilerEndSelect
+   EndProcedure
+   
    Procedure FreeData( GadgetID )
       CompilerSelect #PB_Compiler_OS
          CompilerCase #PB_OS_Windows : ProcedureReturn RemoveProp_(GadgetID, "__cursor")
@@ -1861,7 +1919,7 @@ CompilerIf #PB_Compiler_IsMainFile
    EndProcedure
    
    Procedure EventHandler(eventobject, eventtype, eventdata)
-      Protected window = EventWindow()
+      Protected Window = EventWindow()
       Protected DropX, DropY
       Static deltax, deltay
       
@@ -1926,11 +1984,11 @@ CompilerIf #PB_Compiler_IsMainFile
       EndSelect
    EndProcedure
    
-   Procedure OpenWindow_(window, X,Y,Width,Height, title.s, Flag=0)
+   Procedure OpenWindow_(Window, X,Y,Width,Height, title.s, Flag=0)
       Protected WindowID
-      Protected result = OpenWindow(window, X,Y,Width,Height, title.s, Flag|#PB_Window_SizeGadget)
-      If window >= 0
-         WindowID = WindowID(window)
+      Protected result = OpenWindow(Window, X,Y,Width,Height, title.s, Flag|#PB_Window_SizeGadget)
+      If Window >= 0
+         WindowID = WindowID(Window)
       Else
          WindowID = result
       EndIf
@@ -1939,8 +1997,8 @@ CompilerIf #PB_Compiler_IsMainFile
       ProcedureReturn result
    EndProcedure
    
-   Macro OpenWindow(window, X,Y,Width,Height, title, Flag=0)
-      OpenWindow_(window, X,Y,Width,Height, title, Flag)
+   Macro OpenWindow(Window, X,Y,Width,Height, title, Flag=0)
+      OpenWindow_(Window, X,Y,Width,Height, title, Flag)
    EndMacro
    
    ;events::SetCallback(@EventHandler())
@@ -2389,10 +2447,10 @@ CompilerIf #PB_Compiler_IsMainFile
       
    Until event = #PB_Event_CloseWindow
 CompilerEndIf
-; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 2376
-; FirstLine = 2370
-; Folding = ---------------------------------------
+; IDE Options = PureBasic 6.40 (Windows - x64)
+; CursorPosition = 82
+; FirstLine = 60
+; Folding = CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAw
 ; Optimizer
 ; EnableXP
 ; DPIAware

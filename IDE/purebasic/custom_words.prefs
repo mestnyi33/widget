@@ -1,4 +1,7 @@
-﻿Type
+﻿
+
+
+Type
 Is
 ID
 X
@@ -13,6 +16,7 @@ Clip
 ReClip
 UnClip
 
+ExpandRow
 StartPrevRow
 StopPrevRow
 StartNextRow

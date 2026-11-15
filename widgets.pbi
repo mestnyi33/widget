@@ -923,7 +923,7 @@ Module widgets
    EndMacro
    
    Macro set_check_state_( _state_, _three_state_ )
-      ; change checkbox state
+      ; change checkBox state
       Select _state_
          Case #PB_Checkbox_Unchecked
             If _three_state_
@@ -3322,9 +3322,9 @@ Module widgets
          ProcedureReturn 0
       EndIf
       
-      If *bar\vertical 
-         Debug "bar_update_scroll( )  ["+ *this\class +"]"
-      EndIf
+;       If *bar\vertical 
+;          Debug "bar_update_scroll( )  ["+ *this\class +"]"
+;       EndIf
       
       ; scroll-bar default button size
       If *BB1\size = - 1 And *BB2\size = - 1
@@ -4690,8 +4690,8 @@ Module widgets
    ;-
    Procedure.b bar_PageChange( *this._s_WIDGET, ScrollPos.l, mode.b = 1 )
       Protected result.l, *bar._s_BAR = *this\bar
-       Debug "bar_PageChange( ) "+*this\class +" "+ *bar\page\pos +" "+ ScrollPos +" "+ Bool(*bar\BTN\mask & #__MASK_Disabled)
-     ;ScrollPos + 1
+      ; Debug "bar_PageChange( ) "+*this\class +" "+ *bar\page\pos +" "+ ScrollPos +" "+ Bool(*bar\BTN\mask & #__MASK_Disabled)
+      
       If *bar\area\len
          If Not *bar\max
             ; example ide.pb
@@ -6966,6 +6966,41 @@ Module widgets
    EndMacro
    
    ;-
+   Procedure.i ExpandRow(*this._s_WIDGET, *row._s_ROW, mode.b = #PB_Default )
+      ; mode = #PB_Default — переключить по состоянию buttonbox.
+      ; mode =  #True — развернуть.
+      ; mode = #False — свернуть.
+      
+      If Not *this Or Not *row : ProcedureReturn #False : EndIf
+      
+      If mode = #PB_Default
+         If Not *row\buttonbox : ProcedureReturn #False : EndIf
+         If *row\buttonbox\checked
+            mode = #True
+         Else
+            mode = #False
+         EndIf
+      EndIf
+      
+      Protected state = GetItemState(*this, *row\rindex)
+      If mode 
+         state = (state &~ #PB_Tree_Collapsed) | #PB_Tree_Expanded
+      Else
+         state = (state &~ #PB_Tree_Expanded) | #PB_Tree_Collapsed
+      EndIf
+      
+      If SetItemState(*this, *row\rindex, state)
+         If *this\mask & #__MASK_Press
+            Repaint( )
+            cursor::SetPos( *this\root\canvas\gadget, mouse( )\x, (*this\inner_y( ) + *row\y + *row\height/2) + *this\scroll_y( ) )
+         EndIf
+         
+         ProcedureReturn #True
+      EndIf
+      
+      ProcedureReturn #False
+   EndProcedure
+   
    Procedure.b HideItem( *this._s_widget, item.l, state.b )
       If *this\type = #__TYPE_MenuBar Or
          *this\type = #__TYPE_PopupBar Or
@@ -8022,33 +8057,75 @@ Module widgets
       EndIf
       
       If _row_address_\mask & #__MASK_Press
-         _row_address_\ColorState( ) = #__s_2 ; Цвет выделения/нажатия
+         If  _row_address_\ColorState( ) <> #__s_2
+            _row_address_\ColorState( ) = #__s_2 ; Цвет выделения/нажатия
+                                                 ; 3. Инвалидация (запрос на перерисовку виджета)
+            repaint_set( _this_ )
+            If  ListSize(__GUI\event\binds( ))
+               Post(_this_, #__EVENT_StatusChange, _row_index_, _row_address_ )
+            Else
+               AddEvents(_this_, #__EVENT_StatusChange, _row_index_, _row_address_ )
+            EndIf
+         EndIf
       ElseIf _row_address_\mask & #__MASK_Active
-         _row_address_\ColorState( ) = #__s_3 ; Неактивное выделение (блеклый цвет)
-             
          ; Переключаем на яркий цвет только при выполнении всех условий активности
-         If _row_address_ = _this_\RowFocused( )
-            If (_this_\mask & #__MASK_Active)
-               If Not (_this_\RowEntered( ) And (_this_\mask & #__MASK_Press)) 
-                  _row_address_\ColorState( ) = #__s_2
+         If _row_address_ = _this_\RowFocused( ) And  (_this_\mask & #__MASK_Active) And 
+            Not (_this_\RowEntered( ) And (_this_\mask & #__MASK_Press)) 
+            If  _row_address_\ColorState( ) <> #__s_2
+               _row_address_\ColorState( ) = #__s_2 ; Цвет выделения/нажатия
+                                                    ; 3. Инвалидация (запрос на перерисовку виджета)
+               repaint_set( _this_ )
+               If  ListSize(__GUI\event\binds( ))
+                  Post(_this_, #__EVENT_StatusChange, _row_index_, _row_address_ )
+               Else
+                  AddEvents(_this_, #__EVENT_StatusChange, _row_index_, _row_address_ )
+               EndIf
+            EndIf
+         Else
+            If _row_address_\ColorState( ) <> #__s_3
+               _row_address_\ColorState( ) = #__s_3 ; Неактивное выделение (блеклый цвет)
+                                                    ; 3. Инвалидация (запрос на перерисовку виджета)
+               repaint_set( _this_ )
+               If  ListSize(__GUI\event\binds( ))
+                  Post(_this_, #__EVENT_StatusChange, _row_index_, _row_address_ )
+               Else
+                  AddEvents(_this_, #__EVENT_StatusChange, _row_index_, _row_address_ )
                EndIf
             EndIf
          EndIf
-       
+         
       ElseIf _row_address_\mask & #__MASK_Hover
-        _row_address_\ColorState( ) = #__s_1 ; Обычный цвет наведения (подсветка)
+         If _row_address_\ColorState( ) <> #__s_1
+            _row_address_\ColorState( ) = #__s_1 ; Обычный цвет наведения (подсветка)
+                                                 ; 3. Инвалидация (запрос на перерисовку виджета)
+            repaint_set( _this_ )
+            If  ListSize(__GUI\event\binds( ))
+               Post(_this_, #__EVENT_StatusChange, _row_index_, _row_address_ )
+            Else
+               AddEvents(_this_, #__EVENT_StatusChange, _row_index_, _row_address_ )
+            EndIf
+         EndIf
       Else
          ; Дефолтное состояние (мыши нет, фокуса нет)
-          _row_address_\ColorState( ) = #__s_0 ; Обычный цвет строки
+         If  _row_address_\ColorState( ) <> #__s_0
+            _row_address_\ColorState( ) = #__s_0 ; Обычный цвет строки
+                                                 ; 3. Инвалидация (запрос на перерисовку виджета)
+            repaint_set( _this_ )
+            If  ListSize(__GUI\event\binds( ))
+               Post(_this_, #__EVENT_StatusChange, _row_index_, _row_address_ )
+            Else
+               AddEvents(_this_, #__EVENT_StatusChange, _row_index_, _row_address_ )
+            EndIf
+         EndIf
       EndIf
       
-      ; 3. Инвалидация (запрос на перерисовку виджета)
-      repaint_set( _this_ )
-      If  ListSize(__GUI\event\binds( ))
-         Post(_this_, #__EVENT_StatusChange, _row_index_, _row_address_ )
-      Else
-         AddEvents(_this_, #__EVENT_StatusChange, _row_index_, _row_address_ )
-      EndIf
+      ;       ; 3. Инвалидация (запрос на перерисовку виджета)
+      ;       repaint_set( _this_ )
+      ;       If  ListSize(__GUI\event\binds( ))
+      ;          Post(_this_, #__EVENT_StatusChange, _row_index_, _row_address_ )
+      ;       Else
+      ;          AddEvents(_this_, #__EVENT_StatusChange, _row_index_, _row_address_ )
+      ;       EndIf
    EndMacro
    
    
@@ -8081,13 +8158,13 @@ Module widgets
       ; - Buttonimage( )  : returns 1 If a #PB_Button_Toggle button is toggled, Else 0. 
       ; - Button( )       : returns 1 If a #PB_Button_Toggle button is toggled, Else 0. 
       ; - Option( )       : returns 1 If activated, 0 otherwise. 
-      ; - CheckBox( )     : returns one of the following values:
-      ;                           #PB_Checkbox_Checked  : The check mark is set.
-      ;                           #PB_Checkbox_Unchecked: The check mark is Not set.
-      ;                           #PB_Checkbox_Inbetween: The "in between" state is set. (Only For #PB_CheckBox_ThreeState checkboxes)
+      ; - checkBox( )     : returns one of the following values:
+      ;                           #PB_checkBox_Checked  : The check mark is set.
+      ;                           #PB_checkBox_Unchecked: The check mark is Not set.
+      ;                           #PB_checkBox_Inbetween: The "in between" state is set. (Only For #PB_checkBox_ThreeState checkBoxes)
       ;
       ; - Calendar( )     : returns the currently selected date. 
-      ; - Date( )         : returns the currently selected date/time. If #PB_Date_CheckBox was used, And the checkbox is unchecked, 0 is returned. 
+      ; - Date( )         : returns the currently selected date/time. If #PB_Date_checkBox was used, And the checkBox is unchecked, 0 is returned. 
       ;
       ; - Shortcut( )     : returns the currently selected keyboard shortcut. 
       ; - image( )        : returns the imageiD of the currently displayed img. 
@@ -8161,7 +8238,7 @@ Module widgets
       EndIf
       
       ;
-      If *this\type = #__TYPE_CheckBox Or
+      If *this\type = #__TYPE_checkBox Or
          *this\type = #__TYPE_Option Or
          *this\type = #__TYPE_Button Or *this\type = #__TYPE_ButtonImage
          
@@ -8199,13 +8276,13 @@ Module widgets
       ; - Buttonimage( ) : change the current state of a #PB_Button_Toggle gadget (1 = toggled, 0 = normal). 
       ; - Button( )      : change the current state of a #PB_Button_Toggle gadget (1 = toggled, 0 = normal). 
       ; - Option( )      : 1 To activate it, 0 otherwise. 
-      ; - CheckBox( )    : Change the state of the checkbox. The following values are possible:
-      ;                     #PB_Checkbox_Checked  : Set the check mark.
-      ;                     #PB_Checkbox_Unchecked: Remove the check mark.
-      ;                     #PB_Checkbox_Inbetween: Set the "in between" state. (Only For #PB_CheckBox_ThreeState checkboxes)
+      ; - checkBox( )    : Change the state of the checkBox. The following values are possible:
+      ;                     #PB_checkBox_Checked  : Set the check mark.
+      ;                     #PB_checkBox_Unchecked: Remove the check mark.
+      ;                     #PB_checkBox_Inbetween: Set the "in between" state. (Only For #PB_checkBox_ThreeState checkBoxes)
       ;
       ; - Calendar( )    : set the currently selected date. 
-      ; - Date( )        : set the currently displayed date/time. If #PB_Date_CheckBox was used, set 'State' To 0 To uncheck the checkbox. 
+      ; - Date( )        : set the currently displayed date/time. If #PB_Date_checkBox was used, set 'State' To 0 To uncheck the checkBox. 
       ;
       ; - Shortcut( )    : Change the current shortcut. 
       ; - image( )       : change the current img of the gadget. 
@@ -8266,7 +8343,7 @@ Module widgets
             
             ;
             If *this\type = #__TYPE_Option Or
-               *this\type = #__TYPE_CheckBox
+               *this\type = #__TYPE_checkBox
                
                If *this\groupbar And
                   *this\groupbar\groupbar <> *this
@@ -8657,9 +8734,9 @@ Module widgets
                result | #PB_Tree_Selected
             EndIf
             ;
-            If *row\checkbox And 
-               *row\checkbox\checked
-               If *row\checkbox\checked = #PB_Checkbox_Inbetween
+            If *row\checkBox And 
+               *row\checkBox\checked
+               If *row\checkBox\checked = #PB_Checkbox_Inbetween
                   result | #PB_Tree_Inbetween
                Else
                   result | #PB_Tree_Checked
@@ -8726,13 +8803,13 @@ Module widgets
                EndIf
             EndIf
             ;
-            If *row_sel\checkbox
+            If *row_sel\checkBox
                If State & #PB_Tree_Inbetween 
-                  *row_sel\checkbox\checked = #PB_Checkbox_Inbetween
+                  *row_sel\checkBox\checked = #PB_Checkbox_Inbetween
                ElseIf State & #PB_Tree_Checked
-                  *row_sel\checkbox\checked = #PB_Checkbox_Checked
+                  *row_sel\checkBox\checked = #PB_Checkbox_Checked
                Else
-                  *row_sel\checkbox\checked = #PB_Checkbox_Unchecked
+                  *row_sel\checkBox\checked = #PB_Checkbox_Unchecked
                EndIf
             EndIf
             ;
@@ -8911,7 +8988,7 @@ Module widgets
          *this\type = #__TYPE_Text Or
          *this\type = #__TYPE_Frame Or
          *this\type = #__TYPE_Option Or 
-         *this\type = #__TYPE_CheckBox Or 
+         *this\type = #__TYPE_checkBox Or 
          *this\type = #__TYPE_ComboBox Or
          *this\type = #__TYPE_Hyperlink Or 
          *this\type = #__TYPE_Button Or *this\type = #__TYPE_ButtonImage
@@ -10699,468 +10776,242 @@ Module widgets
       EndIf         
    EndProcedure
    
-   Procedure   SetAlign( *this._s_WIDGET, mode.q, left.q = 0, top.q = 0, right.q = 0, bottom.q = 0, update.b = 1 )
-      Protected Flag.q
-      ;\\
-      ;          If Not (( mode & #__FLAG_full = #__FLAG_full ) Or
-      ;                  ( mode & #__FLAG_auto = #__FLAG_auto ))
-      ;             If mode = 0 And left = 0 And top = 0 And right = 0 And bottom = 0
-      ;                left = #__FLAG_auto
-      ;                top  = #__FLAG_auto
-      ;                mode | #__FLAG_auto
-      ;             EndIf
-      ;                ;
-      ;             If mode & #__FLAG_right And mode & #__FLAG_bottom
-      ;                right  = 1
-      ;                bottom = 1
-      ;             Else
-      ;                If mode & #__FLAG_right
-      ;                   If mode & #__FLAG_center = 0 And mode & #__FLAG_bottom = 0
-      ;                      top = 1
-      ;                   EndIf
-      ;                   right = #__FLAG_auto
-      ;                EndIf
-      ;                If mode & #__FLAG_bottom
-      ;                   If mode & #__FLAG_center = 0 And mode & #__FLAG_right = 0
-      ;                      left = 1
-      ;                   EndIf
-      ;                   bottom = #__FLAG_auto
-      ;                EndIf
-      ;             EndIf
-      ;             If mode & #__FLAG_left
-      ;                If mode & #__FLAG_center = 0
-      ;                   top = 1
-      ;                EndIf
-      ;                left = #__FLAG_auto
-      ;             EndIf
-      ;             If mode & #__FLAG_top
-      ;                If mode & #__FLAG_center = 0
-      ;                   left = 1
-      ;                EndIf
-      ;                top = #__FLAG_auto
-      ;             EndIf
-      ;          EndIf
+   Procedure SetAlign( *this._s_WIDGET, mode.q, left.q = 0, top.q = 0, right.q = 0, bottom.q = 0, update.b = 1 )
+      If Not *this Or Not *this\parent : ProcedureReturn : EndIf
       
-      ;\\
-      If mode & #__FLAG_AutoSize = #__FLAG_AutoSize
+      Protected Flag.q
+      Protected._s_WIDGET *e
+      
+      ;\\ 1. Объединенная нормализация режимов AutoSize и Full
+      If ( mode & #__FLAG_AutoSize = #__FLAG_AutoSize ) Or ( mode & #__FLAG_full = #__FLAG_full )
+         Protected targetFlag.q = #__FLAG_AutoSize
+         If mode & #__FLAG_full = #__FLAG_full : targetFlag = #__FLAG_full : EndIf
+
          If left = 0 And top = 0 And right = 0 And bottom = 0
-            If mode & #__FLAG_left 
-               left = #__FLAG_AutoSize
-            EndIf
-            If mode & #__FLAG_top 
-               top = #__FLAG_AutoSize
-            EndIf
-            If mode & #__FLAG_right 
-               right = #__FLAG_AutoSize
-            EndIf
-            If mode & #__FLAG_bottom 
-               bottom = #__FLAG_AutoSize
-            EndIf
+            If mode & #__FLAG_left   : left   = targetFlag : EndIf
+            If mode & #__FLAG_top    : top    = targetFlag : EndIf
+            If mode & #__FLAG_right  : right  = targetFlag : EndIf
+            If mode & #__FLAG_bottom : bottom = targetFlag : EndIf
+            
             If left = 0 And top = 0 And right = 0 And bottom = 0
-               left   = #__FLAG_AutoSize
-               top    = #__FLAG_AutoSize
-               right  = #__FLAG_AutoSize
-               bottom = #__FLAG_AutoSize
+               left = targetFlag : top = targetFlag : right = targetFlag : bottom = targetFlag
             EndIf
          Else
-            If left > 0 : left = 1 : EndIf
-            If top > 0 : top = 1 : EndIf
-            If right > 0 : right = 1 : EndIf
+            If left > 0   : left   = 1 : EndIf
+            If top > 0    : top    = 1 : EndIf
+            If right > 0  : right  = 1 : EndIf
             If bottom > 0 : bottom = 1 : EndIf
             
-            If left > 0 And top = 0 And right = 0 And bottom = 0 : left = #__FLAG_AutoSize : EndIf
-            If top > 0 And left = 0 And right = 0 And bottom = 0 : top = #__FLAG_AutoSize : EndIf
-            If right > 0 And top = 0 And left = 0 And bottom = 0 : right = #__FLAG_AutoSize : EndIf
-            If bottom > 0 And top = 0 And right = 0 And left = 0 : bottom = #__FLAG_AutoSize : EndIf
+            If left > 0 And top = 0 And right = 0 And bottom = 0   : left   = targetFlag : EndIf
+            If top > 0 And left = 0 And right = 0 And bottom = 0   : top    = targetFlag : EndIf
+            If right > 0 And top = 0 And left = 0 And bottom = 0   : right  = targetFlag : EndIf
+            If bottom > 0 And top = 0 And right = 0 And left = 0   : bottom = targetFlag : EndIf
          EndIf
       EndIf
       
-      ;\\
-      If mode & #__FLAG_full = #__FLAG_full
-         If left = 0 And top = 0 And right = 0 And bottom = 0
-            ;                If mode & #__FLAG_left : left = #__FLAG_full
-            ;                ElseIf mode & #__FLAG_top : top = #__FLAG_full
-            ;                ElseIf mode & #__FLAG_right : right = #__FLAG_full
-            ;                ElseIf mode & #__FLAG_bottom : bottom = #__FLAG_full
-            ;                Else
-            ;                   left   = #__FLAG_full
-            ;                   top    = #__FLAG_full
-            ;                   right  = #__FLAG_full
-            ;                   bottom = #__FLAG_full
-            ;                EndIf
-            
-            If mode & #__FLAG_left 
-               left = #__FLAG_full
-            EndIf
-            If mode & #__FLAG_top 
-               top = #__FLAG_full
-            EndIf
-            If mode & #__FLAG_right 
-               right = #__FLAG_full
-            EndIf
-            If mode & #__FLAG_bottom 
-               bottom = #__FLAG_full
-            EndIf
-            If left = 0 And top = 0 And right = 0 And bottom = 0
-               left   = #__FLAG_full
-               top    = #__FLAG_full
-               right  = #__FLAG_full
-               bottom = #__FLAG_full
-            EndIf
-            
-         Else
-            ;                If left > 0 : left = #__FLAG_full : EndIf
-            ;                If top > 0 : top = #__FLAG_full : EndIf
-            ;                If right > 0 : right = #__FLAG_full : EndIf
-            ;                If bottom > 0 : bottom = #__FLAG_full : EndIf
-            If left > 0 : left = #True : EndIf
-            If top > 0 : top = #True : EndIf
-            If right > 0 : right = #True : EndIf
-            If bottom > 0 : bottom = #True : EndIf
-            
-            If left > 0 And top = 0 And right = 0 And bottom = 0 : left = #__FLAG_full : EndIf
-            If top > 0 And left = 0 And right = 0 And bottom = 0 : top = #__FLAG_full : EndIf
-            If right > 0 And top = 0 And left = 0 And bottom = 0 : right = #__FLAG_full : EndIf
-            If bottom > 0 And top = 0 And right = 0 And left = 0 : bottom = #__FLAG_full : EndIf
-         EndIf
-      EndIf
+      ;\\ Приведение #__FLAG_full к докингу по сторонам
+      If left = #__FLAG_full   : left   = #__FLAG_AutoSize : top = 1 : bottom = 1 : Flag | #__FLAG_full : EndIf
+      If right = #__FLAG_full  : right  = #__FLAG_AutoSize : top = 1 : bottom = 1 : Flag | #__FLAG_full : EndIf
+      If top = #__FLAG_full    : top    = #__FLAG_AutoSize : left = 1 : right = 1 : Flag | #__FLAG_full : EndIf
+      If bottom = #__FLAG_full : bottom = #__FLAG_AutoSize : left = 1 : right = 1 : Flag | #__FLAG_full : EndIf
       
-      ;\\
-      If left = #__FLAG_full
-         left   = #__FLAG_AutoSize
-         top    = 1
-         bottom = 1
-         Flag | #__FLAG_full
-      EndIf
-      If right = #__FLAG_full
-         right  = #__FLAG_AutoSize
-         top    = 1
-         bottom = 1
-         Flag | #__FLAG_full
-      EndIf
-      If top = #__FLAG_full
-         top   = #__FLAG_AutoSize
-         left  = 1
-         right = 1
-         Flag | #__FLAG_full
-      EndIf
-      If bottom = #__FLAG_full
-         bottom = #__FLAG_AutoSize
-         left   = 1
-         right  = 1
-         Flag | #__FLAG_full
-      EndIf
       If mode And left > 0 And top > 0 And right > 0 And bottom > 0
          Flag | #__FLAG_full
       EndIf
       
-      ;\\
+      ;\\ 2. Нормализация пропорционального режима
       If mode & #__FLAG_proportional
-         If left = 0 And right = 0
-            left  = #__FLAG_proportional
-            right = #__FLAG_proportional
-         EndIf
-         If top = 0 And bottom = 0
-            top    = #__FLAG_proportional
-            bottom = #__FLAG_proportional
-         EndIf
-         ;
-         If left And left <> #__FLAG_proportional
-            If right = 0
-               left = 0
-            EndIf
-            right = #__FLAG_proportional
-         EndIf
-         If top And top <> #__FLAG_proportional
-            If bottom = 0
-               top = 0
-            EndIf
-            bottom = #__FLAG_proportional
-         EndIf
-         If right And right <> #__FLAG_proportional
-            If left = 0
-               right = 0
-            EndIf
-            left = #__FLAG_proportional
-         EndIf
-         If bottom And bottom <> #__FLAG_proportional
-            If top = 0
-               bottom = 0
-            EndIf
-            top = #__FLAG_proportional
-         EndIf
-         ;
-         If mode & #__FLAG_right
-            left = #__FLAG_proportional
-         EndIf
-         If mode & #__FLAG_left
-            right = #__FLAG_proportional
-         EndIf
-         If mode & #__FLAG_top
-            bottom = #__FLAG_proportional
-         EndIf
-         If mode & #__FLAG_bottom
-            top = #__FLAG_proportional
-         EndIf
-         ;
+         If left = 0 And right = 0 : left = #__FLAG_proportional : right = #__FLAG_proportional : EndIf
+         If top = 0 And bottom = 0 : top  = #__FLAG_proportional : bottom = #__FLAG_proportional : EndIf
+         
+         If left And left <> #__FLAG_proportional     : If right = 0  : left = 0   : EndIf : right  = #__FLAG_proportional : EndIf
+         If top And top <> #__FLAG_proportional       : If bottom = 0 : top = 0    : EndIf : bottom = #__FLAG_proportional : EndIf
+         If right And right <> #__FLAG_proportional   : If left = 0   : right = 0  : EndIf : left   = #__FLAG_proportional : EndIf
+         If bottom And bottom <> #__FLAG_proportional : If top = 0    : bottom = 0 : EndIf : top    = #__FLAG_proportional : EndIf
+         
+         If mode & #__FLAG_right  : left   = #__FLAG_proportional : EndIf
+         If mode & #__FLAG_left   : right  = #__FLAG_proportional : EndIf
+         If mode & #__FLAG_top    : bottom = #__FLAG_proportional : EndIf
+         If mode & #__FLAG_bottom : top    = #__FLAG_proportional : EndIf
+         
          mode = 0
       EndIf
       
-      
-      If left = #__FLAG_AutoSize
-         mode = #__FLAG_AutoSize
-      EndIf
-      If top = #__FLAG_AutoSize
-         mode = #__FLAG_AutoSize
-      EndIf
-      If right = #__FLAG_AutoSize
-         mode = #__FLAG_AutoSize
-      EndIf
-      If bottom = #__FLAG_AutoSize
+      If left = #__FLAG_AutoSize Or top = #__FLAG_AutoSize Or right = #__FLAG_AutoSize Or bottom = #__FLAG_AutoSize
          mode = #__FLAG_AutoSize
       EndIf
       
-      ;\\
-      If *this\parent
-         If Not *this\parent\align
-            *this\parent\align.allocate( ALIGN )
-            
-            
-            ;               ;\\ ?-надо тестировать
-            ;                If Not *this\parent\align\width
-            *this\parent\align\x     = *this\parent\container_x( )
-            *this\parent\align\width = *this\parent\inner_width( )
-            ;                EndIf
-            ;                If Not *this\parent\align\height
-            *this\parent\align\y      = *this\parent\container_y( )
-            *this\parent\align\height = *this\parent\inner_height( )
-            ;                EndIf
-            ;                
-            
+      ;\\ 3. Выделение структур и запись матрицы (1 / 0 / -1)
+      If Not *this\parent\align
+         *this\parent\align.allocate( ALIGN )
+         *this\parent\align\x      = *this\parent\container_x( )
+         *this\parent\align\y      = *this\parent\container_y( )
+         *this\parent\align\width  = *this\parent\inner_width( )
+         *this\parent\align\height = *this\parent\inner_height( )
+      EndIf
+      
+      If Not *this\align
+         *this\align.allocate( ALIGN )
+      EndIf
+      If Not *this\align : ProcedureReturn : EndIf
+      
+      If left Or ( Not right And constants::BinaryFlag( Flag, #__FLAG_full ))
+         If left = #__FLAG_proportional : *this\align\left = -1 : Else : *this\align\left = 1 : EndIf
+      Else
+         *this\align\left = 0
+      EndIf
+      
+      If right Or ( Not left And constants::BinaryFlag( Flag, #__FLAG_full ))
+         If right = #__FLAG_proportional : *this\align\right = -1 : Else : *this\align\right = 1 : EndIf
+      Else
+         *this\align\right = 0
+      EndIf
+      
+      If top Or ( Not bottom And constants::BinaryFlag( Flag, #__FLAG_full ))
+         If top = #__FLAG_proportional : *this\align\top = -1 : Else : *this\align\top = 1 : EndIf
+      Else
+         *this\align\top = 0
+      EndIf
+      
+      If bottom Or ( Not top And constants::BinaryFlag( Flag, #__FLAG_full ))
+         If bottom = #__FLAG_proportional : *this\align\bottom = -1 : Else : *this\align\bottom = 1 : EndIf
+      Else
+         *this\align\bottom = 0
+      EndIf
+      
+      ;\\ 4. Расчет базовой геометрии
+      If mode = 0
+         *this\align\x = *this\container_x( )
+         *this\align\y = *this\container_y( )
+         If *this\type = #__TYPE_window
+            *this\align\width  = *this\inner_width( )
+            *this\align\height = *this\inner_height( )
+         Else
+            *this\align\width  = *this\frame_width( )
+            *this\align\height = *this\frame_height( )
+         EndIf
+      Else
+         ; Горизонтальная ось
+         If *this\align\right And *this\align\left
+            *this\align\x     = 0
+            *this\align\width = *this\parent\align\width
+            If *this\type = #__TYPE_window : *this\align\width - *this\fs * 2 : EndIf
+         Else
+            *this\align\width = *this\frame_width( )
+            If *this\align\left And Not *this\align\right
+               *this\align\x = 0
+            ElseIf Not *this\align\right And Not *this\align\left
+               *this\align\x = ( *this\parent\align\width - *this\align\width ) / 2
+            ElseIf *this\align\right And Not *this\align\left
+               If ( mode & #__FLAG_full = #__FLAG_full ) Or ( mode & #__FLAG_AutoSize = #__FLAG_AutoSize )
+                  *this\align\x = *this\parent\align\width - *this\align\width
+                  If *this\type = #__TYPE_window : *this\align\x - *this\fs * 2 : EndIf
+               EndIf
+            EndIf
          EndIf
          
-         If Not *this\align
-            *this\align.allocate( ALIGN )
+         ; Вертикальная ось
+         If *this\align\bottom And *this\align\top
+            *this\align\y      = 0
+            *this\align\height = *this\parent\align\height
+            If *this\type = #__TYPE_window : *this\align\height - *this\fs * 2 : EndIf
+         Else
+            *this\align\height = *this\frame_height( )
+            If *this\align\top And Not *this\align\bottom
+               *this\align\y = 0
+            ElseIf Not *this\align\bottom And Not *this\align\top
+               *this\align\y = ( *this\parent\align\height - *this\align\height ) / 2
+            ElseIf *this\align\bottom And Not *this\align\top
+               If ( mode & #__FLAG_full = #__FLAG_full ) Or ( mode & #__FLAG_AutoSize = #__FLAG_AutoSize )
+                  *this\align\y = *this\parent\align\height - *this\align\height
+                  If *this\type = #__TYPE_window : *this\align\y - *this\fs * 2 : EndIf
+               EndIf
+            EndIf
          EndIf
          
-         ;\\
-         If *this\align
-            ;\\ horizontal
-            If left Or ( Not right And constants::BinaryFlag( Flag, #__FLAG_full ))
-               If left = #__FLAG_proportional 
-                  *this\align\left = - 1
-               Else
-                  *this\align\left = 1
-               EndIf
+         ;\\ 5. Безопасный DPI и стековый докинг (autodock)
+         If left = #__FLAG_AutoSize
+            If *this\parent\align\autodock\x : left = - *this\parent\align\autodock\x : Else : left = 0 : EndIf
+         Else
+            left = DPIScaled(left)
+         EndIf
+         If right = #__FLAG_AutoSize
+            If *this\parent\align\autodock\width : right = - *this\parent\align\autodock\width : Else : right = 0 : EndIf
+         Else
+            right = DPIScaled(right)
+         EndIf
+         If top = #__FLAG_AutoSize
+            If *this\parent\align\autodock\y : top = - *this\parent\align\autodock\y : Else : top = 0 : EndIf
+         Else
+            top = DPIScaled(top)
+         EndIf
+         If bottom = #__FLAG_AutoSize
+            If *this\parent\align\autodock\height : bottom = - *this\parent\align\autodock\height : Else : bottom = 0 : EndIf
+         Else
+            bottom = DPIScaled(bottom)
+         EndIf
+         
+         If left < 0 Or right < 0
+            If left And right
+               *this\align\x - left
+               *this\align\width - *this\align\x + right
             Else
-               *this\align\left = 0
-            EndIf
-            If right Or ( Not left And constants::BinaryFlag( Flag, #__FLAG_full ))
-               If right = #__FLAG_proportional
-                  *this\align\right = - 1
-               Else
-                  *this\align\right = 1
-               EndIf
-            Else
-               *this\align\right = 0
-            EndIf
-            
-            ;\\ vertical
-            If top Or ( Not bottom And constants::BinaryFlag( Flag, #__FLAG_full )) 
-               If top = #__FLAG_proportional
-                  *this\align\top = - 1
-               Else
-                  *this\align\top = 1
-               EndIf
-            Else
-               *this\align\top = 0
-            EndIf
-            If bottom Or ( Not top And constants::BinaryFlag( Flag, #__FLAG_full ))
-               If bottom = #__FLAG_proportional
-                  *this\align\bottom = - 1
-               Else
-                  *this\align\bottom = 1
-               EndIf
-            Else
-               *this\align\bottom = 0
-            EndIf
-            
-            
-            ;\\
-            ; Debug ""+mode +" - "+ left+" "+top+" "+right+" "+bottom
-            If mode = 0
-               *this\align\x = *this\container_x( )
-               *this\align\y = *this\container_y( )
-               ;\\
-               If *this\type = #__TYPE_window
-                  *this\align\width  = *this\inner_width( )
-                  *this\align\height = *this\inner_height( )
-               Else
-                  *this\align\width  = *this\frame_width( )
-                  *this\align\height = *this\frame_height( )
-               EndIf
-               
-            Else
-               ;\\ full horizontal
-               If *this\align\right And *this\align\left
-                  *this\align\x     = 0
-                  *this\align\width = (*this\parent\align\width)
-                  If *this\type = #__TYPE_window
-                     *this\align\width - *this\fs * 2
-                  EndIf
-               Else
-                  *this\align\width = *this\frame_width( )
-                  If *this\align\left And Not *this\align\right
-                     ; left
-                     *this\align\x = 0
-                  ElseIf Not *this\align\right And Not *this\align\left
-                     ; center
-                     *this\align\x = ( *this\parent\align\width - *this\align\width ) / 2
-                  ElseIf *this\align\right And Not *this\align\left
-                     ; right
-                     If ( mode & #__FLAG_full = #__FLAG_full ) Or
-                        ( mode & #__FLAG_AutoSize = #__FLAG_AutoSize )
-                        *this\align\x = *this\parent\align\width - *this\align\width
-                        If *this\type = #__TYPE_window
-                           *this\align\x - *this\fs * 2
-                        EndIf
-                     EndIf
-                  EndIf
-               EndIf
-               
-               ;\\ full vertical
-               If *this\align\bottom And *this\align\top
-                  *this\align\y      = 0
-                  *this\align\height = *this\parent\align\height
-                  If *this\type = #__TYPE_window
-                     *this\align\height - *this\fs * 2
-                  EndIf
-               Else
-                  *this\align\height = *this\frame_height( )
-                  If *this\align\top And Not *this\align\bottom
-                     ; top
-                     *this\align\y = 0
-                  ElseIf Not *this\align\bottom And Not *this\align\top
-                     ; center
-                     *this\align\y = ( *this\parent\align\height - *this\align\height ) / 2
-                  ElseIf *this\align\bottom And Not *this\align\top
-                     ; bottom
-                     If ( mode & #__FLAG_full = #__FLAG_full ) Or
-                        ( mode & #__FLAG_AutoSize = #__FLAG_AutoSize )
-                        *this\align\y = *this\parent\align\height - *this\align\height
-                        If *this\type = #__TYPE_window
-                           *this\align\y - *this\fs * 2
-                        EndIf
-                     EndIf
-                  EndIf
-               EndIf
-               
-               ;
-               ;\\ auto stick change
-               If *this\parent\align
-                  If left = #__FLAG_AutoSize And *this\parent\align\autodock\x
-                     left = - *this\parent\align\autodock\x
-                  Else
-                     left = DPIScaled(left)
-                  EndIf
-                  If right = #__FLAG_AutoSize And *this\parent\align\autodock\width
-                     right = - *this\parent\align\autodock\width
-                  Else
-                     right = DPIScaled(right)
-                  EndIf
-                  If top = #__FLAG_AutoSize And *this\parent\align\autodock\y
-                     top = - *this\parent\align\autodock\y
-                  Else
-                     top = DPIScaled(top)
-                  EndIf
-                  If bottom = #__FLAG_AutoSize And *this\parent\align\autodock\height
-                     bottom = - *this\parent\align\autodock\height
-                  Else
-                     bottom = DPIScaled(bottom)
-                  EndIf
-                  ;
-                  If left < 0 Or right < 0
-                     If left And right
-                        *this\align\x - left
-                        *this\align\width - *this\align\x + right
-                     Else
-                        *this\align\x - left + right
-                     EndIf
-                  EndIf
-                  If top < 0 Or bottom < 0
-                     If top And bottom
-                        *this\align\y - top
-                        *this\align\height - *this\align\y + bottom
-                     Else
-                        *this\align\y - top + bottom
-                     EndIf
-                  EndIf
-                  
-                  ;\\ dock auto stick position
-                  If *this\align\left And Not *this\align\right 
-                     *this\parent\align\autodock\x = *this\align\x + *this\align\width
-                     If *this\type = #__TYPE_window
-                        *this\parent\align\autodock\x + *this\fs * 2
-                     EndIf
-                  EndIf
-                  If *this\align\top And Not *this\align\bottom
-                     *this\parent\align\autodock\y = *this\align\y + *this\align\height
-                     If *this\type = #__TYPE_window
-                        *this\parent\align\autodock\y + *this\fs * 2
-                     EndIf
-                  EndIf
-                  If *this\align\right And Not *this\align\left
-                     *this\parent\align\autodock\width = *this\parent\inner_width( ) - *this\align\x
-                  EndIf
-                  If *this\align\bottom And Not *this\align\top
-                     *this\parent\align\autodock\height = *this\parent\inner_height( ) - *this\align\y
-                  EndIf
-                  
-                  ;\\ dock auto stick position update
-                  If constants::BinaryFlag( Flag, #__FLAG_full )
-                     If ( *this\parent\align\autodock\x Or
-                          *this\parent\align\autodock\y Or
-                          *this\parent\align\autodock\width Or
-                          *this\parent\align\autodock\height )
-                        Protected._s_WIDGET *e
-                        
-                        ; loop enum widgets
-                        If StartNext( *e, *this\parent )
-                           If *e\align
-                              If *e\align\top And *e\align\bottom
-                                 *e\align\y      = *e\parent\align\autodock\y
-                                 *e\align\height = *e\parent\inner_height( ) - ( *e\parent\align\autodock\y + *e\parent\align\autodock\height )
-                                 
-                                 If *e\align\left And *e\align\right
-                                    *e\align\x     = *e\parent\align\autodock\x
-                                    *e\align\width = (*e\parent\inner_width( )) - ( *e\parent\align\autodock\x + *e\parent\align\autodock\width )
-                                    
-                                    If *e\type = #__TYPE_window
-                                       *e\align\width - *e\fs * 2
-                                    EndIf
-                                 EndIf
-                                 
-                                 If *e\type = #__TYPE_window
-                                    *e\align\height - *e\fs * 2
-                                 EndIf
-                              EndIf
-                           EndIf
-                           ;
-                           StopNext( *e, *this\parent )
-                        EndIf
-                     EndIf
-                  EndIf
-               EndIf
-            EndIf
-            
-            ;\\ update parent children's coordinate
-            If update 
-               Resize( *this\parent, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
+               *this\align\x - left + right
             EndIf
          EndIf
+         If top < 0 Or bottom < 0
+            If top And bottom
+               *this\align\y - top
+               *this\align\height - *this\align\y + bottom
+            Else
+               *this\align\y - top + bottom
+            EndIf
+         EndIf
+         
+         ; Обновление границ autodock родителя
+         If *this\align\left And Not *this\align\right 
+            *this\parent\align\autodock\x = *this\align\x + *this\align\width
+            If *this\type = #__TYPE_window : *this\parent\align\autodock\x + *this\fs * 2 : EndIf
+         EndIf
+         If *this\align\top And Not *this\align\bottom
+            *this\parent\align\autodock\y = *this\align\y + *this\align\height
+            If *this\type = #__TYPE_window : *this\parent\align\autodock\y + *this\fs * 2 : EndIf
+         EndIf
+         If *this\align\right And Not *this\align\left
+            *this\parent\align\autodock\width = *this\parent\inner_width( ) - *this\align\x
+         EndIf
+         If *this\align\bottom And Not *this\align\top
+            *this\parent\align\autodock\height = *this\parent\inner_height( ) - *this\align\y
+         EndIf
+         
+         ; Вложенный стековый пересчет уже пристыкованных панелей
+         If constants::BinaryFlag( Flag, #__FLAG_full )
+            If *this\parent\align\autodock\x Or *this\parent\align\autodock\y Or *this\parent\align\autodock\width Or *this\parent\align\autodock\height
+               If StartNext( *e, *this\parent )
+                  If *e\align
+                     If *e\align\top And *e\align\bottom
+                        *e\align\y  = *e\parent\align\autodock\y
+                        *e\align\height = *e\parent\inner_height( ) - ( *e\parent\align\autodock\y + *e\parent\align\autodock\height )
+                        If *e\type = #__TYPE_window : *e\align\height - *e\fs * 2 : EndIf
+                         
+                        If *e\align\left And *e\align\right
+                           *e\align\x = *e\parent\align\autodock\x
+                           *e\align\width = *e\parent\inner_width( ) - ( *e\parent\align\autodock\x + *e\parent\align\autodock\width )
+                           If *e\type = #__TYPE_window : *e\align\width - *e\fs * 2 : EndIf
+                        EndIf
+                     EndIf
+                  EndIf
+                  StopNext( *e, *this\parent )
+               EndIf
+            EndIf
+         EndIf
+      EndIf
+      
+      If update
+         Resize( *this\parent, #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
       EndIf
    EndProcedure
-   
+
    Procedure   Alignment( *this._s_WIDGET, align.q, mode.q = 0 )
       If align & #__FLAG_AutoSize
          align &~ #__FLAG_AutoSize
@@ -11638,9 +11489,9 @@ Module widgets
          *row\rindex        = position 
          *row\columnindex   = ListIndex( *this\__columns( ))
          
-         If *this\flagmask & #__FLAG_checkboxes Or 
+         If *this\flagmask & #__FLAG_checkBoxes Or 
             *this\flagmask & #__FLAG_optionboxes
-            *row\checkbox.allocate( BOX )
+            *row\checkBox.allocate( BOX )
          EndIf
          If *this\flagmask & #__FLAG_nolines
             *row\buttonbox.allocate( BOX )
@@ -11663,7 +11514,7 @@ Module widgets
          *row\color\fore[3] = 0
          
          ;
-         *row\_groupbar = *row\parent
+         *row\groupRow = *row\parent
          
          ; 
          *row\TextChange( ) = 1
@@ -12326,10 +12177,10 @@ Module widgets
                       "#PB_Text_Center|"+
                       "#PB_Text_Right"
             
-         Case #__TYPE_CheckBox       
-            result$ = "#PB_CheckBox_ThreeState|"+
-                      "#PB_CheckBox_Center|"+
-                      "#PB_CheckBox_Right"
+         Case #__TYPE_checkBox       
+            result$ = "#PB_checkBox_ThreeState|"+
+                      "#PB_checkBox_Center|"+
+                      "#PB_checkBox_Right"
             
          Case #__TYPE_Option         
             result$ = ""
@@ -12366,7 +12217,7 @@ Module widgets
                       "#PB_Container_Double"
             
          Case #__TYPE_ListIcon       
-            result$ = "#PB_ListIcon_CheckBoxes|"+
+            result$ = "#PB_ListIcon_checkBoxes|"+
                       "#PB_ListIcon_ThreeState|"+
                       "#PB_ListIcon_MultiSelect|"+
                       "#PB_ListIcon_GridLines|"+
@@ -12447,7 +12298,7 @@ Module widgets
             result$ = "#PB_Tree_AlwaysShowSelection|"+
                       "#PB_Tree_NoLines|"+
                       "#PB_Tree_NoButtons|"+
-                      "#PB_Tree_CheckBoxes|"+
+                      "#PB_Tree_checkBoxes|"+
                       "#PB_Tree_ThreeState"
             
          Case #__TYPE_Panel          
@@ -12635,7 +12486,7 @@ Module widgets
          Case "button"        : result = #__TYPE_Button
          Case "buttonimage"   : result = #__TYPE_ButtonImage
          Case "calendar"      : result = #__TYPE_Calendar
-         Case "checkbox"      : result = #__TYPE_CheckBox
+         Case "checkBox"      : result = #__TYPE_checkBox
          Case "combobox"      : result = #__TYPE_ComboBox
          Case "container"     : result = #__TYPE_Container
          Case "date"          : result = #__TYPE_Date
@@ -12689,7 +12540,7 @@ Module widgets
          Case #__TYPE_ButtonImage   : result$ = "ButtonImage"
          Case #__TYPE_String        : result$ = "String"
          Case #__TYPE_Text          : result$ = "Text"
-         Case #__TYPE_CheckBox      : result$ = "CheckBox"
+         Case #__TYPE_checkBox      : result$ = "checkBox"
          Case #__TYPE_Option        : result$ = "Option"
          Case #__TYPE_ListView      : result$ = "ListView"
          Case #__TYPE_Frame         : result$ = "Frame"
@@ -12790,7 +12641,7 @@ Module widgets
       If flags & #__FLAG_button_Default : result$ +" #__FLAG_button_Default |": EndIf  
       If flags & #__FLAG_Collapsed      : result$ +" #__FLAG_Collapsed |": EndIf     
       If flags & #__FLAG_OptionBoxes    : result$ +" #__FLAG_OptionBoxes |": EndIf    
-      If flags & #__FLAG_CheckBoxes     : result$ +" #__FLAG_CheckBoxes |": EndIf     
+      If flags & #__FLAG_checkBoxes     : result$ +" #__FLAG_checkBoxes |": EndIf     
       If flags & #__FLAG_ThreeState     : result$ +" #__FLAG_ThreeState |": EndIf      
       If flags & #__FLAG_RowClickSelect : result$ +" #__FLAG_RowClickSelect |": EndIf   
       If flags & #__FLAG_RowMultiSelect : result$ +" #__FLAG_RowMultiSelect |": EndIf  
@@ -12864,9 +12715,9 @@ Module widgets
                If Constant & #PB_Button_Default        : result$ + " #PB_Button_Default |" : EndIf
                If Constant & #PB_Button_MultiLine      : result$ + " #PB_Button_MultiLine |" : EndIf
                
-            Case "checkbox", "check"
-               If Constant & #PB_CheckBox_Center       : result$ + " #PB_CheckBox_Center |" : EndIf
-               If Constant & #PB_CheckBox_Right        : result$ + " #PB_CheckBox_Right |" : EndIf
+            Case "checkBox", "check"
+               If Constant & #PB_CheckBox_Center       : result$ + " #PB_checkBox_Center |" : EndIf
+               If Constant & #PB_CheckBox_Right        : result$ + " #PB_checkBox_Right |" : EndIf
                
             Case "combobox", "combo"
                If Constant & #PB_ComboBox_Image        : result$ + " #PB_ComboBox_Image |" : EndIf
@@ -12924,7 +12775,7 @@ Module widgets
                If Constant & #PB_HyperLink_Underline   : result$ + " #PB_Hyperlink_Underline |" : EndIf
                
             Case "listicon"       
-               If Constant & #PB_ListIcon_CheckBoxes          : result$ + " #PB_ListIcon_CheckBoxes |" : EndIf
+               If Constant & #PB_ListIcon_CheckBoxes          : result$ + " #PB_ListIcon_checkBoxes |" : EndIf
                If Constant & #PB_ListIcon_ThreeState          : result$ + " #PB_ListIcon_ThreeState |" : EndIf
                If Constant & #PB_ListIcon_MultiSelect         : result$ + " #PB_ListIcon_MultiSelect |" : EndIf
                If Constant & #PB_ListIcon_GridLines           : result$ + " #PB_ListIcon_GridLines |" : EndIf
@@ -12990,7 +12841,7 @@ Module widgets
                If Constant & #PB_Tree_AlwaysShowSelection     : result$ + " #PB_Tree_AlwaysShowSelection |" : EndIf
                If Constant & #PB_Tree_NoLines                 : result$ + " #PB_Tree_NoLines |" : EndIf
                If Constant & #PB_Tree_NoButtons               : result$ + " #PB_Tree_NoButtons |" : EndIf
-               If Constant & #PB_Tree_CheckBoxes              : result$ + " #PB_Tree_CheckBoxes |" : EndIf
+               If Constant & #PB_Tree_CheckBoxes              : result$ + " #PB_Tree_checkBoxes |" : EndIf
                If Constant & #PB_Tree_ThreeState              : result$ + " #PB_Tree_ThreeState |" : EndIf
                
             Case "panel"          
@@ -13150,10 +13001,10 @@ Module widgets
                Case "#PB_Text_Center"                    : Flag = Flag | #PB_Text_Center
                Case "#PB_Text_Right"                     : Flag = Flag | #PB_Text_Right
                   ; option
-                  ; checkbox
-               Case "#PB_CheckBox_ThreeState"            : Flag = Flag | #PB_CheckBox_ThreeState
-               Case "#PB_CheckBox_Center"                : Flag = Flag | #PB_CheckBox_Center
-               Case "#PB_CheckBox_Right"                 : Flag = Flag | #PB_CheckBox_Right
+                  ; checkBox
+               Case "#PB_checkBox_ThreeState"            : Flag = Flag | #PB_CheckBox_ThreeState
+               Case "#PB_checkBox_Center"                : Flag = Flag | #PB_CheckBox_Center
+               Case "#PB_checkBox_Right"                 : Flag = Flag | #PB_CheckBox_Right
                   ; listview
                Case "#PB_ListView_ClickSelect"           : Flag = Flag | #PB_ListView_ClickSelect
                Case "#PB_ListView_MultiSelect"           : Flag = Flag | #PB_ListView_MultiSelect
@@ -13179,7 +13030,7 @@ Module widgets
                Case "#PB_Container_Single"               : Flag = Flag | #PB_Container_Single
                   ; listicon
                Case "#PB_ListIcon_AlwaysShowSelection"   : Flag = Flag | #PB_ListIcon_AlwaysShowSelection
-               Case "#PB_ListIcon_CheckBoxes"            : Flag = Flag | #PB_ListIcon_CheckBoxes
+               Case "#PB_ListIcon_checkBoxes"            : Flag = Flag | #PB_ListIcon_CheckBoxes
                Case "#PB_ListIcon_ColumnWidth"           : Flag = Flag | #PB_ListIcon_ColumnWidth
                Case "#PB_ListIcon_DisplayMode"           : Flag = Flag | #PB_ListIcon_DisplayMode
                Case "#PB_ListIcon_GridLines"             : Flag = Flag | #PB_ListIcon_GridLines
@@ -13211,7 +13062,7 @@ Module widgets
                Case "#PB_Calendar_Borderless"            : Flag = Flag | #PB_Calendar_Borderless
                   
                   ; date
-               Case "#PB_Date_CheckBox"                  : Flag = Flag | #PB_Date_CheckBox
+               Case "#PB_Date_checkBox"                  : Flag = Flag | #PB_Date_CheckBox
                Case "#PB_Date_UpDown"                    : Flag = Flag | #PB_Date_UpDown
                   
                   ; editor
@@ -13248,7 +13099,7 @@ Module widgets
                Case "#PB_Spin_ReadOnly"                  : Flag = Flag | #PB_Spin_ReadOnly
                   ; tree
                Case "#PB_Tree_AlwaysShowSelection"       : Flag = Flag | #PB_Tree_AlwaysShowSelection
-               Case "#PB_Tree_CheckBoxes"                : Flag = Flag | #PB_Tree_CheckBoxes
+               Case "#PB_Tree_checkBoxes"                : Flag = Flag | #PB_Tree_CheckBoxes
                Case "#PB_Tree_NoButtons"                 : Flag = Flag | #PB_Tree_NoButtons
                Case "#PB_Tree_NoLines"                   : Flag = Flag | #PB_Tree_NoLines
                Case "#PB_Tree_ThreeState"                : Flag = Flag | #PB_Tree_ThreeState
@@ -13277,7 +13128,7 @@ Module widgets
                      Case "#__FLAG_button_default"       : Flag = Flag | #__FLAG_button_Default
                      Case "#__FLAG_collapsed"            : Flag = Flag | #__FLAG_Collapsed          
                      Case "#__FLAG_optionboxes"          : Flag = Flag | #__FLAG_OptionBoxes      
-                     Case "#__FLAG_checkboxes"           : Flag = Flag | #__FLAG_CheckBoxes         
+                     Case "#__FLAG_checkBoxes"           : Flag = Flag | #__FLAG_checkBoxes         
                      Case "#__FLAG_threestate"           : Flag = Flag | #__FLAG_ThreeState         
                      Case "#__FLAG_rowclickselect"       : Flag = Flag | #__FLAG_RowClickSelect  
                      Case "#__FLAG_rowmultiselect"       : Flag = Flag | #__FLAG_RowMultiSelect 
@@ -13511,7 +13362,7 @@ Module widgets
                flags | #__FLAG_BorderLess
             EndIf
             ;
-         Case #__TYPE_CheckBox
+         Case #__TYPE_checkBox
             If constants::BinaryFlag( Flag, #PB_CheckBox_Right )
                flags & ~ #PB_CheckBox_Right
                flags | #__FLAG_Right
@@ -13612,7 +13463,7 @@ Module widgets
             EndIf
             If constants::BinaryFlag( Flag, #PB_Tree_CheckBoxes ) 
                flags & ~ #PB_Tree_CheckBoxes
-               flags | #__FLAG_checkboxes
+               flags | #__FLAG_checkBoxes
             EndIf
             If constants::BinaryFlag( Flag, #PB_Tree_ThreeState ) 
                flags & ~ #PB_Tree_ThreeState
@@ -13643,7 +13494,7 @@ Module widgets
             EndIf
             If constants::BinaryFlag( Flag, #PB_ListIcon_CheckBoxes )
                flags & ~ #PB_ListIcon_CheckBoxes
-               flags | #__FLAG_checkboxes
+               flags | #__FLAG_checkBoxes
             EndIf
             If constants::BinaryFlag( Flag, #PB_ListIcon_ThreeState )
                flags & ~ #PB_ListIcon_ThreeState
@@ -13841,7 +13692,7 @@ Module widgets
          *this\type = #__TYPE_String Or
          *this\type = #__TYPE_Button Or *this\type = #__TYPE_ButtonImage Or 
          *this\type = #__TYPE_Option Or
-         *this\type = #__TYPE_CheckBox Or
+         *this\type = #__TYPE_checkBox Or
          *this\type = #__TYPE_HyperLink Or 
          *this\type = #__TYPE_Frame
          
@@ -13946,7 +13797,7 @@ Module widgets
       ;
       SetPadding( *this )
       
-      If *this\type = #__TYPE_CheckBox
+      If *this\type = #__TYPE_checkBox
          If constants::BinaryFlag( *this\flagmask, #PB_CheckBox_ThreeState )
             *this\flagmask | #__FLAG_threestate 
          Else
@@ -14095,14 +13946,14 @@ Module widgets
                      *this\flagmask &~ #__FLAG_optionboxes
                   EndIf
                EndIf
-               If constants::BinaryFlag( Flag, #__FLAG_checkboxes ) 
+               If constants::BinaryFlag( Flag, #__FLAG_checkBoxes ) 
                   If state
-                     *this\flagmask | #__FLAG_checkboxes
+                     *this\flagmask | #__FLAG_checkBoxes
                   Else
-                     *this\flagmask &~ #__FLAG_checkboxes
+                     *this\flagmask &~ #__FLAG_checkBoxes
                   EndIf
                EndIf
-               If *this\flagmask & #__FLAG_checkboxes
+               If *this\flagmask & #__FLAG_checkBoxes
                   If constants::BinaryFlag( Flag, #__FLAG_threestate ) 
                      If state
                         *this\flagmask | #__FLAG_threestate
@@ -14114,7 +13965,7 @@ Module widgets
                
                ;\\
                If constants::BinaryFlag( Flag, #__FLAG_optionboxes ) Or
-                  constants::BinaryFlag( Flag, #__FLAG_checkboxes ) Or
+                  constants::BinaryFlag( Flag, #__FLAG_checkBoxes ) Or
                   constants::BinaryFlag( Flag, #__FLAG_nobuttons ) Or
                   constants::BinaryFlag( Flag, #__FLAG_nolines ) 
                   
@@ -14123,10 +13974,10 @@ Module widgets
                   If *this\countitems
                      PushListPosition( *this\row\__s( ))
                      ForEach *this\row\__s( ) : *row = @*this\row\__s( )
-                        If *this\flagmask & #__FLAG_checkboxes Or *this\flagmask & #__FLAG_optionboxes
-                           *row\checkbox.allocate( BOX )
+                        If *this\flagmask & #__FLAG_checkBoxes Or *this\flagmask & #__FLAG_optionboxes
+                           *row\checkBox.allocate( BOX )
                         Else
-                           *row\checkbox = #Null
+                           *row\checkBox = #Null
                         EndIf
                         If *this\flagmask & #__FLAG_nolines Or *this\flagmask & #__FLAG_nobuttons
                            *row\buttonbox.allocate( BOX )
@@ -14377,7 +14228,7 @@ Module widgets
                   ; enter item buttons
                   If *this\row
                      If *this\RowEntered( )
-                        *BB1 = *this\RowEntered( )\checkbox
+                        *BB1 = *this\RowEntered( )\checkBox
                         If *this\RowEntered( )\childrens
                            *BB2 = *this\RowEntered( )\buttonbox
                         EndIf
@@ -15521,7 +15372,129 @@ Module widgets
       ProcedureReturn result
    EndProcedure
    
+   Procedure GetAtPointRow(*this._s_WIDGET, mouse_x.l = -1, mouse_y.l = -1)
+   If Not *this\row : ProcedureReturn 0 : EndIf
    
+   Protected._s_ROW *row, *row_leaved
+   Protected._s_ROW *row_pressed = *this\RowPressed()
+   Protected._s_ROW *row_actived = *this\RowFocused()
+   Protected._s_ROW *row_hovered = *this\RowEntered()
+   Protected._s_BTN *hoverBTN = EnteredButton()
+   
+   Protected is_pressed = Bool(*this\mask & #__MASK_Press)
+   Protected is_dragged = Bool(MouseDrag() And is_pressed)
+   Protected is_multiselect = Bool(*this\flagmask & #__FLAG_RowMultiSelect)
+   Protected is_clickselect = Bool(*this\flagmask & #__FLAG_RowClickSelect)
+   Protected can_slide_press = Bool(Not *hoverBTN And is_pressed And Not Drag() And Not is_multiselect And Not is_clickselect)
+   Protected need_repaint = #False
+   
+   ; 1. ТРАНСФОРМАЦИЯ КООРДИНАТ МЫШИ
+   mouse_x - *this\inner_x()
+   If *this\type = #__TYPE_ListIcon
+      mouse_x - *this\scroll_x()
+   EndIf
+   mouse_y - *this\inner_y() - *this\scroll_y()
+   
+   ; 2. ОПРЕДЕЛЕНИЕ СТРОКИ ПОД КУРСОРОМ (HOVER)
+   If Not Drag() Or *this\drop
+      If MouseEnter(*this, 2)
+         *row_hovered = hover_row(*this, *row_hovered, mouse_x, mouse_y)
+      Else
+         *row_hovered = #Null
+      EndIf
+   EndIf
+   
+   ; Если строка под курсором не изменилась — выходим сразу
+   If *this\RowEntered() = *row_hovered
+      ProcedureReturn
+   EndIf
+   
+   ; 3. ЛОГИКА LEAVE (Мышь покинула предыдущую строку)
+   *row_leaved = *this\RowEntered()
+   If *row_leaved
+      *row_leaved\mask &~ #__MASK_Hover
+      
+      If can_slide_press And Not MouseRelease()
+         *row_leaved\mask &~ #__MASK_Press
+      EndIf
+      
+      If is_pressed
+         DoEvent_Status("status - press-leave-item", *this, *row_leaved\rindex, *row_leaved)
+      ElseIf *row_actived <> *row_leaved
+         DoEvent_Status("status - leave-item", *this, *row_leaved\rindex, *row_leaved)
+      EndIf
+   EndIf
+   
+   *this\RowEntered() = *row_hovered
+   
+   ; 4. ЛОГИКА ENTER (Мышь зашла на новую строку)
+   If *row_hovered
+      ; Выделение протягиванием (MultiSelect)
+      If is_dragged And is_multiselect And *row_pressed
+         Protected idx_min = *row_pressed\rindex
+         Protected idx_max = *row_hovered\rindex
+         If idx_min > idx_max : Swap idx_min, idx_max : EndIf
+         
+         PushListPosition(*this\row\__s())
+         ForEach *this\row\__s()
+            *row = @*this\row\__s()
+            If *row\mask & #__MASK_Visible
+               If *row\rindex >= idx_min And *row\rindex <= idx_max
+                  If (*row\mask & #__MASK_Press) = 0
+                     *row\mask | #__MASK_Press
+                     DoEvent_Status("status - multiselect-add", *this, *row\rindex, *row)
+                  EndIf
+               ElseIf *row\mask & #__MASK_Press
+                  *row\mask &~ #__MASK_Press
+                  DoEvent_Status("status - multiselect-remove", *this, *row\rindex, *row)
+               EndIf
+            EndIf
+         Next
+         PopListPosition(*this\row\__s())
+      EndIf
+      
+      ; Обработка наведения на новую строку
+      If (*row_hovered\mask & #__MASK_Hover) = 0
+         *row_hovered\mask | #__MASK_Hover
+         
+         If can_slide_press
+            If *row_actived And (*row_actived\mask & #__MASK_Press)
+               *row_actived\mask &~ #__MASK_Press
+               DoEvent_Status("status - leave-lostfocus", *this, *row_actived\rindex, *row_actived)
+            EndIf
+            *row_hovered\mask | #__MASK_Press
+         EndIf
+         
+         If is_pressed
+            DoEvent_Status("status - press-enter-item", *this, *row_hovered\rindex, *row_hovered)
+         ElseIf *row_actived = *row_hovered
+            need_repaint = #True
+         Else
+            DoEvent_Status("status - enter-item", *this, *row_hovered\rindex, *row_hovered)
+         EndIf
+      EndIf
+      
+      ; 5. КУРСОР ВЫШЕЛ ЗА ПРЕДЕЛЫ ВСЕХ СТРОК
+   ElseIf *row_actived And *row_actived <> *row_leaved
+      If MousePress()
+         If (*row_actived\mask & #__MASK_Press) = 0
+            *row_actived\mask | #__MASK_Press
+            DoEvent_Status("status - leave-focus", *this, *row_actived\rindex, *row_actived)
+         EndIf
+      Else
+         need_repaint = #True
+      EndIf
+   EndIf
+   
+   ; Единая точка обновления состояния и перерисовки
+   If need_repaint And *row_actived
+      repaint_set(*this)
+      Post(*this, #__EVENT_StatusChange, *row_actived\rindex, *row_actived)
+   EndIf
+EndProcedure
+
+
+
    Procedure   _DoEvent_Rows( *this._s_WIDGET, event.l, mouse_x.l = - 1, mouse_y.l = - 1 )
       Protected Repaint, dragged = Bool( MouseDrag( ) And *this\mask & #__MASK_Press ) ; 
       Protected._s_ROW *row
@@ -15813,30 +15786,30 @@ Module widgets
                      EndIf
                      
                      ; change box ( option&check )
-                     If *row_hovered\checkbox
-                        If *row_hovered\checkbox\mask & #__MASK_Hover
+                     If *row_hovered\checkBox
+                        If *row_hovered\checkBox\mask & #__MASK_Hover
                            ;
                            ; change option box state
                            If *this\flagmask & #__FLAG_optionboxes
-                              If *row_hovered\_groupbar
+                              If *row_hovered\groupRow
                                  If *row_hovered\parent 
-                                    If *row_hovered\_groupbar\parent And
-                                       *row_hovered\_groupbar\checkbox\checked
-                                       *row_hovered\_groupbar\checkbox\checked = #PB_Checkbox_Unchecked
+                                    If *row_hovered\groupRow\parent And
+                                       *row_hovered\groupRow\checkBox\checked
+                                       *row_hovered\groupRow\checkBox\checked = #PB_Checkbox_Unchecked
                                     EndIf
                                  EndIf
                                  ;
-                                 If *row_hovered\_groupbar\_groupbar <> *row_hovered
-                                    If *row_hovered\_groupbar\_groupbar
-                                       *row_hovered\_groupbar\_groupbar\checkbox\checked = #PB_Checkbox_Unchecked
+                                 If *row_hovered\groupRow\groupRow <> *row_hovered
+                                    If *row_hovered\groupRow\groupRow
+                                       *row_hovered\groupRow\groupRow\checkBox\checked = #PB_Checkbox_Unchecked
                                     EndIf
-                                    *row_hovered\_groupbar\_groupbar = *row_hovered
+                                    *row_hovered\groupRow\groupRow = *row_hovered
                                  EndIf
                               EndIf
                            EndIf
                            ;
                            ; change checked box state
-                           set_check_state_( *row_hovered\checkbox\checked, Bool(*this\flagmask & #__FLAG_threestate) )
+                           set_check_state_( *row_hovered\checkBox\checked, Bool(*this\flagmask & #__FLAG_threestate) )
                         EndIf
                      EndIf
                   Else
@@ -15966,164 +15939,137 @@ Module widgets
       
    EndProcedure
    
-   Procedure   DoEvent_Rows( *this._s_WIDGET, event.l, mouse_x.l = - 1, mouse_y.l = - 1 ) 
-      Protected Repaint
-      Protected dragged = Bool( MouseDrag( ) And *this\mask & #__MASK_Press ) 
-      Protected._s_ROW *row
-      Protected._s_ROW *row_leaved
-      Protected._s_ROW *row_hovered = *this\RowEntered( )
-      Protected._s_ROW *row_pressed = *this\RowPressed( )
-      Protected._s_ROW *row_actived = *this\RowFocused( )
-      Protected._s_BTN *hoverBTN = EnteredButton( )
-      
-      
-      ; 1. ТРАНСФОРМАЦИЯ КООРДИНАТ МЫШИ
-      If *this\type = #__TYPE_ListIcon
-         mouse_x - *this\inner_x( ) - *this\scroll_x( )
-      Else
-         mouse_x - *this\inner_x( )
-      EndIf
-      mouse_y - *this\inner_y( ) - *this\scroll_y( )
-      
-      ; Если у виджета вообще нет строк, прерываем обработку
+   Procedure _2GetAtPointRow(*this._s_WIDGET, mouse_x.l = -1, mouse_y.l = -1)
       If Not *this\row : ProcedureReturn 0 : EndIf
       
-      ; 2. ОПРЕДЕЛЕНИЕ СТРОКИ ПОД КУРСОРМ (HOVER) ИМЕННО ВНУТРИ КЛИЕНТСКОЙ ОБЛАСТИ
-      If Not Drag( ) Or *this\drop
-         If MouseEnter( *this, 2 ) 
-            *row_hovered = hover_row( *this, *this\RowEntered( ), mouse_x, mouse_y )
+      Protected._s_ROW *row, *row_leaved, *row_pressed = *this\RowPressed(), *row_actived = *this\RowFocused()
+      Protected._s_ROW *row_hovered = *this\RowEntered()
+      Protected._s_BTN *hoverBTN = EnteredButton()
+      
+      Protected is_pressed = Bool(*this\mask & #__MASK_Press)
+      Protected is_dragged = Bool(MouseDrag() And is_pressed)
+      Protected is_multiselect = Bool(*this\flagmask & #__FLAG_RowMultiSelect)
+      Protected is_clickselect = Bool(*this\flagmask & #__FLAG_RowClickSelect)
+      Protected can_slide_press = Bool(Not *hoverBTN And is_pressed And Not Drag() And Not is_multiselect And Not is_clickselect)
+      Protected need_repaint = #False
+      
+      ; 1. ТРАНСФОРМАЦИЯ КООРДИНАТ МЫШИ
+      mouse_x - *this\inner_x()
+      If *this\type = #__TYPE_ListIcon
+         mouse_x - *this\scroll_x()
+      EndIf
+      mouse_y - *this\inner_y() - *this\scroll_y()
+      
+      ; 2. ОПРЕДЕЛЕНИЕ СТРОКИ ПОД КУРСОРОМ (HOVER)
+      If Not Drag() Or *this\drop
+         If MouseEnter(*this, 2)
+            *row_hovered = hover_row(*this, *row_hovered, mouse_x, mouse_y)
          Else
             *row_hovered = #Null
          EndIf
       EndIf
       
-      ;\\
-      If *this\RowEntered( ) <> *row_hovered
+      ; Если строка под курсором не изменилась — выходим сразу
+      If *this\RowEntered() = *row_hovered
+         ProcedureReturn
+      EndIf
+      
+      ; --- 3. ЛОГИКА LEAVE (Мышь покинула предыдущую строку) ---
+      *row_leaved = *this\RowEntered()
+      If *row_leaved
+         *row_leaved\mask &~ #__MASK_Hover
          
-         ; --- ЛОГИКА LEAVE (Мышь покинула предыдущую строку) ---
-         If *this\RowEntered( )
-            *row_leaved = *this\RowEntered( )
+         If can_slide_press And Not MouseRelease()
+            *row_leaved\mask &~ #__MASK_Press
+         EndIf
+         
+         If is_pressed
+            DoEvent_Status("status - press-leave-item", *this, *row_leaved\rindex, *row_leaved)
+         ElseIf *row_actived <> *row_leaved
+            DoEvent_Status("status - leave-item", *this, *row_leaved\rindex, *row_leaved)
+         EndIf
+      EndIf
+      
+      *this\RowEntered() = *row_hovered
+      
+      ; --- 4. ЛОГИКА ENTER (Мышь зашла на новую строку) ---
+      If *row_hovered
+         ; Выделение протягиванием (MultiSelect)
+         If is_dragged And is_multiselect And *row_pressed
+            Protected idx_min = *row_pressed\rindex
+            Protected idx_max = *row_hovered\rindex
+            If idx_min > idx_max : Swap idx_min, idx_max : EndIf
             
-            ; Снимаем маску наведения
-            If *row_leaved\mask & #__MASK_Hover
-               *row_leaved\mask &~ #__MASK_Hover
-            EndIf
-            
-            ; Дополнительно: Если кнопка зажата и это НЕ мультиселект/клик-селект, 
-            ; то при уходе мыши со строки временно убираем маску нажатия
-            If Not MouseRelease( )
-               If Not *hoverBTN And ( *this\mask & #__MASK_Press And Not Drag( ) ) And 
-                  *this\flagmask & #__FLAG_RowMultiSelect = 0 And 
-                  *this\flagmask & #__FLAG_RowClickSelect = 0
-                  
-                  If *row_leaved\mask & #__MASK_Press
-                     *row_leaved\mask &~ #__MASK_Press
+            PushListPosition(*this\row\__s())
+            ForEach *this\row\__s()
+               *row = @*this\row\__s()
+               If *row\mask & #__MASK_Visible
+                  If *row\rindex >= idx_min And *row\rindex <= idx_max
+                     If (*row\mask & #__MASK_Press) = 0
+                        *row\mask | #__MASK_Press
+                        DoEvent_Status("status - multiselect-add", *this, *row\rindex, *row)
+                     EndIf
+                  ElseIf *row\mask & #__MASK_Press
+                     *row\mask &~ #__MASK_Press
+                     DoEvent_Status("status - multiselect-remove", *this, *row\rindex, *row)
                   EndIf
                EndIf
+            Next
+            PopListPosition(*this\row\__s())
+         EndIf
+         
+         ; Обработка наведения на новую строку
+         If (*row_hovered\mask & #__MASK_Hover) = 0
+            *row_hovered\mask | #__MASK_Hover
+            
+            If can_slide_press
+               If *row_actived And (*row_actived\mask & #__MASK_Press)
+                  *row_actived\mask &~ #__MASK_Press
+                  DoEvent_Status("status - leave-lostfocus", *this, *row_actived\rindex, *row_actived)
+               EndIf
+               *row_hovered\mask | #__MASK_Press
             EndIf
             
-            ; Автоматически обновляет цвет покинутой строки на основе снятой маски Hover
-            If *this\mask & #__MASK_Press
-               DoEvent_Status( "status - press-leave-item", *this, *row_leaved\rindex, *row_leaved )
+            If is_pressed
+               DoEvent_Status("status - press-enter-item", *this, *row_hovered\rindex, *row_hovered)
+            ElseIf *row_actived = *row_hovered
+               need_repaint = #True
             Else
-               If *row_actived <> *row_leaved
-                  DoEvent_Status( "status - leave-item", *this, *row_leaved\rindex, *row_leaved )
-               EndIf
+               DoEvent_Status("status - enter-item", *this, *row_hovered\rindex, *row_hovered)
             EndIf
          EndIf
          
-         ; Обновляем указатель на текущую строку под курсором в структуре виджета
-         *this\RowEntered( ) = *row_hovered
-         
-         ; --- ЛОГИКА ENTER (Мышь зашла на новую строку) ---
-         If *row_hovered
-            
-            ; [Здесь начнется обработка MultiSelect при зажатой мыши из Части 2]
-            ; ВЫДЕЛЕНИЕ ПРОТЯГИВАНИЕМ (MultiSelect при зажатой мыши)
-            If dragged And (*this\flagmask & #__FLAG_RowMultiSelect) And *row_pressed
-               
-               PushListPosition(*this\row\__s( ))
-               ForEach *this\row\__s( )
-                  *row = @*this\row\__s( )
-                  
-                  If *row\mask & #__MASK_Visible
-                     ; Проверяем, находится ли строка между начальной (pressed) и текущей (hovered)
-                     If Bool((*row_pressed\rindex >= *row\rindex And *row_hovered\rindex <= *row\rindex) Or
-                             (*row_pressed\rindex <= *row\rindex And *row_hovered\rindex >= *row\rindex))
-                        
-                        ; Строка внутри диапазона протягивания — добавляем маску нажатия
-                        If (*row\mask & #__MASK_Press) = 0
-                           *row\mask | #__MASK_Press
-                           DoEvent_Status("status - multiselect-add", *this, *row\rindex, *row)
-                        EndIf
-                        
-                     Else
-                        ; Строка вышла из диапазона протягивания — снимаем маску нажатия
-                        If *row\mask & #__MASK_Press
-                           *row\mask &~ #__MASK_Press
-                           DoEvent_Status("status - multiselect-remove", *this, *row\rindex, *row)
-                        EndIf
-                     EndIf
-                  EndIf
-                  
-               Next
-               PopListPosition(*this\row\__s( ))
-            EndIf
-            
-            ; Выставляем маску наведения, если её ещё нет
-            If *row_hovered\mask & #__MASK_Hover = 0
-               *row_hovered\mask | #__MASK_Hover
-               
-               ; Если мышь зажата в процессе перемещения по спискам (и это разрешено флагами) — 
-               ; временно добавляем маску Press, чтобы строка подсветилась как при нажатии
-               If Not *hoverBTN And ( *this\mask & #__MASK_Press And Not Drag( ) ) And 
-                     *this\flagmask & #__FLAG_RowMultiSelect = 0 And 
-                     *this\flagmask & #__FLAG_RowClickSelect = 0
-                  
-                  If *row_actived And
-                     *row_actived\mask & #__MASK_Press
-                     *row_actived\mask &~ #__MASK_Press 
-                     DoEvent_Status( "status - leave-lostfocus", *this, *row_actived\rindex, *row_actived )
-                  EndIf
-                  
-                  *row_hovered\mask | #__MASK_Press
-               EndIf
-               
-               ; Автоматически рассчитывает и применяет нужный ColorState для новой строки
-               If *this\mask & #__MASK_Press
-                  DoEvent_Status( "status - press-enter-item", *this, *row_hovered\rindex, *row_hovered )
-               Else
-                  If *row_actived = *row_hovered
-                      If *row_actived <> *row_leaved
-                        ; If *row_leaved
-                            ; Debug 555
-                             repaint_set( *this )
-                            Post(*this, #__EVENT_StatusChange, *row_actived\rindex, *row_actived)
-                        ; EndIf
-                      EndIf
-                  Else
-                     DoEvent_Status( "status - enter-item", *this, *row_hovered\rindex, *row_hovered )
-                  EndIf
-               EndIf
+         ; --- 5. КУРСОР ВЫШЕЛ ЗА ПРЕДЕЛЫ ВСЕХ СТРОК ---
+      ElseIf *row_actived And *row_actived <> *row_leaved
+         If MousePress()
+            If (*row_actived\mask & #__MASK_Press) = 0
+               *row_actived\mask | #__MASK_Press
+               DoEvent_Status("status - leave-focus", *this, *row_actived\rindex, *row_actived)
             EndIf
          Else
-            ; Курсор вышел вообще за пределы всех строк
-            If *row_actived 
-               If *row_actived <> *row_leaved
-                  If MousePress( )
-                     If *row_actived\mask & #__MASK_Press = 0
-                        *row_actived\mask | #__MASK_Press  
-                        DoEvent_Status( "status - leave-focus", *this, *row_actived\rindex, *row_actived )
-                     EndIf
-                  Else
-                      repaint_set( *this )
-                     Post(*this, #__EVENT_StatusChange, *row_actived\rindex, *row_actived)
-                  EndIf
-               EndIf
-            EndIf
+            need_repaint = #True
          EndIf
-         
       EndIf
+      
+      ; Единая точка обновления состояния и перерисовки
+      If need_repaint And *row_actived
+         repaint_set(*this)
+         Post(*this, #__EVENT_StatusChange, *row_actived\rindex, *row_actived)
+      EndIf
+   EndProcedure
+
+   Procedure   DoEvent_Rows( *this._s_WIDGET, event.l, mouse_x.l = - 1, mouse_y.l = - 1 ) 
+      GetAtPointRow( *this, mouse_x, mouse_y)
+      
+      Protected Repaint
+      Protected dragged = Bool( MouseDrag( ) And *this\mask & #__MASK_Press ) 
+      Protected._s_ROW *row
+      Protected._s_ROW *row_leaved
+      Protected._s_ROW *row_group
+      Protected._s_ROW *row_hovered = *this\RowEntered( )
+      Protected._s_ROW *row_pressed = *this\RowPressed( )
+      Protected._s_ROW *row_actived = *this\RowFocused( )
+      Protected._s_BTN *hoverBTN = EnteredButton( )
       
       ;\\
       If event = #__EVENT_Focus
@@ -16173,66 +16119,64 @@ Module widgets
       
       If event = #__EVENT_Down
          If MouseButtons( ) & #PB_Canvas_LeftButton
-            If *hoverBTN
-               ; change collapsed/expanded button state
-               If *this\flagmask & #__FLAG_nobuttons
-                  If *row_hovered\buttonbox
+            If *row_hovered 
+               If *hoverBTN
+                  ; 1 change collapsed/expanded button state
+                  If *row_hovered\buttonbox And
+                     *this\flagmask & #__FLAG_NoButtons
                      If *row_hovered\buttonbox\mask & #__MASK_Hover
-                        If *row_hovered\buttonbox\checked
-                           ; развернул список
-                           If SetItemState( *this, *row_hovered\rindex, (GetItemState(*this, *row_hovered\rindex) &~ #PB_Tree_Collapsed) | #PB_Tree_Expanded )
-                              Post( *this, #__EVENT_StatusChange, *row_hovered\rindex, *row_hovered )
-                           EndIf
-                        Else
-                           ; свернул список
-                           If SetItemState( *this, *row_hovered\rindex, (GetItemState(*this, *row_hovered\rindex) &~ #PB_Tree_Expanded) | #PB_Tree_Collapsed )
-                              Post( *this, #__EVENT_StatusChange, *row_hovered\rindex, *row_hovered )
-                           EndIf
+                        If ExpandRow( *this, *row_hovered )
+                          Post(*this, #__EVENT_StatusChange, *row_hovered\rindex, *row_hovered)
+;                            *row_hovered\mask | #__MASK_Press
+;                            *row_pressed = *row_hovered
+;                   *this\RowPressed( ) = *row_hovered
+;                   *row_pressed\mask | #__MASK_Press
+;                   DoEvent_Status( "status - expand-item", *this, *row_hovered\rindex, *row_hovered )
+;                          ; *row_hovered\mask &~ #__MASK_Press
                         EndIf
                      EndIf
                   EndIf
-               EndIf
-               
-               ; change box ( option&check )
-               If *row_hovered\checkbox
-                  If *row_hovered\checkbox\mask & #__MASK_Hover
-                     ;
-                     ; change option box state
-                     If *this\flagmask & #__FLAG_optionboxes
-                        If *row_hovered\_groupbar
-                           If *row_hovered\parent 
-                              If *row_hovered\_groupbar\parent And
-                                 *row_hovered\_groupbar\checkbox\checked
-                                 *row_hovered\_groupbar\checkbox\checked = #PB_Checkbox_Unchecked
+                  
+                  ; 2 change box ( option&check )
+                  If *row_hovered\checkBox
+                     If *row_hovered\checkBox\mask & #__MASK_Hover
+                        ;
+                        ; change option box state
+                        If *this\flagmask & #__FLAG_OptionBoxes
+                           *row_group = *row_hovered\groupRow
+                           If *row_group
+                              If *row_hovered\parent 
+                                 If *row_group\parent And
+                                    *row_group\checkBox\checked
+                                    *row_group\checkBox\checked = #PB_Checkbox_Unchecked
+                                 EndIf
                               EndIf
-                           EndIf
-                           ;
-                           If *row_hovered\_groupbar\_groupbar <> *row_hovered
-                              If *row_hovered\_groupbar\_groupbar
-                                 *row_hovered\_groupbar\_groupbar\checkbox\checked = #PB_Checkbox_Unchecked
+                              ;
+                              If *row_group\groupRow <> *row_hovered
+                                 If *row_group\groupRow
+                                    *row_group\groupRow\checkBox\checked = #PB_Checkbox_Unchecked
+                                 EndIf
+                                 *row_group\groupRow = *row_hovered
                               EndIf
-                              *row_hovered\_groupbar\_groupbar = *row_hovered
                            EndIf
                         EndIf
+                        ;
+                        ; change checked box state
+                        set_check_state_( *row_hovered\checkBox\checked, Bool(*this\flagmask & #__FLAG_ThreeState) )
                      EndIf
-                     ;
-                     ; change checked box state
-                     set_check_state_( *row_hovered\checkbox\checked, Bool(*this\flagmask & #__FLAG_threestate) )
                   EndIf
-               EndIf
-            Else
-               If *row_hovered 
+               Else
                   *row_pressed = *row_hovered
                   *this\RowPressed( ) = *row_hovered
-                  *row_hovered\mask | #__MASK_Press
+                  *row_pressed\mask | #__MASK_Press
                   
-                  If *row_actived <> *row_hovered
+                  If *row_actived <> *row_pressed
                      ; Ваша фишка: временно гасим старый фокус
                      If *row_actived And *row_actived\mask & #__MASK_Active
                         DoEvent_Status( "status - press-deactive-item", *this, *row_actived\rindex, *row_actived )
                      EndIf
                      
-                     DoEvent_Status( "status - press-item", *this, *row_hovered\rindex, *row_hovered )
+                     DoEvent_Status( "status - press-active-item", *this, *row_pressed\rindex, *row_pressed )
                   EndIf
                EndIf
             EndIf
@@ -16243,26 +16187,41 @@ Module widgets
          If MouseButtons( ) & #PB_Canvas_LeftButton
             If *row_pressed
                ; Снимаем маску нажатия, так как кнопка отпущена
-               *row_pressed\mask &~ #__MASK_Press
-               
-              If *row_hovered
-                  *row_hovered\mask &~ #__MASK_Press
+               If *row_pressed\mask & #__MASK_Press
+                  *row_pressed\mask &~ #__MASK_Press
                   
-                 ; Если отпустили мышь над другой строкой — окончательно переносим фокус
-                If *row_actived <> *row_hovered
-                     If *row_actived
-                        *this\RowFocused( ) = #Null
-                        *row_actived\mask &~ #__MASK_Active
-                        DoEvent_Status( "status - up-lostfocused-item", *this, *row_actived\rindex, *row_actived )
+                  If  Not *hoverBTN
+                     If *row_hovered
+                        *row_hovered\mask &~ #__MASK_Press
+                        SetState( *this, *row_hovered\index)
+                        
+                        ;                         ; Если отпустили мышь над другой строкой — окончательно переносим фокус
+                        ;                         If *row_actived <> *row_hovered 
+                        ;                            If *row_actived
+                        ;                               *this\RowFocused( ) = #Null
+                        ;                               *row_actived\mask &~ #__MASK_Active
+                        ;                               DoEvent_Status( "status - up-lostfocus-item", *this, *row_actived\rindex, *row_actived )
+                        ;                            EndIf
+                        ;                            
+                        ;                            ; Делаем новую строку активной
+                        ;                            *row_actived = *row_hovered
+                        ;                            *this\RowFocused( ) = *row_hovered
+                        ;                            *row_actived\mask | #__MASK_Active
+                        ;                            
+                        ;                            DoEvent_Status( "status - up-focus-item", *this, *row_actived\rindex, *row_actived )
+                        ;                            DoEvents( *this, #__EVENT_Change, *row_actived\rindex, *row_actived )
+                        ;                         EndIf
                      EndIf
+                  EndIf
+               Else
+                  If  Not *hoverBTN
+                     DoEvent_Status( "status - up-press-item", *this, *row_pressed\rindex, *row_pressed )
                      
-                     ; Делаем новую строку активной
-                     *row_actived = *row_hovered
-                     *this\RowFocused( ) = *row_hovered
-                     *row_hovered\mask | #__MASK_Active
-                     
-                     DoEvent_Status( "status - up-focused-item", *this, *row_hovered\rindex, *row_hovered )
-                     DoEvents( *this, #__EVENT_Change, *row_hovered\rindex, *row_hovered )
+                     If *row_hovered
+                        *row_hovered\mask &~ #__MASK_Press
+                        DoEvent_Status( "status - up-hover-item", *this, *row_hovered\rindex, *row_hovered )
+                        ;  *row_hovered\mask | #__MASK_Press
+                     EndIf
                   EndIf
                EndIf
                
@@ -17117,7 +17076,7 @@ Module widgets
                   EndIf
                EndIf
                
-            Case #__TYPE_CheckBox
+            Case #__TYPE_checkBox
                If event = #__EVENT_LeftClick Or
                   event = #__EVENT_left2Click Or
                   event = #__EVENT_left3Click
@@ -19029,14 +18988,14 @@ Module widgets
                EndIf
                
                If *this\flagmask & #__FLAG_optionboxes 
-                  If *row\checkbox
-                     *row\checkbox\width = box_size
-                     *row\checkbox\height = box_size
+                  If *row\checkBox
+                     *row\checkBox\width = box_size
+                     *row\checkBox\height = box_size
                      If *row\parent
                         *this\row\sublevelpos - *this\row\sublevelsize
                      EndIf
-                     *row\checkbox\x = *this\row\sublevelpos 
-                     *row\checkbox\y = *row\height - ( *row\height + *row\checkbox\height ) / 2
+                     *row\checkBox\x = *this\row\sublevelpos 
+                     *row\checkBox\y = *row\height - ( *row\height + *row\checkBox\height ) / 2
                      *this\row\sublevelpos + box_size
                   EndIf
                   If *row\buttonbox 
@@ -19054,19 +19013,19 @@ Module widgets
                      *row\buttonbox\y = *row\height - ( *row\height + *row\buttonbox\height ) / 2
                      *this\row\sublevelpos + (button_pos + button_size)
                   EndIf
-                  If *this\flagmask & #__FLAG_checkboxes
-                     If *row\checkbox
-                        *row\checkbox\width = box_size
-                        *row\checkbox\height = box_size
-                        *row\checkbox\x = *this\row\sublevelpos
-                        *row\checkbox\y = *row\height - ( *row\height + *row\checkbox\height ) / 2
+                  If *this\flagmask & #__FLAG_checkBoxes
+                     If *row\checkBox
+                        *row\checkBox\width = box_size
+                        *row\checkBox\height = box_size
+                        *row\checkBox\x = *this\row\sublevelpos
+                        *row\checkBox\y = *row\height - ( *row\height + *row\checkBox\height ) / 2
                         *this\row\sublevelpos + box_size
                      EndIf
                   EndIf
                EndIf
                
                If *row\img\imageID
-                  If *this\flagmask & #__FLAG_checkboxes Or *this\flagmask & #__FLAG_optionboxes
+                  If *this\flagmask & #__FLAG_checkBoxes Or *this\flagmask & #__FLAG_optionboxes
                      *this\row\sublevelpos + padding_size
                   EndIf
                   *row\img\x = *this\row\sublevelpos 
@@ -19092,7 +19051,7 @@ Module widgets
             ;\\ Расчет ширины скролла
             If *this\type = #__TYPE_ListIcon
                *row\img\x - DPIScaled(8)
-               If *row\checkbox : *row\checkbox\x - box_size : EndIf
+               If *row\checkBox : *row\checkBox\x - box_size : EndIf
                scroll_width = ( *this\__columns( )\pos + *this\__columns( )\size + *this\row\sublevelpos + padding_size + *this\MarginLine( )\width )
             Else
                scroll_width = ( *row\x + *row\txt(0)\x + *row\txt(0)\width + *this\row\sellastsize + padding_size )
@@ -19900,7 +19859,7 @@ Module widgets
          If #__TYPE_Option = *this\type
             _box_type_ = 1
          EndIf
-         If #__TYPE_CheckBox = *this\type
+         If #__TYPE_checkBox = *this\type
             _box_type_ = 3
          EndIf
          If _box_type_
@@ -19926,7 +19885,7 @@ Module widgets
                EndIf
             EndIf
             
-            __draw_checkbox( _box_type_, *this\Toggle( ), 0,0, *this\Toggle( )\round )
+            __draw_checkBox( _box_type_, *this\Toggle( ), 0,0, *this\Toggle( )\round )
          EndIf
       EndIf
       
@@ -20352,20 +20311,20 @@ Module widgets
          EndIf
          
          ; ====================================================================
-         ; ЭТАП 3: Отрисовка кнопок (Checkboxes / Optionboxes)
+         ; ЭТАП 3: Отрисовка кнопок (checkBoxes / Optionboxes)
          ; ====================================================================
-         If *this\flagmask & #__FLAG_checkboxes Or *this\flagmask & #__FLAG_optionboxes
+         If *this\flagmask & #__FLAG_checkBoxes Or *this\flagmask & #__FLAG_optionboxes
             If StartNextRow(*row, *this\row)
-                  If *row\checkbox
+                  If *row\checkBox
                      X = row_x_(*this, *row) - _scroll_x_
                      Y = row_y_(*this, *row) - _scroll_y_
                      
                      If *row\parent And *this\flagmask & #__FLAG_optionboxes
                         ; option box
-                        __draw_checkbox(1, *row\checkbox, X, Y, *row\checkbox\width)
+                        __draw_checkBox(1, *row\checkBox, X, Y, *row\checkBox\width)
                      Else
                         ; check box
-                        __draw_checkbox(3, *row\checkbox, X, Y, DPIScaled(2))
+                        __draw_checkBox(3, *row\checkBox, X, Y, DPIScaled(2))
                      EndIf
                   EndIf
                StopNextRow(*row, *this\row)
@@ -20852,7 +20811,7 @@ Module widgets
                *this\type = #__TYPE_Button Or *this\type = #__TYPE_ButtonImage Or *this\type = #__TYPE_Image Or
                *this\type = #__TYPE_Option Or
                *this\type = #__TYPE_Progress Or
-               *this\type = #__TYPE_CheckBox Or
+               *this\type = #__TYPE_checkBox Or
                *this\type = #__TYPE_HyperLink Or
                *this\type = #__TYPE_ComboBox 
                
@@ -20914,7 +20873,7 @@ Module widgets
                      Case #__TYPE_ButtonImage: Draw_Button( *this )
                      Case #__TYPE_Button     : Draw_Button( *this )
                      Case #__TYPE_Option     : Draw_Button( *this )
-                     Case #__TYPE_CheckBox   : Draw_Button( *this )
+                     Case #__TYPE_checkBox   : Draw_Button( *this )
                      Case #__TYPE_HyperLink  : Draw_Button( *this )
                      Case #__TYPE_ComboBox   : Draw_Button( *this )
                         
@@ -21507,7 +21466,7 @@ Module widgets
          ; set dafault multiline text
          If Text
             If Type = #__TYPE_Option Or
-               Type = #__TYPE_CheckBox Or
+               Type = #__TYPE_checkBox Or
                Type = #__TYPE_HyperLink
                
                If CountString( Text, #LF$ )
@@ -21546,7 +21505,7 @@ Module widgets
             ElseIf Type = #__TYPE_ComboBox Or 
                    Type = #__TYPE_String Or
                    Type = #__TYPE_Option Or
-                   Type = #__TYPE_CheckBox
+                   Type = #__TYPE_checkBox
                
                Flag | #__FLAG_Left
             EndIf
@@ -21605,9 +21564,9 @@ Module widgets
                *this\Toggle( ).allocate( BOX )
             EndIf
          EndIf
-         If Type = #__TYPE_CheckBox Or Type = #__TYPE_Option
+         If Type = #__TYPE_checkBox Or Type = #__TYPE_Option
             *this\Toggle( ).allocate( BOX )
-            If Type = #__TYPE_CheckBox 
+            If Type = #__TYPE_checkBox 
                *this\Toggle( )\round  = dpi_scale_two
             EndIf
             If Type = #__TYPE_Option
@@ -21729,7 +21688,7 @@ Module widgets
             *this\type = #__TYPE_String Or
             *this\type = #__TYPE_Button Or *this\type = #__TYPE_ButtonImage Or
             *this\type = #__TYPE_Option Or
-            *this\type = #__TYPE_CheckBox Or
+            *this\type = #__TYPE_checkBox Or
             *this\type = #__TYPE_HyperLink
             
             *this\lineColor = $FFC0C0C0
@@ -21776,7 +21735,7 @@ Module widgets
          EndIf
          If *this\type = #__TYPE_Text Or
             *this\type = #__TYPE_Option Or
-            *this\type = #__TYPE_CheckBox Or
+            *this\type = #__TYPE_checkBox Or
             *this\type = #__TYPE_HyperLink Or
             *this\type = #__TYPE_MenuBar Or
             *this\type = #__TYPE_Track Or 
@@ -21823,7 +21782,7 @@ Module widgets
          *this\type = #__TYPE_String Or
          *this\type = #__TYPE_Button Or *this\type = #__TYPE_ButtonImage Or
          *this\type = #__TYPE_Option Or
-         *this\type = #__TYPE_CheckBox Or
+         *this\type = #__TYPE_checkBox Or
          *this\type = #__TYPE_HyperLink
          
          *this\row.allocate( ROWS )
@@ -22265,7 +22224,7 @@ Module widgets
          *this\type = #__TYPE_String Or
          *this\type = #__TYPE_Button Or 
          *this\type = #__TYPE_Option Or
-         *this\type = #__TYPE_CheckBox Or
+         *this\type = #__TYPE_checkBox Or
          *this\type = #__TYPE_HyperLink Or 
          *this\type = #__TYPE_Frame
          
@@ -22708,8 +22667,8 @@ Module widgets
    EndProcedure
    
    Procedure.i ListIcon( X.l, Y.l, Width.l, Height.l, ColumnTitle.s, ColumnWidth.i, Flag.q = 0 )
-      ; #PB_ListIcon_CheckBoxes          ; Display checkboxes in the first column.
-      ; #PB_ListIcon_ThreeState          ; The checkboxes can have an "in between" state.
+      ; #PB_ListIcon_checkBoxes          ; Display checkBoxes in the first column.
+      ; #PB_ListIcon_ThreeState          ; The checkBoxes can have an "in between" state.
       ; #PB_ListIcon_MultiSelect         ; Enable multiple selection.
       ; #PB_ListIcon_GridLines           ; Display separator lines between rows And columns.
       ; #PB_ListIcon_FullRowSelect       ; The selection covers the full row instead of the first column (Windows And QT only).
@@ -22798,7 +22757,7 @@ Module widgets
    EndProcedure
    
    Procedure.i CheckBox( X.l, Y.l, Width.l, Height.l, Text.s, Flag.q = 0 )
-      ProcedureReturn Create( Opened( ), #PB_Compiler_Procedure, #__TYPE_CheckBox, X, Y, Width, Height, Text, Flag, 0, 0, 0, #__bar_button_size, 0, 0 )
+      ProcedureReturn Create( Opened( ), #PB_Compiler_Procedure, #__TYPE_checkBox, X, Y, Width, Height, Text, Flag, 0, 0, 0, #__bar_button_size, 0, 0 )
    EndProcedure
    
    Procedure.i ComboBox( X.l, Y.l, Width.l, Height.l, Flag.q = 0 )
@@ -23230,7 +23189,7 @@ Module widgets
          Case #__TYPE_Text      : *this = Text( 0, 0, Width, Height, Text, Flag )
          Case #__TYPE_Button    : *this = Button( 0, 0, Width, Height, Text, Flag )
          Case #__TYPE_Option    : *this = Option( 0, 0, Width, Height, Text, Flag )
-         Case #__TYPE_CheckBox  : *this = CheckBox( 0, 0, Width, Height, Text, Flag )
+         Case #__TYPE_checkBox  : *this = CheckBox( 0, 0, Width, Height, Text, Flag )
          Case #__TYPE_HyperLink : *this = HyperLink( 0, 0, Width, Height, Text, *param1, Flag )
          Case #__TYPE_Splitter  : *this = Splitter( 0, 0, Width, Height, *param1, *param2, Flag )
       EndSelect
@@ -24076,6 +24035,7 @@ Module widgets
             ;Debug *this\class
             Protected pw, ph
             Protected piw, pih
+            Protected ScaleX.d, ScaleY.d
             
             If StartEnum( *this )
                If widget( )\parent <> *this
@@ -24084,13 +24044,13 @@ Module widgets
                ;
                If Not is_scrollbars_( widget( ))
                   If widget( )\align
-                     piw = (widget( )\parent\inner_width( ))
-                     pih = (widget( )\parent\inner_height( ))
+                     piw = widget( )\parent\inner_width( )
+                     pih = widget( )\parent\inner_height( )
                      
                      ;\\
                      If widget( )\parent\align
-                        pw = ( piw - widget( )\parent\align\width )
-                        ph = ( pih - widget( )\parent\align\height )
+                        pw = piw - widget( )\parent\align\width
+                        ph = pih - widget( )\parent\align\height
                      EndIf
                      
                      ;\\
@@ -24099,20 +24059,13 @@ Module widgets
                      If widget( )\align\left > 0
                         X = widget( )\align\x
                         If widget( )\align\right < 0
-                           If widget( )\align\left = 0
-                              X + pw / 2
-                           EndIf
                            Width = (( widget( )\align\x + widget( )\align\width ) + pw / 2 ) - X
                         EndIf
                      EndIf
-                     If Not widget( )\align\right
+                     If widget( )\align\right = 0
                         Width = widget( )\align\width
-                        
-                        If Not widget( )\align\left
-                           X = widget( )\align\x
-                           If widget( )\align\left = 0
-                              X + pw / 2
-                           EndIf
+                        If widget( )\align\left = 0
+                           X = widget( )\align\x + pw / 2
                            Width = (( widget( )\align\x + widget( )\align\width ) + pw / 2 ) - X
                         EndIf
                      EndIf
@@ -24120,7 +24073,7 @@ Module widgets
                         X = widget( )\align\x
                         If widget( )\align\left < 0
                            ;\\ ( left = proportional & right = 1 )
-                           X     = widget( )\align\x + pw / 2
+                           X = widget( )\align\x + pw / 2
                            Width = (( widget( )\align\x + widget( )\align\width ) + pw ) - X
                         Else
                            If widget( )\align\left = 0
@@ -24132,7 +24085,11 @@ Module widgets
                      ;\\ horizontal proportional
                      If ( widget( )\align\left < 0 And widget( )\align\right <= 0 ) Or
                         ( widget( )\align\right < 0 And widget( )\align\left <= 0 )
-                        Protected ScaleX.d = piw / widget( )\parent\align\width
+                        If widget( )\parent\align And widget( )\parent\align\width > 0
+                           ScaleX = piw / widget( )\parent\align\width
+                        Else
+                           ScaleX = 1.0
+                        EndIf
                         Width = ScaleX * widget( )\align\width
                         ;\\ center proportional
                         If widget( )\align\left < 0 And widget( )\align\right < 0
@@ -24140,7 +24097,7 @@ Module widgets
                         ElseIf widget( )\align\left < 0 And widget( )\align\right = 0
                            ;\\ right proportional
                            X = piw - ( widget( )\parent\align\width - widget( )\align\x - widget( )\align\width ) - Width
-                        ElseIf ( widget( )\align\right < 0 And widget( )\align\left = 0 )
+                        ElseIf widget( )\align\right < 0 And widget( )\align\left = 0
                            ;\\ left proportional
                            X = widget( )\align\x
                         EndIf
@@ -24152,20 +24109,13 @@ Module widgets
                      If widget( )\align\top > 0
                         Y = widget( )\align\y
                         If widget( )\align\bottom < 0
-                           If widget( )\align\top = 0
-                              Y + ph / 2
-                           EndIf
                            Height = (( widget( )\align\y + widget( )\align\height ) + ph / 2 ) - Y
                         EndIf
                      EndIf
-                     If Not widget( )\align\bottom
+                     If widget( )\align\bottom = 0
                         Height = widget( )\align\height
-                        
-                        If Not widget( )\align\top
-                           Y = widget( )\align\y
-                           If widget( )\align\top = 0
-                              Y + ph / 2
-                           EndIf
+                        If widget( )\align\top = 0
+                           Y = widget( )\align\y + ph / 2
                            Height = (( widget( )\align\y + widget( )\align\height ) + ph / 2 ) - Y
                         EndIf
                      EndIf
@@ -24173,7 +24123,7 @@ Module widgets
                         Y = widget( )\align\y
                         If widget( )\align\top < 0
                            ;\\ ( top = proportional & bottom = 1 )
-                           Y      = widget( )\align\y + ph / 2
+                           Y = widget( )\align\y + ph / 2
                            Height = (( widget( )\align\y + widget( )\align\height ) + ph ) - Y
                         Else
                            If widget( )\align\top = 0
@@ -24185,7 +24135,11 @@ Module widgets
                      ;\\ vertical proportional
                      If ( widget( )\align\top < 0 And widget( )\align\bottom <= 0 ) Or
                         ( widget( )\align\bottom < 0 And widget( )\align\top <= 0 )
-                        Protected ScaleY.d = pih / widget( )\parent\align\height
+                        If widget( )\parent\align And widget( )\parent\align\height > 0
+                           ScaleY = pih / widget( )\parent\align\height
+                        Else
+                           ScaleY = 1.0
+                        EndIf
                         Height = ScaleY * widget( )\align\height
                         ;\\ center proportional
                         If widget( )\align\top < 0 And widget( )\align\bottom < 0
@@ -24193,14 +24147,14 @@ Module widgets
                         ElseIf widget( )\align\top < 0 And widget( )\align\bottom = 0
                            ;\\ bottom proportional
                            Y = pih - ( widget( )\parent\align\height - widget( )\align\y - widget( )\align\height ) - Height
-                        ElseIf ( widget( )\align\bottom < 0 And widget( )\align\top = 0 )
+                        ElseIf widget( )\align\bottom < 0 And widget( )\align\top = 0
                            ;\\ top proportional
                            Y = widget( )\align\y
                         EndIf
                      EndIf
                      
                      ;
-                     Resize( widget( ), (X), (Y), (Width), (Height), 0 )
+                     Resize( widget( ), X, Y, Width, Height, 0 )
                   Else
                      Resize( widget( ), #PB_Ignore, #PB_Ignore, #PB_Ignore, #PB_Ignore )
                   EndIf
@@ -24211,7 +24165,7 @@ Module widgets
             
          EndIf
       EndIf
-      
+ 
       ;
       ProcedureReturn Bool( Change_x Or Change_y Or Change_width Or Change_height )
    EndProcedure
@@ -24349,316 +24303,7 @@ Module widgets
    EndProcedure
    
    
-   Procedure.i _Post( *this._s_ROOT, event.l, *btn = #PB_All, *data = #Null )
-      Protected result, __widget = #Null, __event = #PB_All, __item = #PB_All, __data = #Null
-      Protected._s_BINDDATA *bind
-      
-      If *this > 0 
-         If *this\parent
-            Protected *hoverTAB._s_TAB = parentTabEntered( *this )
-         EndIf
-         
-         If is_bar_( *this )
-            If event = #__EVENT_LeftClick Or
-               event = #__EVENT_Change
-               If *hoverTAB
-                  *btn = *hoverTAB\ID
-               EndIf
-            EndIf
-            ;
-            If *btn < 0
-               ProcedureReturn 0
-            EndIf
-         EndIf
-         
-         ;\\ 
-         __widget = EventWidget( )
-         __event  = WidgetEvent( )
-         __item   = WidgetEventItem( )
-         __data   = WidgetEventData( )
-         
-         ;\\
-         EventWidget( )     = *this
-         WidgetEvent( )     = event
-         WidgetEventItem( ) = *btn
-         WidgetEventData( ) = *data
-         
-         ;\\ menu send bind event
-         If is_bar_( *this ) 
-            If *this\menu\parent
-               While *this\menu\parent
-                  *this = *this\menu\parent
-               Wend
-               EventWidget( )     = *this
-            Else
-               If *hoverTAB And *hoverTAB\childrens
-                  ; Чтобы не отправлять события
-                  ProcedureReturn 0
-               EndIf
-            EndIf
-            
-            ; Debug ""+ *btn +" "+ *this\class +" POSTMENU "
-         EndIf
-         
-         ;          If event = #__EVENT_ScrollChange
-         ;             Debug "send - "+*this\class +" "+ EventString(event) +" "+ *btn +" "+ *data
-         ;          EndIf
-         If event = #__EVENT_Free 
-            result = #False
-         Else
-            result = #True
-         EndIf
-         
-         ; examples bars area
-         If event = #__EVENT_MouseMove
-            If widgets::__GUI\DrawingRoot
-               StopDraw( )
-               widgets::__GUI\DrawingRoot = 0
-            EndIf
-         EndIf    
-         
-         ;\\
-         If Not is_root_( *this )
-            ;\\ 1 call (current-widget) bind event function
-            ForEach __GUI\event\binds( ) : *bind = @__GUI\event\binds( )
-               If *bind\widget = *this 
-                  If *bind\type = event 
-                     ; Debug ""+EventString(*bind\type)+" "+ListSize(*bind)
-                     If Not ( *bind\item >= 0 And *bind\item <> *btn )
-                        If *bind\data
-                           WidgetEventData( ) = *bind\data
-                        EndIf
-                        
-                        result = *bind\function( )
-                        If result = #PB_Ignore
-                           Break
-                        EndIf
-                     EndIf
-                  EndIf
-               EndIf
-            Next
-            ;
-            If event = #__EVENT_ScrollChange
-               Debug "send - "+*this\class +" "+ EventString(event) +" "+ *btn +" "+ *data
-            EndIf
-            
-            ;\\ 2 call (current-widget-window) bind event function
-            If *this\window 
-               If result <> #PB_Ignore
-                  If Not is_root_( *this\window )
-                     ForEach __GUI\event\binds( ) : *bind = @__GUI\event\binds( )
-                        If *bind\widget = *this\window  
-                           If *bind\type = event And
-                              Not ( *bind\item >= 0 And *bind\item <> *btn )
-                              result = *bind\function( )
-                              If result = #PB_Ignore
-                                 Break
-                              EndIf
-                           EndIf
-                        EndIf
-                     Next
-                  EndIf
-               EndIf
-            EndIf
-         EndIf
-         
-         ;\\ 3 call (current-widget-root) bind event function
-         If *this\root
-            If result <> #PB_Ignore
-               ForEach __GUI\event\binds( ) : *bind = @__GUI\event\binds( )
-                  If *bind\widget = *this\root 
-                     If *bind\type = event And
-                        Not ( *bind\item >= 0 And *bind\item <> *btn )
-                        result = *bind\function( )
-                        If result = #PB_Ignore
-                           Break
-                        EndIf
-                     EndIf
-                  EndIf
-               Next
-            EndIf
-         EndIf
-         
-         If result = #PB_Ignore
-            result = #True
-         EndIf
-         
-         ;\\
-         If event = #__EVENT_Close
-            If result
-               If is_root_( *this )
-                  Select result
-                     Case #PB_All 
-                        Close( #PB_All )
-                     Default
-                        Close( *this\root )
-                  EndSelect
-               Else
-                  Select result 
-                     Case #PB_All
-                        If Not PostQuit( )
-                           ; 1. Сохраняем в локальную переменную
-                           Protected._s_ROOT *root = *this\root
-                           
-                           ; 2. Отматываем в самое начало (к первому/нижнему окну)
-                           While *root\PrevRoot( ) : *root = *root\PrevRoot( ) : Wend
-                           
-                           ; 3. Рисуем все элементы по порядку (снизу вверх)
-                           While *root 
-                              PostFree( *root )
-                              *Root = *root\NextRoot( ) 
-                           Wend
-                        EndIf
-                     Default
-                        PostFree( *this )
-                  EndSelect
-               EndIf
-            EndIf
-         EndIf
-         ;                If event = #__EVENT_Free
-         ;                   If result
-         ;                      Delete( *this, #True )
-         ;                   EndIf
-         ;                EndIf
-         
-         ;\\ если это оставить то после вызова функции напр setState( ) получается EventWidget( ) будеть равно #Null
-         EventWidget( )           = __widget
-         WidgetEvent( )           = __event
-         WidgetEventItem( )   = __item
-         WidgetEventData( )   = __data
-         
-         If event = #__EVENT_Change
-            repaint_set( *this ) ; - 2
-         EndIf
-         
-         
-         ;             EndIf
-      EndIf
-      
-      ProcedureReturn result
-   EndProcedure
-   
-   Procedure.i _Bind( *this._s_WIDGET, *callback, event.l = #PB_All, item.l = #PB_All, *data = 0 )
-      Protected._s_BINDDATA *bind
-      ;
-      If *this < 0
-         ;
-         ; 1. Сохраняем в локальную переменную
-         Protected._s_ROOT *root = Root( )
-         
-         ; 2. Отматываем в самое начало (к первому/нижнему окну)
-         While *root\PrevRoot( ) : *root = *root\PrevRoot( ) : Wend
-         
-         ; 3. Рисуем все элементы по порядку (снизу вверх)
-         While *root 
-            Bind( *root, *callback, event, item )
-            *Root = *root\NextRoot( ) 
-         Wend
-         ProcedureReturn #PB_All
-         ;
-      Else
-         If event < 0 
-            Define i
-            For i = 1 To #__event - 1
-               If i = #__EVENT_Draw
-                  If Not *this\eventmask & #__eventmask_draw
-                     Continue
-                  EndIf
-               EndIf
-               If i = #__EVENT_Resize
-                  If Not *this\eventmask & #__eventmask_resize
-                     If Not *this\container 
-                        If Not *this\haschildren 
-                           Continue
-                        EndIf
-                     EndIf
-                  EndIf
-               EndIf
-               If i = #__EVENT_CursorChange
-                  If Not *this\eventmask & #__eventmask_cursor
-                     Continue
-                  EndIf
-               EndIf
-               
-               Bind( *this, *callback, i, item )
-            Next
-         Else
-            ; 
-            If event = #__EVENT_Draw
-               *this\eventmask | #__eventmask_draw
-            EndIf
-            If event = #__EVENT_Resize
-               *this\eventmask | #__eventmask_resize
-            EndIf
-            If event = #__EVENT_CursorChange
-               *this\eventmask | #__eventmask_cursor
-            EndIf
-            
-            If *callback
-               LastElement( __GUI\event\binds( ))
-               *bind =  AddElement( __GUI\event\binds( ))
-               If *bind
-                  *bind\function = *callback
-                  *bind\widget   = *this
-                  *bind\type     = event
-                  *bind\item     = item
-                  *bind\data     = *data
-               EndIf
-            EndIf
-            
-            ; RemoveEvents( *this, event )
-         EndIf
-      EndIf
-      
-   EndProcedure
-   
-   Procedure.i _Unbind( *this._s_WIDGET, *callback, event.l = #PB_All, item.l = #PB_All )
-        Protected._s_BINDDATA *bind
-        If *this < 0
-         ; 1. Сохраняем в локальную переменную
-         Protected._s_ROOT *root = Root( )
-         
-         ; 2. Отматываем в самое начало (к первому/нижнему окну)
-         While *root\PrevRoot( ) : *root = *root\PrevRoot( ) : Wend
-         
-         ; 3. Рисуем все элементы по порядку (снизу вверх)
-         While *root 
-            Unbind( *root, *callback, event, item )
-            *Root = *root\NextRoot( ) 
-         Wend
-         ProcedureReturn #PB_All
-      Else
-         ; Используем ResetList + While NextElement для безопасного удаления в цикле
-         ResetList( __GUI\event\binds( ) )
-         
-         If *callback = #PB_All
-            While NextElement( __GUI\event\binds( ))
-               If *this = @__GUI\event\binds( )\widget
-                  DeleteElement( __GUI\event\binds( ), 1 )
-               EndIf
-            Wend
-         Else
-            If event < 0
-               Define i
-               For i = 0 To #__event - 1
-                  Unbind( *this, *callback, i, item )
-               Next
-            Else
-               While NextElement( __GUI\event\binds( )) 
-                  *bind = @__GUI\event\binds( )
-                  If *bind\widget = *this And 
-                     *bind\type = event And 
-                     *bind\item = item
-                     
-                     DeleteElement( __GUI\event\binds( ), 1 )
-                  EndIf
-               Wend
-            EndIf
-         EndIf
-      EndIf
-   EndProcedure
-   
-   
+   ; 2,278 commit
    Procedure.i Post( *this._s_WIDGET, event.l, *btn = #PB_All, *data = #Null )
       Protected result = #True
       Protected *target._s_WIDGET, *root._s_ROOT, *nextRoot._s_ROOT
@@ -24821,7 +24466,19 @@ Module widgets
          EndSelect
       EndIf
       
-      ; 2. Ищем место в списке перед первым элементом с более высоким уровнем
+      ; Шаг 2а: Проверка на дубликат
+      ForEach __GUI\event\binds()
+         If __GUI\event\binds()\widget = *this And
+            __GUI\event\binds()\function = *callback And
+            __GUI\event\binds()\type = event And
+            __GUI\event\binds()\item = item
+            
+            __GUI\event\binds()\data = *data
+            ProcedureReturn #True
+         EndIf
+      Next
+      
+      ; Шаг 2б: Ищем место в списке перед первым элементом с более высоким уровнем
       ForEach __GUI\event\binds( )
          If __GUI\event\binds( )\widget = #PB_All
             currLevel = 4
@@ -26030,7 +25687,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
    ;\\
    AddItem(*btn_panel, -1, "3")
-   *g = ListIcon(0, 0, 0, 0, "Column_1", 90, #__FLAG_autosize | #__FLAG_RowFullSelect | #__FLAG_GridLines | #__FLAG_CheckBoxes) ;: *g = GetGadgetData(g)
+   *g = ListIcon(0, 0, 0, 0, "Column_1", 90, #__FLAG_autosize | #__FLAG_RowFullSelect | #__FLAG_GridLines | #__FLAG_checkBoxes) ;: *g = GetGadgetData(g)
    For a = 1 To 2
       AddColumn(*g, a, "Column_" + Str(a + 1), 90)
    Next
@@ -26442,7 +26099,7 @@ CompilerIf #PB_Compiler_IsMainFile
    
    ;-\\ OPENROOT3
    OpenList( *root3 )
-   Define *tree = Tree( 10, 20, 150, 200, #__FLAG_checkboxes)
+   Define *tree = Tree( 10, 20, 150, 200, #__FLAG_checkBoxes)
    For i = 1 To 100;0000
       AddItem(*tree, i, "text-" + Str(i))
    Next
@@ -26462,7 +26119,7 @@ CompilerIf #PB_Compiler_IsMainFile
    SetItemFont(*w, 5, 6)
    
    ;\\
-   *w = Tree( 180, 40, 100, 260 - 20 + 300, #__FLAG_checkboxes|#__FLAG_RowClickSelect )
+   *w = Tree( 180, 40, 100, 260 - 20 + 300, #__FLAG_checkBoxes|#__FLAG_RowClickSelect )
    For i = 1 To 100;0000
       If (i & 5)
          AddItem(*w, i, "text-" + Str(i), -1, 1 )
@@ -26495,7 +26152,7 @@ CompilerIf #PB_Compiler_IsMainFile
       EndIf
       Container(5, 5, 120 + 2, 85 + 2) ;, #PB_Container_Flat)
       If i = 3
-         CheckBox(10, 10, 100, 30, "CheckBox_" + Trim(Str(i + 10)))
+         CheckBox(10, 10, 100, 30, "checkBox_" + Trim(Str(i + 10)))
          SetState( widget( ), 1 )
       ElseIf i = 4
          Option(10, 10, 100, 30, "Option_" + Trim(Str(i + 10)))
@@ -26523,9 +26180,9 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.40 (Windows - x64)
-; CursorPosition = 26236
-; FirstLine = 24316
-; Folding = ---------------------------------------------------------------------------------------------------------------------------------------4-----------------------------------------------------------------------------------------0--f+H2--XW--v-4---------------------------------P+---------------------------------------------------------------------b--------------------------------------------------------------------------------------------v-------------------td---vv4-00--d+00+-+n4---f---------------------444f-XP0f---8-+8--------------------8u--80-----------------------------------------------------------8-4----------------------------------------------------------------------------------------------------------------------8-f------8--+-------------------------------
+; CursorPosition = 10778
+; FirstLine = 10543
+; Folding = -------------------------------------------------------------------------------------------------------------------------------------4-8------------------------------------------------------------------------------------------8---+P7--vs+-f-v---------------------------------f9---------------------------0--------------------------------------4+-------------------------------------------------------------------------------------------f-----------------------4u---448--+--O-3---z6-0-----------------------000--2T-4---+v-+--------------------u8--e------------------------------------------------------------+--------------------------------------------------------------------------------------------------------------------ft-vf-0-----+-------------------------
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe
