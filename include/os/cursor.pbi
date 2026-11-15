@@ -272,26 +272,57 @@ Module Cursor
       
       
    CompilerEndIf
-   CompilerIf #PB_Compiler_OS = #PB_OS_Linux
-      ImportC ""
-         gdk_display_get_default()
-         gdk_display_get_default_seat(*display)
-         gdk_seat_get_pointer(*seat)
-         gdk_device_warp(*device, *screen, X.l, Y.l)
-         gdk_display_get_default_screen(*display)
-         gdk_window_get_origin(*window, *x, *y)
-         gtk_widget_get_window(*widget)
-      EndImport
-   CompilerElseIf #PB_Compiler_OS = #PB_OS_MacOS
-      ImportC ""
-         CGWarpMouseCursorPosition(X.d, Y.d)
-      EndImport
-   CompilerEndIf
    
    ;-
-   Procedure   SetPos(Gadget, X, Y)
-      CompilerSelect #PB_Compiler_OS
+   CompilerIf #PB_Compiler_OS = #PB_OS_Linux
+      CompilerSelect #PB_Compiler_Subsystem
+         CompilerCase "qt"
+            ; Импорт функций Qt5 / Qt6 через C-обертки или напрямую из libQt5Widgets / libQt5Gui
+            ; В PureBasic для Qt проще всего использовать QCursor::setPos и QWidget::mapToGlobal
+            ImportC ""
+               ; Функции будут вызваны через QtScript / QMetaObject или прямые символы C++ (Itanium ABI)
+            EndImport
             
+            ; В PureBasic на Linux/Qt самый надежный способ без привязки к версии Qt (5 или 6) —
+            ; использовать XWarpPointer через X11 (если сессия X11), но для чистого Qt используем C++ символы:
+            CompilerIf #PB_Compiler_Processor = #PB_Processor_x64
+               ImportC "-lQt5Widgets"
+                  ; QWidget::mapToGlobal(QPoint const&) const
+                  _ZNK7QWidget11mapToGlobalERK6QPoint(*widget, *pt) As "Qt_mapToGlobal"
+               EndImport
+               ImportC "-lQt5Gui"
+                  ; QCursor::setPos(int, int)
+                  _ZN7QCursor6setPosEii(X.l, Y.l) As "Qt_setPos"
+               EndImport
+            CompilerEndIf
+            
+         CompilerCase "gtk2"
+            ImportC "-lgtk-x11-2.0"
+               gdk_window_get_origin(*window, *x, *y)
+               gdk_display_get_default()
+               gdk_display_warp_pointer(*display, *screen, X.l, Y.l)
+               gdk_display_get_default_screen(*display)
+               gtk_widget_get_window(*widget)
+            EndImport
+            
+         CompilerDefault ; По умолчанию в современном PureBasic используется GTK3
+            ImportC "-lgtk-3"
+               gdk_display_get_default()
+               gdk_display_get_default_seat(*display)
+               gdk_seat_get_pointer(*seat)
+               gdk_device_warp(*device, *screen, X.l, Y.l)
+               gdk_display_get_default_screen(*display)
+               gdk_window_get_origin(*window, *x, *y)
+               gtk_widget_get_window(*widget)
+            EndImport
+      CompilerEndSelect
+   CompilerEndIf
+   
+   Procedure SetPos(Gadget, X, Y)
+      CompilerSelect #PB_Compiler_OS
+            ; ==========================================
+            ; WINDOWS
+            ; ==========================================
          CompilerCase #PB_OS_Windows
             Protected pt.POINT
             pt\x = X
@@ -299,36 +330,65 @@ Module Cursor
             ClientToScreen_(GadgetID(Gadget), @pt)
             SetCursorPos_(pt\x, pt\y)
             
-         CompilerCase #PB_OS_Linux
-            Protected *display = gdk_display_get_default()
-            Protected *seat = gdk_display_get_default_seat(*display)
-            Protected *pointer = gdk_seat_get_pointer(*seat)
-            Protected *screen = gdk_display_get_default_screen(*display)
-            Protected *gdkWin = gtk_widget_get_window(GadgetID(Gadget))
-            Protected winX.l, winY.l
-            
-            If *gdkWin
-               gdk_window_get_origin(*gdkWin, @winX, @winY)
-               gdk_device_warp(*pointer, *screen, winX + X, winY + Y)
-            EndIf
-            
+            ; ==========================================
+            ; MACOS (COCOA)
+            ; ==========================================
          CompilerCase #PB_OS_MacOS
-            ; Вычисляем экранные координаты для macOS через Cocoa
             Protected *view = GadgetID(Gadget)
             Protected *window = CocoaMessage(0, *view, "window")
             Protected pt.NSPoint, winPt.NSPoint, screenPt.NSPoint
             
             pt\x = X
-            ; В Cocoa ось Y внутри View направлена снизу вверх, переворачиваем её
-            pt\y = GadgetHeight(Gadget) - Y
+            If CocoaMessage(0, *view, "isFlipped")
+               pt\y = Y
+            Else
+               pt\y = GadgetHeight(Gadget) - Y
+            EndIf
             
             CocoaMessage(@winPt, *view, "convertPoint:@", @pt, "toView:", 0)
-            CocoaMessage(@screenPt, *window, "convertBaseToScreen:", @winPt)
+            CocoaMessage(@screenPt, *window, "convertPointToScreen:@", @winPt)
             
-            ; В Quartz (CGWarp) начало координат в левом верхнем углу главного экрана
-            Protected screenHeight.d = DesktopHeight(0)
-            CGWarpMouseCursorPosition(screenPt\x, screenHeight - screenPt\y)
+            Protected screenFrame.NSRect
+            CocoaMessage(@screenFrame, CocoaMessage(0, CocoaMessage(0, 0, "NSScreen screens"), "objectAtIndex:", 0), "frame")
+            CGWarpMouseCursorPosition(screenPt\x, screenFrame\size\height - screenPt\y)
             
+            ; ==========================================
+            ; LINUX (GTK3 / GTK2 / QT)
+            ; ==========================================
+         CompilerCase #PB_OS_Linux
+            Protected *widget = GadgetID(Gadget)
+            
+            CompilerSelect #PB_Compiler_Subsystem
+               CompilerCase "qt"
+                  ; Структура QPoint в Qt состоит из двух 32-битных int (xp, yp)
+                  Protected qPt.q, globalPt.q
+                  PokeL(@qPt, X)
+                  PokeL(@qPt + 4, Y)
+                  globalPt = Qt_mapToGlobal(*widget, @qPt)
+                  Qt_setPos(PeekL(@globalPt), PeekL(@globalPt + 4))
+                  
+               CompilerCase "gtk2"
+                  Protected *gdkWin2 = gtk_widget_get_window(*widget)
+                  If *gdkWin2
+                     Protected origX2.l, origY2.l
+                     gdk_window_get_origin(*gdkWin2, @origX2, @origY2)
+                     Protected *disp2 = gdk_display_get_default()
+                     Protected *scr2 = gdk_display_get_default_screen(*disp2)
+                     gdk_display_warp_pointer(*disp2, *scr2, origX2 + X, origY2 + Y)
+                  EndIf
+                  
+               CompilerDefault ; GTK3
+                  Protected *gdkWin3 = gtk_widget_get_window(*widget)
+                  If *gdkWin3
+                     Protected origX3.l, origY3.l
+                     gdk_window_get_origin(*gdkWin3, @origX3, @origY3)
+                     Protected *disp3 = gdk_display_get_default()
+                     Protected *scr3 = gdk_display_get_default_screen(*disp3)
+                     Protected *seat = gdk_display_get_default_seat(*disp3)
+                     Protected *pointer = gdk_seat_get_pointer(*seat)
+                     gdk_device_warp(*pointer, *scr3, origX3 + X, origY3 + Y)
+                  EndIf
+            CompilerEndSelect
       CompilerEndSelect
    EndProcedure
    
@@ -2398,6 +2458,8 @@ CompilerIf #PB_Compiler_IsMainFile
       StopDrawing()
    EndIf
    
+   
+   cursor::SetPos( 1, 30,30)
    ;-
    Repeat 
       event = WaitWindowEvent()
@@ -2447,10 +2509,10 @@ CompilerIf #PB_Compiler_IsMainFile
       
    Until event = #PB_Event_CloseWindow
 CompilerEndIf
-; IDE Options = PureBasic 6.40 (Windows - x64)
-; CursorPosition = 82
-; FirstLine = 60
-; Folding = CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAw
+; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
+; CursorPosition = 2510
+; FirstLine = 2486
+; Folding = ----------------------------------------
 ; Optimizer
 ; EnableXP
 ; DPIAware
