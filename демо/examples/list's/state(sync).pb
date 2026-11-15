@@ -103,7 +103,7 @@ CompilerIf #PB_Compiler_IsMainFile
                      SetState( *g, *row\index)
                   EndIf
                EndIf
-            
+               
             Case #__EVENT_LeftDown
                If  Not *hoverBTN
                   If Not *row\childrens
@@ -122,7 +122,7 @@ CompilerIf #PB_Compiler_IsMainFile
                If *g\RowFocused( ) And 
                   *g\RowFocused( )\ColorState( ) = #__s_3
                   *g\RowFocused( )\ColorState( ) = #__s_2
-                  ProcedureReturn
+                  ProcedureReturn 0
                EndIf
                
                ; Debug "             ["+*row\index+"] "+*g\class +" status "
@@ -159,46 +159,46 @@ CompilerIf #PB_Compiler_IsMainFile
                   ;                   EndIf
                EndIf
                
-               ;
+               ;\\
                Select *g
                   Case *g1  : StatusChange( *g2, *row )
                   Case *g2  : StatusChange( *g1, *row )
                EndSelect
                
-;             Case #__EVENT_MouseEnter
-;                
-;                If SetState( *g2\scroll\v, 30)
-;                   Debug "SCROLL ["+GetClass(*g)+"] "+*g\scroll\v\bar\page\pos
-;                   PropertiesButton_Resize( GetData( *g2 ), *g2\RowFocused( ) )
-;                EndIf
-;                
-            
+            Case #__EVENT_MouseEnter
+               
+               ;                If SetState( *g2\scroll\v, 30)
+               ;                   Debug "SCROLL ["+GetClass(*g)+"] "+*g\scroll\v\bar\page\pos
+               ;                   PropertiesButton_Resize( GetData( *g2 ), *g2\RowFocused( ) )
+               ;                EndIf
+               ;                
+               
          EndSelect
       EndIf
       
       Select WidgetEvent( )
          Case #__EVENT_ScrollChange
+            *this = GetData( *g2 )
+            *row = *g2\RowFocused( )
             
-           Select *g
+            Select *g
                Case *g2 
                   If GetState( *g1\scroll\v ) <> WidgetEventData( )
                      If SetState( *g1\scroll\v, WidgetEventData( ))
-                        PropertiesButton_Resize( GetData( *g2 ), *g\RowFocused( ) )
+                        PropertiesButton_Resize( *this, *row )
                      EndIf
                   EndIf
                   ;
                Case *g1 
                   If GetState( *g2\scroll\v ) <> WidgetEventData( )
-                     ; Debug ">>>"
                      If SetState( *g2\scroll\v, WidgetEventData( ))
-                        PropertiesButton_Resize( GetData( *g2 ), *g\RowFocused( ) )
+                        PropertiesButton_Resize( *this, *row )
                      EndIf
-                     ; Debug "<<<"
                   EndIf
             EndSelect
             
             Debug "SCROLL ["+GetClass(*g)+"] "+GetState( *g\scroll\v ) +" "+ WidgetEventData( )
-               
+            
          Case #__EVENT_Resize
             If *g = *g2
                PropertiesButton_Resize( GetData( *g2 ),  *g\RowFocused( ))
@@ -317,8 +317,8 @@ CompilerIf #PB_Compiler_IsMainFile
    WaitClose()
 CompilerEndIf
 ; IDE Options = PureBasic 6.40 (Windows - x64)
-; CursorPosition = 172
-; FirstLine = 115
-; Folding = ---O-0--
+; CursorPosition = 124
+; FirstLine = 117
+; Folding = ---f----
 ; EnableXP
 ; DPIAware

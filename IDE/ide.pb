@@ -554,7 +554,7 @@ Procedure   PropertiesButton_Hide( *this._s_WIDGET )
    If *this
       *row = *this\parent\RowFocused( ) 
       If *row
-         Hide(*this, Bool(*row\mask & #__mask_hidden))
+         Hide(*this, Bool(*row\mask & #__MASK_Hidden))
       EndIf
    EndIf
 EndProcedure
@@ -1188,7 +1188,7 @@ Procedure   Properties_Create( X,Y,Width,Height, Flag=0 )
    *splitter\bar\btn\size = DPIScaled(1)
    *splitter\bar\btn\size + Bool( *splitter\bar\btn\size % 2 )
    *Splitter\bar\btn\round = 0;  DPIScaled(1)
-                                 ;*splitter\bar\btn\color\back = $D4C8C8C8
+                              ;*splitter\bar\btn\color\back = $D4C8C8C8
    SetState(*splitter, DPIScaled(position) ) ; похоже ошибка DPI
    
    ;
@@ -2720,38 +2720,33 @@ Procedure   ide_events( )
          
       Case #__EVENT_StatusChange
          *row = __data
-        
-         ; Debug ""+__item +" "+ __data
-         If *g = ide_element_PANEL
-            ; Debug "status change element tab "+ __item
-            Select __item 
-               Case 0 : SetText( ide_help_VIEW, "all elements" )
-               Case 1 : SetText( ide_help_VIEW, "all containers" )
-               Case 2 : SetText( ide_help_VIEW, "all buttons" )
-               Case 3 : SetText( ide_help_VIEW, "all texts" )
-               Case 4 : SetText( ide_help_VIEW, "all bars" )
-            EndSelect
-         EndIf
          ;
-         If __item = - 1
-            SetText( ide_help_VIEW, "help for the inspector" )
-         Else
-            If *row\mask & #__mask_hover Or 
-                *row\mask & #__mask_active
-               ;
-            If *g = ide_all_ELEMENTS
-               SetText( ide_help_VIEW, ide_help_VIEW_elements(GetItemText( *g, __item )) )
+         If  *g\RowEntered( )
+            If  *g\RowEntered( ) = *row   : Debug "enter "+*row\txt(0)\text
+               If *g = ide_all_ELEMENTS
+                  SetText( ide_help_VIEW, ide_help_VIEW_elements( GetItemText( *g, __item ) ) )
+               EndIf
+               If *g = ide_inspector_VIEW
+                  SetText( ide_help_VIEW, GetItemText( *g, __item ) )
+               EndIf
+               If *g = ide_inspector_PROPERTIES
+                  SetText( ide_help_VIEW, GetItemText( *g, __item ) )
+               EndIf
+               If *g = ide_inspector_EVENTS
+                  SetText( ide_help_VIEW, GetItemText( *g, __item ) )
+               EndIf
+               If *g = ide_element_PANEL
+                  Select __item 
+                     Case 0 : SetText( ide_help_VIEW, "all elements" )
+                     Case 1 : SetText( ide_help_VIEW, "all containers" )
+                     Case 2 : SetText( ide_help_VIEW, "all buttons" )
+                     Case 3 : SetText( ide_help_VIEW, "all texts" )
+                     Case 4 : SetText( ide_help_VIEW, "all bars" )
+                  EndSelect
+               EndIf
             EndIf
-            If *g = ide_inspector_VIEW
-               SetText( ide_help_VIEW, GetItemText( *g, __item ) )
-            EndIf
-            If *g = ide_inspector_PROPERTIES
-               SetText( ide_help_VIEW, GetItemText( *g, __item ) )
-            EndIf
-            If *g = ide_inspector_EVENTS
-               SetText( ide_help_VIEW, GetItemText( *g, __item ) )
-            EndIf
-         EndIf
+         Else                                          : Debug "leave "+ *row\txt(0)\text
+            SetText( ide_help_VIEW, "inspector help" )
          EndIf
          
    EndSelect
@@ -3385,9 +3380,9 @@ DataSection
    image_group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.40 (Windows - x64)
-; CursorPosition = 2741
-; FirstLine = 2717
-; Folding = ---------------------0-+----------------------------------------
+; CursorPosition = 2724
+; FirstLine = 2719
+; Folding = --------------------------------------------------------fw------
 ; EnableXP
 ; DPIAware
 ; Executable = ..\..\2_621.exe
