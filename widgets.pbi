@@ -8049,7 +8049,6 @@ Module widgets
    EndProcedure
    
    ;-
-   ;Declare  DoEvent_Status( status$, *this._s_WIDGET, *btn = #PB_All, *data = #Null )
    Macro  DoEvent_Status( _status_info_, _this_, _row_index_, _row_address_ )
       ; 1. Логирование отладки
       If test_StatusChange 
@@ -8059,7 +8058,7 @@ Module widgets
       If _row_address_\mask & #__MASK_Press
          If  _row_address_\ColorState( ) <> #__s_2
             _row_address_\ColorState( ) = #__s_2 ; Цвет выделения/нажатия
-                                                 ; 3. Инвалидация (запрос на перерисовку виджета)
+            
             repaint_set( _this_ )
             PostEvents(_this_, #__EVENT_StatusChange, _row_index_, _row_address_ )
          EndIf
@@ -8069,16 +8068,19 @@ Module widgets
             Not (_this_\RowEntered( ) And (_this_\mask & #__MASK_Press)) 
             If  _row_address_\ColorState( ) <> #__s_2
                _row_address_\ColorState( ) = #__s_2 ; Цвет выделения/нажатия
-           EndIf
+               
+               repaint_set( _this_ )
+               PostEvents(_this_, #__EVENT_StatusChange, _row_index_, _row_address_ )
+            EndIf
          Else
             If _row_address_\ColorState( ) <> #__s_3
                _row_address_\ColorState( ) = #__s_3 ; Неактивное выделение (блеклый цвет)
+               
+               repaint_set( _this_ )
+               PostEvents(_this_, #__EVENT_StatusChange, _row_index_, _row_address_ )
             EndIf
          EndIf
-         ;
-         repaint_set( _this_ )
-        PostEvents(_this_, #__EVENT_StatusChange, _row_index_, _row_address_ )
-         
+        
       ElseIf _row_address_\mask & #__MASK_Hover
          If _row_address_\ColorState( ) <> #__s_1
             _row_address_\ColorState( ) = #__s_1 ; Обычный цвет наведения (подсветка)
@@ -15670,7 +15672,7 @@ Module widgets
                ForEach *this\row\__s( ) : *row = @*this\row\__s( )
                   If *row <> *this\RowFocused( )
                      If *row\ColorState( ) = #__s_3
-                        *row\ColorState( ) = #__s_2
+                       *row\ColorState( ) = #__s_2
                         ;
                         DoEvent_Status( "status - focus-others", *this, *row\rindex, *row)
                      EndIf
@@ -16047,8 +16049,9 @@ Module widgets
          EndIf
          
          ; Возвращаем яркую подсветку текущей сфокусированной строке
-         If *row_actived And *row_actived\mask & #__MASK_Active
-            DoEvent_Status( "status - focus-current", *this, *row_actived\rindex, *row_actived )
+         If *row_actived And *row_actived\mask & #__MASK_Active ;And *row_actived\ColorState( ) = #__s_3 : *row_actived\ColorState( ) = #__s_2
+              DoEvent_Status( "status - focus-current", *this, *row_actived\rindex, *row_actived )
+          ;   Post( *this, #__EVENT_StatusChange, *row_actived\rindex, *row_actived )
          EndIf
       EndIf
       
@@ -16071,7 +16074,8 @@ Module widgets
          
          ; Переводим текущую строку в состояние неактивного фокуса
          If *row_actived And *row_actived\mask & #__MASK_Active
-            DoEvent_Status( "status - lostfocus-current", *this, *row_actived\rindex, *row_actived )
+           DoEvent_Status( "status - lostfocus-current", *this, *row_actived\rindex, *row_actived )
+            ;  Post( *this, #__EVENT_StatusChange, *row_actived\rindex, *row_actived )
          EndIf
       EndIf
       
@@ -26119,9 +26123,9 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.40 (Windows - x64)
-; CursorPosition = 8075
-; FirstLine = 8058
-; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+f----------------------------------------------------------------------------------------------------------------v+---u8-----------------------u0--+-------4-----6--------------------------------------------------------------------------------------------------------------------------8--0-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; CursorPosition = 16052
+; FirstLine = 14171
+; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------v-----------+f----------------------------------------------------------------------------------------------------------------v+---u8-----------------------u0--+-------4-----6-----------------------------------------------------------4--------------------------------------------------------------8--0-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe
