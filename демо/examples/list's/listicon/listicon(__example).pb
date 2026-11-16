@@ -126,7 +126,7 @@ CompilerIf #PB_Compiler_IsMainFile
             EndIf
             
          Case #__event_MouseWheel
-            If MouseDirection( ) > 0
+            If WheelDirection( ) > 0
                SetAttribute( *area, #PB_ScrollArea_Y, GetAttribute( *area, #PB_ScrollArea_Y)-WidgetEventData())
             Else
                SetAttribute( *area, #PB_ScrollArea_X, GetAttribute( *area, #PB_ScrollArea_X)-WidgetEventData())
@@ -314,8 +314,8 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.40 (Windows - x64)
-; CursorPosition = 170
-; FirstLine = 165
+; CursorPosition = 128
+; FirstLine = 124
 ; Folding = --------
 ; EnableXP
 ; DPIAware

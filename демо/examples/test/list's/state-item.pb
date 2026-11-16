@@ -255,7 +255,7 @@ EndEnumeration
             _ChangeItemState( *g2, GetData( EventWidget( )), 3 )
             
          Case #__event_MouseWheel
-            If MouseDirection( ) > 0
+            If WheelDirection( ) > 0
                SetState(*g2\scroll\v, GetState( *g2\scroll\v ) - WidgetEventData( ) )
             EndIf
       EndSelect
@@ -634,7 +634,7 @@ EndEnumeration
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.40 (Windows - x64)
-; CursorPosition = 360
-; FirstLine = 358
+; CursorPosition = 257
+; FirstLine = 249
 ; Folding = ---0--------0
 ; EnableXP

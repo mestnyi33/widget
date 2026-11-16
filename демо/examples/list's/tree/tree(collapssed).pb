@@ -24,11 +24,12 @@ CompilerIf #PB_Compiler_IsMainFile
 ; ;   If Not LoadImage(0, #PB_Compiler_Home + "examples/sources/Data/ToolBar/Paste.png") ; world.png") ; File.bmp") ; Измените путь/имя файла на собственное изображение 32x32 пикселя
 ; ;     End
 ; ;   EndIf
-  
+  ;Macro __rows( ): row\__s( ) : EndMacro    ; row\items( )
+      
   Procedure.i add( *this._s_widget, position.l, Text.s, Image.i = -1, sublevel.i = 0 )
     ProcedureReturn AddItem( *this, position, Text, Image, sublevel)
-    Protected handle, *last._s_ROWS, *parent._s_ROWS
-    Protected *row.allocate(ROWS)
+    Protected handle, *last._s_ROW, *parent._s_ROW
+    Protected *row.allocate(ROW)
     ; sublevel + 1
     
     ;With *this
@@ -68,7 +69,7 @@ CompilerIf #PB_Compiler_IsMainFile
       ;}
       
       If handle
-         *this\__rows( ) = *row
+         ;*this\__rows( ) = *row
          
         If sublevel > position
           sublevel = position
@@ -148,15 +149,15 @@ CompilerIf #PB_Compiler_IsMainFile
         
         ; add lines
         *this\__rows( )\index = ListIndex( *this\__rows( ) )
-        *this\__rows( )\color = _get_colors_( )
+        ;*this\__rows( )\color = color::_get_colors_( )
         *this\__rows( )\color\state = 0
         *this\__rows( )\color\back = 0 
         *this\__rows( )\color\frame = 0
         
         If Text
-          *this\__rows( )\text\change = 1
-          *this\__rows( )\text\string = StringField( Text.s, 1, #LF$ )
-          *this\__rows( )\text\edit\string = StringField( Text.s, 2, #LF$ )
+          *this\__rows( )\txt(0)\change = 1
+          *this\__rows( )\txt(0)\string = StringField( Text.s, 1, #LF$ )
+          ;*this\__rows( )\txt(0)\edit\string = StringField( Text.s, 2, #LF$ )
         EndIf
         
         *this\countitems + 1
@@ -441,9 +442,9 @@ CompilerIf #PB_Compiler_IsMainFile
   ForEver
   
 CompilerEndIf
-; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 27
-; FirstLine = 338
+; IDE Options = PureBasic 6.40 (Windows - x64)
+; CursorPosition = 159
+; FirstLine = 155
 ; Folding = ------
 ; EnableXP
 ; DPIAware

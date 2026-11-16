@@ -84,7 +84,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
       ;--     ARROW
       Structure _s_ARROW
          size.a
-         type.b
+         Type.b
          direction.b
       EndStructure
       ;--     BOX
@@ -98,7 +98,7 @@ CompilerIf Not Defined(Structures, #PB_Module)
       Structure _s_BTN Extends _s_BOX
          color._s_color
          arrow._s_arrow
-         type.l       
+         Type.l       
       EndStructure
       ;--     KEYBOARD
       Structure _s_KEYBOARD  ; Ok
@@ -217,7 +217,9 @@ CompilerIf Not Defined(Structures, #PB_Module)
          steps.a
          click.a                 ; mouse clicked count
          buttons.a               ; canvas mouse clicked button
-                                 ; direction.b
+         
+         wheel.w
+         WheelDirection.b
          
          press._s_POINT
          anchors._s_TRANSFORM    ; a_anchors( )
@@ -747,8 +749,8 @@ CompilerIf Not Defined(Structures, #PB_Module)
    EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 6.40 (Windows - x64)
-; CursorPosition = 382
-; FirstLine = 372
+; CursorPosition = 222
+; FirstLine = 214
 ; Folding = ------------
 ; Optimizer
 ; EnableXP

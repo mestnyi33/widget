@@ -63,6 +63,9 @@ DPIResolution
 DPIResolutionX
 DPIResolutionY
 
+WheelDirection
+WheelData
+
 MouseEnter
 MouseClick
 MousePress
@@ -71,19 +74,12 @@ MousePressX
 MousePressY
 
 MouseButtons
-MouseButtonClick
-MouseButtonPress
-MouseButtonPressX
-MouseButtonPressY
-MouseWheelDirection
-MouseWheelData
-
-;MouseDragStart
 MouseDrag
 MouseMask
 MouseDirection
 MouseMoveX
 MouseMoveY
+
 GadgetMouseX
 GadgetMouseY
 GetMouseX
@@ -137,6 +133,7 @@ GetData
 GetItem
 
 Events
+PostEvents
 AddEvents
 ResetEvents
 RemoveEvents

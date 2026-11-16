@@ -85,8 +85,8 @@
       ;
       ;#__BAR_toggle_line_size = 0
       #__BAR_splitter_size = 9
-      #__ButtonRound  = 7
       #__BAR_button_size   = 18
+      #__ButtonRound  = 7
       #__tab_size   = 25;18
       
       #__Draw_plus_Size = 5
@@ -185,7 +185,7 @@
       ;#__s_Inbetween = 1<<9
       ;#__s_Entered   = 1<<10 ; мышь внутри
       ;#__s_Pressed   = 1<<11 ; нажато
-      #__s_nofocus    = -1 
+     ; #__s_nofocus    = -1 
       
       ;-\\ resize-state
       ;       ;#__resize_Restore  = 1<<1 
@@ -685,8 +685,8 @@
       EndDeclareModule : Module Constants : EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 6.40 (Windows - x64)
-; CursorPosition = 371
-; FirstLine = 361
+; CursorPosition = 88
+; FirstLine = 81
 ; Folding = ----
 ; Optimizer
 ; EnableXP

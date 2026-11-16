@@ -85,12 +85,13 @@ CompilerIf #PB_Compiler_IsMainFile
    ;    EndProcedure
    
    ;-
-   Procedure all_events()
+   Procedure PropertiesItems_Events()
       Static._s_WIDGET *this
       Protected._s_ROW *t
       Protected._s_BTN *hoverBTN = EnteredButton( )
       Protected._s_ROW *row = WidgetEventData( )
       Protected._s_WIDGET *g = EventWidget( )
+      Protected scrollPos
       
       If *row
          Select WidgetEvent( )
@@ -125,7 +126,7 @@ CompilerIf #PB_Compiler_IsMainFile
                   ProcedureReturn 0
                EndIf
                
-               ; Debug "             ["+*row\index+"] "+*g\class +" status "
+                Debug "             ["+*row\index+"] "+*g\class +" status "
                
                If *row\childrens
                   If *row\mask & #__MASK_Hover
@@ -177,27 +178,37 @@ CompilerIf #PB_Compiler_IsMainFile
       EndIf
       
       Select WidgetEvent( )
+         Case #__EVENT_MouseWheel
+            If WheelDirection( ) > 0
+               Select *g
+                 ; Case *g2 : SetState(*g1\scroll\v, GetState( *g1\scroll\v ) - WidgetEventData( ) )
+                  ;Case *g1 : SetState(*g2\scroll\v, GetState( *g2\scroll\v ) - WidgetEventData( ) )
+               EndSelect
+               ; SetState(*g1\scroll\v, GetState( *g1\scroll\v ) - WidgetEventData( ) )
+            EndIf
+            
          Case #__EVENT_ScrollChange
             *this = GetData( *g2 )
             *row = *g2\RowFocused( )
+            scrollPos = WidgetEventData( )
             
             Select *g
                Case *g2 
-                  If GetState( *g1\scroll\v ) <> WidgetEventData( )
-                     If SetState( *g1\scroll\v, WidgetEventData( ))
+                  If GetState( *g1\scroll\v ) <> scrollPos
+                     If SetState( *g1\scroll\v, scrollPos)
                         PropertiesButton_Resize( *this, *row )
                      EndIf
                   EndIf
-                  ;
+                  
                Case *g1 
-                  If GetState( *g2\scroll\v ) <> WidgetEventData( )
-                     If SetState( *g2\scroll\v, WidgetEventData( ))
+                  If GetState( *g2\scroll\v ) <> scrollPos
+                     If SetState( *g2\scroll\v, scrollPos)
                         PropertiesButton_Resize( *this, *row )
                      EndIf
                   EndIf
             EndSelect
             
-            Debug "SCROLL ["+GetClass(*g)+"] "+GetState( *g\scroll\v ) +" "+ WidgetEventData( )
+            Debug "SCROLL ["+GetClass(*g)+"] "+GetState( *g\scroll\v ) +" "+ scrollPos
             
          Case #__EVENT_Resize
             If *g = *g2
@@ -208,11 +219,121 @@ CompilerIf #PB_Compiler_IsMainFile
       EndSelect
       
    EndProcedure
+   ;-
+   Procedure   Properties_AddItem( *splitter._s_WIDGET, item, Text.s, Type=-1, mode=0 )
+      Protected *g1._s_WIDGET = GetAttribute(*splitter, #PB_Splitter_FirstGadget)
+      Protected *g2._s_WIDGET = GetAttribute(*splitter, #PB_Splitter_SecondGadget)
+      
+      If mode
+         AddItem( *g1, item, StringField(Text.s, 1, Chr(10)), -1, mode )
+         AddItem( *g2, item, Text.s, -1, mode )
+         ;     AddItem( *g2, item, StringField(Text.s, 2, Chr(10)), -1, mode )
+      Else
+         AddItem( *g1, item, UCase(StringField(Text.s, 1, Chr(10))), -1 )
+         AddItem( *g2, item, "", -1, mode )
+      EndIf
+      
+      item = CountItems( *g1 ) - 1
+      If mode = 0
+         Define color_properties.q = $FFBF9CC3;$BE80817D
+         Define fcolor_properties.q = $CA2E2E2E
+         
+         
+         ;                      SetItemFont( *g1, item, font_properties)
+         ;                      SetItemFont( *g2, item, font_properties)
+         
+         SetItemColor( *g1, item, #PB_Gadget_FrontColor, fcolor_properties, 0, #PB_All )
+         SetItemColor( *g2, item, #PB_Gadget_FrontColor, fcolor_properties, 0, #PB_All )
+         
+         SetItemColor( *g1, item, #__FrameColor,  $FF00FFFF, 0, #PB_All)
+         SetItemColor( *g2, item, #__FrameColor,  $FF00FFFF, 0, #PB_All)   
+         
+         SetItemColor( *g1, item, #PB_Gadget_BackColor,  $FF00FFFF, 0, #PB_All)
+         SetItemColor( *g2, item, #PB_Gadget_BackColor,  $FF00FFFF, 0, #PB_All)   
+      Else
+         SetItemColor( *g1, item, #PB_Gadget_BackColor, $FFFEFEFE)
+         SetItemColor( *g2, item, #PB_Gadget_BackColor, $FFFEFEFE )
+      EndIf
+      
+      SetItemData( *g2, item, Type )
+   EndProcedure
+   
+   Procedure   Properties_Events( )
+      Select WidgetEvent( )
+         Case #__EVENT_FOCUS
+            ;             If *display
+            ;                SetActive( *display )
+            ;             EndIf
+            
+      EndSelect
+   EndProcedure
+   
+   Procedure   Properties_Create( X,Y,Width,Height, Flag=0 )
+      Protected position = Width/2-30
+      Protected tflag.q = #__flag_BorderLess|#PB_Tree_NoLines|#__flag_Transparent;|#__flag_gridlines
+      Protected *g._s_WIDGET
+      
+      *g1 = Tree(0,0,0,0, tflag)
+      *g2 = Tree(0,0,0,0, tflag|#PB_Tree_NoButtons)
+      ;    *g1\padding\x = 10
+      ;    *g2\padding\x = 10
+      *g = *g1
+      ;*g\padding\x = DPIScaled(20)
+      ;*g\fs[1] = DPIScaled(20)
+      ;Resize(*g, #PB_Ignore, #PB_Ignore, 100, #PB_Ignore )
+      
+      *g = *g2
+      ;*g\padding\x = DPIScaled(20)
+      ;*g\fs[1] = DPIScaled(20)
+      ;Resize(*g, #PB_Ignore, #PB_Ignore, 100, #PB_Ignore )
+      
+      Protected *splitter._s_WIDGET = Splitter(X,Y,Width,Height, *g1,*g2, Flag|#__flag_Transparent|#PB_Splitter_Vertical );|#PB_Splitter_firstFixed )
+      SetAttribute(*splitter, #PB_Splitter_FirstMinimumSize, position/2+30 )
+      SetAttribute(*splitter, #PB_Splitter_SecondMinimumSize, position/2+30 )
+      ;
+      *splitter\bar\btn\round = 0
+      *splitter\bar\btn\size = DPIScaled(5)
+      *splitter\bar\btn\size + Bool( *splitter\bar\btn\size % 2 )
+      SetState(*splitter, (position) ) 
+      
+      ;
+      SetClass(*g1\scroll\v, "g1_v")
+      SetClass(*g1\scroll\h, "g1_h")
+      SetClass(*g2\scroll\v, "g2_v")
+      SetClass(*g2\scroll\h, "g2_h")
+      
+      ;
+      Hide( *g1\scroll\v, 1 )
+      Hide( *g1\scroll\h, 1 )
+      Hide( *g2\scroll\h, 1 )
+      
+      ; CloseList( )
+    ;  SetColor( *splitter, #PB_Gadget_BackColor, $FF00FFFF)
+;       SetColor( *splitter, #PB_Gadget_BackColor, -1, #PB_All )
+     ;  SetColor( *g1, #PB_Gadget_BackColor, $FF00FFFF)
+     ;  SetColor( *g2, #PB_Gadget_BackColor, $FF00FFFF)
+;       SetColor( *g1, #PB_Gadget_LineColor, $FFBF9CC3)
+;       SetColor( *g2, #PB_Gadget_LineColor, $FFBF9CC3)
+      
+      ;
+      Bind(*splitter, @Properties_Events( ))
+      Bind(*g1, @PropertiesItems_Events( ))
+      Bind(*g2, @PropertiesItems_Events( ))
+      
+      Bind(*g2, @PropertiesItems_Events( ), #__EVENT_Resize)
+      ;Bind(*g2, @PropertiesItems_Events( ), #__EVENT_Draw)
+      ProcedureReturn *splitter
+   EndProcedure
+   
+   
+   ;-
+   Procedure all_events()
+      
+   EndProcedure
+   
    
    Open(1, 100, 50, 400, 330, "demo items status", #PB_Window_SystemMenu)
-   *g1 = Tree(10, 10, 150, 310, #__flag_nolines ) : SetClass(*g1, "*g1") : Hide( HBar(*g1), #True ) ;: Hide( VBar(*g1), #True )
-   *g2 = Tree(170, 10, 150, 310, #__flag_nolines ) : SetClass(*g2, "*g2") : Hide( HBar(*g2), #True )
-   Splitter( 10,10, 310, 310, *g1, *g2, #PB_Splitter_Vertical)
+   Properties_Create( 10, 10, 310, 310 )
    
    For a = 0 To CountItems
       If a % 5 = 0
@@ -250,11 +371,11 @@ CompilerIf #PB_Compiler_IsMainFile
    ;       Next
    
    ; 
-   Repaint( )
+   ;Repaint( )
    
    ;
-   SetState(*g1, CountItems+4) : SetActive(*g1)
-   ; SetState(*g2, CountItems+4) : SetActive(*g2)
+   ;SetState(*g1, CountItems+4) : SetActive(*g1)
+    SetState(*g2, CountItems+4) : SetActive(*g2)
    
    ;       ForEach *g1\row\__s( ) : Define._s_ROW *row = @*g1\row\__s( )
    ;          Debug ""+*row\index +"  " + *row\ColorState( )
@@ -296,29 +417,11 @@ CompilerIf #PB_Compiler_IsMainFile
    EndProcedure
    Bind(Button(370, 130, 20, 30,">"), @event_last_item(), #__EVENT_Down)
    
-   Bind(*g2, @all_events(), #__EVENT_Resize)
-   ;
-   Bind(*g1, @all_events(), #__EVENT_LeftDown)
-   Bind(*g2, @all_events(), #__EVENT_LeftDown)
-   Bind(*g1, @all_events(), #__EVENT_Up)
-   Bind(*g2, @all_events(), #__EVENT_Up)
-   
-   Bind(*g1, @all_events(), #__EVENT_ScrollChange)
-   Bind(*g2, @all_events(), #__EVENT_ScrollChange)
-   
-   Bind(*g1, @all_events(), #__EVENT_StatusChange)
-   Bind(*g2, @all_events(), #__EVENT_StatusChange)
-   
-   Bind(*g1, @all_events(), #__EVENT_Change)
-   Bind(*g2, @all_events(), #__EVENT_Change)
-   
-   Bind(*g1, @all_events(), #__EVENT_MouseEnter)
-   
    WaitClose()
 CompilerEndIf
 ; IDE Options = PureBasic 6.40 (Windows - x64)
-; CursorPosition = 124
-; FirstLine = 117
-; Folding = ---f----
+; CursorPosition = 291
+; FirstLine = 201
+; Folding = --ve-0f---
 ; EnableXP
 ; DPIAware

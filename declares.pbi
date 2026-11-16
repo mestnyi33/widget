@@ -455,7 +455,7 @@ CompilerIf Not Defined( widgets, #PB_Module )
       Macro TabChange( ): change: EndMacro           ; temp
       Macro TextChange( ): txt(0)\change: EndMacro   ; temp
       Macro ResizeChange( )
-         mask & #__mask_resize ; Resize\change
+         mask & #__MASK_resize ; Resize\change
       EndMacro                 ; temp
       Macro WidgetChange( ): change: EndMacro        ; temp
       
@@ -579,7 +579,7 @@ CompilerIf Not Defined( widgets, #PB_Module )
       
       Repeat
          _ptr_ = @_object_\__s()
-         If Not (_ptr_\mask & #__mask_visible And Not _ptr_\mask & #__mask_hidden) : Continue : EndIf
+         If Not (_ptr_\mask & #__MASK_visible And Not _ptr_\mask & #__MASK_hidden) : Continue : EndIf
       EndMacro
       
       Macro StopPrevRow(_ptr_, _object_ )
@@ -608,7 +608,7 @@ CompilerIf Not Defined( widgets, #PB_Module )
          _ptr_ = @_object_\__s()
          
          ; Если элемент скрыт — двигаем список ВПЕРЕД перед тем, как сделать Continue
-         If Not (_ptr_\mask & #__mask_visible And Not _ptr_\mask & #__mask_hidden)
+         If Not (_ptr_\mask & #__MASK_visible And Not _ptr_\mask & #__MASK_hidden)
             ; Если дошли до конца видимой области, прерываем цикл
             If _ptr_ = _object_\_v_last : Break : EndIf
             
@@ -771,7 +771,7 @@ CompilerIf Not Defined( widgets, #PB_Module )
    
    ;-
    Macro repaint_set( _address_ )
-      _address_\mask | #__mask_redraw ;  Root\Repaint = 0
+      _address_\mask | #__MASK_redraw ;  Root\Repaint = 0
    EndMacro
    
    Macro Repaint( _address_ = #PB_All )
@@ -793,6 +793,14 @@ CompilerIf Not Defined( widgets, #PB_Module )
    Macro PostClose( _this_ )
       AddEvents( _this_, #__event_Close ) 
    EndMacro
+   Macro PostEvents( _this_, _event_, _row_index_, _row_address_)
+      If  ListSize(__GUI\event\binds( ))
+         Post(_this_, _event_, _row_index_, _row_address_ )
+      Else
+         AddEvents(_this_, _event_, _row_index_, _row_address_ )
+      EndIf
+   EndMacro
+   
    
    ; 
    Macro PostEventsResize( _this_ )
@@ -906,7 +914,7 @@ CompilerIf Not Defined( widgets, #PB_Module )
    
    
    Macro is_hover( _address_, _mouse_x_, _mouse_y_, _mode_ = )
-      Bool( Not _address_\mask & #__mask_hidden And is_atpoint_( _address_, _mouse_x_, _mouse_y_, _mode_ ))
+      Bool( Not _address_\mask & #__MASK_hidden And is_atpoint_( _address_, _mouse_x_, _mouse_y_, _mode_ ))
    EndMacro
    
    
@@ -955,17 +963,23 @@ CompilerIf Not Defined( widgets, #PB_Module )
       ; #PB_Canvas_RightButton
    EndMacro ; Returns mouse button                                                                     
    Macro MousePress( _address_ = #Null )
-      Bool((mouse( )\mask & #__mask_press) And ((Pressed( )=_address_) Or _address_=#Null))
+      Bool((mouse( )\mask & #__MASK_press) And ((Pressed( )=_address_) Or _address_=#Null))
    EndMacro ; Returns mouse buttons state
    Macro MouseDirection( )   
-      (Bool(MouseMask( ) & #__mask_left) * - 1) + (Bool(MouseMask( ) & #__mask_top) * 1) + (Bool(MouseMask( ) & #__mask_right) * - 2) + (Bool(MouseMask( ) & #__mask_bottom) * 2)
+      (Bool(MouseMask( ) & #__MASK_left) * - 1) + (Bool(MouseMask( ) & #__MASK_top) * 1) + (Bool(MouseMask( ) & #__MASK_right) * - 2) + (Bool(MouseMask( ) & #__MASK_bottom) * 2)
+   EndMacro ; Returns mouse [move/wheel] direction                 
+   Macro WheelDirection( )   
+      mouse( )\wheeldirection
+   EndMacro ; Returns mouse [move/wheel] direction                 
+   Macro WheelData( )   
+      mouse( )\wheel
    EndMacro ; Returns mouse [move/wheel] direction                 
    Macro MouseClick( ): mouse( )\click: EndMacro                                               ; Returns mouse click count
    Macro MouseMask( ): mouse( )\mask: EndMacro                                                 ; Returns mouse data
-   Macro MouseDrag( ): Bool( MouseMask( ) & #__mask_drag ): EndMacro                           ; Returns mouse data
+   Macro MouseDrag( ): Bool( MouseMask( ) & #__MASK_drag ): EndMacro                           ; Returns mouse data
                                                                                                ; Macro MouseRelease( ): Bool( Not ( MouseButtons( ) And Not MousePress( ))): EndMacro 
-   Macro MouseRelease( ): Bool( MouseMask( ) & #__mask_release ): EndMacro 
-   Macro MouseEnter( _this_, _mode_ = 2 ): (Bool(_this_\mask & #__mask_hover_in)*2) = _mode_: EndMacro
+   Macro MouseRelease( ): Bool( MouseMask( ) & #__MASK_release ): EndMacro 
+   Macro MouseEnter( _this_, _mode_ = 2 ): (Bool(_this_\mask & #__MASK_hover_in)*2) = _mode_: EndMacro
    Macro MousePressX( ): mouse( )\press\x: EndMacro                                            ; Returns mouse buttons press [x]-coordinate
    Macro MousePressY( ): mouse( )\press\y: EndMacro                                            ; Returns mouse buttons press [y]-coordinate
    Macro MouseMoveX( ): DPIUnscaledX( CanvasMouseX( ) - MousePressX( )): EndMacro              ; Returns mouse x
@@ -1228,7 +1242,7 @@ CompilerIf Not Defined( widgets, #PB_Module )
          ;\\
          If StartEnum( _this_\parent )
             ;
-            If widget()\anchors And Not widget()\mask & #__mask_hidden And widget() <> _this_ And widget()\level = _this_\level
+            If widget()\anchors And Not widget()\mask & #__MASK_hidden And widget() <> _this_ And widget()\level = _this_\level
                ;\\ left-line
                If _this_\frame_x( ) = widget()\frame_x( )
                   If a_anchors( )\line[#__a_line_left]\y > widget()\frame_y( )
@@ -1605,7 +1619,7 @@ CompilerIf Not Defined( widgets, #PB_Module )
    
    Macro __draw_bar_BTNs( _this_ )
       ; background buttons draw
-      If Not _this_\bar\BTN[1]\mask & #__mask_hidden
+      If Not _this_\bar\BTN[1]\mask & #__MASK_hidden
          If _this_\bar\BTN[1]\color\fore <> - 1
             draw_mode_alpha_( #PB_2DDrawing_Gradient )
             __draw_gradient(_this_\bar\vertical, _this_\bar\BTN[1], 0,0, _this_\bar\BTN[1]\ColorState( ))
@@ -1615,7 +1629,7 @@ CompilerIf Not Defined( widgets, #PB_Module )
             ; draw_roundbox_( _this_\bar\BTN[1]\x, _this_\bar\BTN[1]\y, _this_\bar\BTN[1]\width, _this_\bar\BTN[1]\height, _this_\bar\BTN[1]\round, _this_\bar\BTN[1]\round, _this_\bar\BTN[1]\color\frame[_this_\bar\BTN[1]\ColorState( )] & $FFFFFF | _this_\bar\BTN[1]\AlphaState24( ) )
          EndIf
       EndIf
-      If Not _this_\bar\BTN[2]\mask & #__mask_hidden
+      If Not _this_\bar\BTN[2]\mask & #__MASK_hidden
          If _this_\bar\BTN[2]\color\fore <> - 1
             draw_mode_alpha_( #PB_2DDrawing_Gradient )
             __draw_gradient(_this_\bar\vertical, _this_\bar\BTN[2], 0,0, _this_\bar\BTN[2]\ColorState( ))
@@ -1646,7 +1660,7 @@ CompilerIf Not Defined( widgets, #PB_Module )
       EndIf
       
       ; frame buttons draw
-      If Not _this_\bar\BTN[1]\mask & #__mask_hidden
+      If Not _this_\bar\BTN[1]\mask & #__MASK_hidden
          If _this_\bar\BTN[1]\arrow\size
             If _this_\flagmask & #__spin_Plus 
                __draw_plus( _this_\bar\BTN[1], Bool( _this_\bar\invert ) )
@@ -1657,7 +1671,7 @@ CompilerIf Not Defined( widgets, #PB_Module )
          __draw_box(_this_\bar\BTN[1], color\frame)
          ; draw_roundbox_( _this_\bar\BTN[1]\x, _this_\bar\BTN[1]\y, _this_\bar\BTN[1]\width, _this_\bar\BTN[1]\height, _this_\bar\BTN[1]\round, _this_\bar\BTN[1]\round, _this_\bar\BTN[1]\color\frame[_this_\bar\BTN[1]\ColorState( )] & $FFFFFF | _this_\bar\BTN[1]\AlphaState24( ) )
       EndIf
-      If Not _this_\bar\BTN[2]\mask & #__mask_hidden
+      If Not _this_\bar\BTN[2]\mask & #__MASK_hidden
          If _this_\bar\BTN[2]\arrow\size
             If _this_\flagmask & #__spin_Plus 
                __draw_plus( _this_\bar\BTN[2], Bool( Not _this_\bar\invert ) )
@@ -1943,8 +1957,8 @@ CompilerIf Not Defined( DD, #PB_Module )
    XIncludeFile "include/DD.pbi"
 CompilerEndIf
 ; IDE Options = PureBasic 6.40 (Windows - x64)
-; CursorPosition = 1676
-; FirstLine = 1514
-; Folding = --------9-----------Mw-------------------
+; CursorPosition = 795
+; FirstLine = 636
+; Folding = --------9-----------Nw--------------------
 ; EnableXP
 ; DPIAware

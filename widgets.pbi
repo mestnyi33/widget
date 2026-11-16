@@ -8061,11 +8061,7 @@ Module widgets
             _row_address_\ColorState( ) = #__s_2 ; Цвет выделения/нажатия
                                                  ; 3. Инвалидация (запрос на перерисовку виджета)
             repaint_set( _this_ )
-            If  ListSize(__GUI\event\binds( ))
-               Post(_this_, #__EVENT_StatusChange, _row_index_, _row_address_ )
-            Else
-               AddEvents(_this_, #__EVENT_StatusChange, _row_index_, _row_address_ )
-            EndIf
+            PostEvents(_this_, #__EVENT_StatusChange, _row_index_, _row_address_ )
          EndIf
       ElseIf _row_address_\mask & #__MASK_Active
          ; Переключаем на яркий цвет только при выполнении всех условий активности
@@ -8073,62 +8069,34 @@ Module widgets
             Not (_this_\RowEntered( ) And (_this_\mask & #__MASK_Press)) 
             If  _row_address_\ColorState( ) <> #__s_2
                _row_address_\ColorState( ) = #__s_2 ; Цвет выделения/нажатия
-                                                    ; 3. Инвалидация (запрос на перерисовку виджета)
-               repaint_set( _this_ )
-               If  ListSize(__GUI\event\binds( ))
-                  Post(_this_, #__EVENT_StatusChange, _row_index_, _row_address_ )
-               Else
-                  AddEvents(_this_, #__EVENT_StatusChange, _row_index_, _row_address_ )
-               EndIf
-            EndIf
+           EndIf
          Else
             If _row_address_\ColorState( ) <> #__s_3
                _row_address_\ColorState( ) = #__s_3 ; Неактивное выделение (блеклый цвет)
-                                                    ; 3. Инвалидация (запрос на перерисовку виджета)
-               repaint_set( _this_ )
-               If  ListSize(__GUI\event\binds( ))
-                  Post(_this_, #__EVENT_StatusChange, _row_index_, _row_address_ )
-               Else
-                  AddEvents(_this_, #__EVENT_StatusChange, _row_index_, _row_address_ )
-               EndIf
             EndIf
          EndIf
+         ;
+         repaint_set( _this_ )
+        PostEvents(_this_, #__EVENT_StatusChange, _row_index_, _row_address_ )
          
       ElseIf _row_address_\mask & #__MASK_Hover
          If _row_address_\ColorState( ) <> #__s_1
             _row_address_\ColorState( ) = #__s_1 ; Обычный цвет наведения (подсветка)
-                                                 ; 3. Инвалидация (запрос на перерисовку виджета)
+                                                
             repaint_set( _this_ )
-            If  ListSize(__GUI\event\binds( ))
-               Post(_this_, #__EVENT_StatusChange, _row_index_, _row_address_ )
-            Else
-               AddEvents(_this_, #__EVENT_StatusChange, _row_index_, _row_address_ )
-            EndIf
+            PostEvents(_this_, #__EVENT_StatusChange, _row_index_, _row_address_ )
          EndIf
       Else
          ; Дефолтное состояние (мыши нет, фокуса нет)
          If  _row_address_\ColorState( ) <> #__s_0
             _row_address_\ColorState( ) = #__s_0 ; Обычный цвет строки
-                                                 ; 3. Инвалидация (запрос на перерисовку виджета)
+                                             
             repaint_set( _this_ )
-            If  ListSize(__GUI\event\binds( ))
-               Post(_this_, #__EVENT_StatusChange, _row_index_, _row_address_ )
-            Else
-               AddEvents(_this_, #__EVENT_StatusChange, _row_index_, _row_address_ )
-            EndIf
+            PostEvents(_this_, #__EVENT_StatusChange, _row_index_, _row_address_ )
          EndIf
       EndIf
-      
-      ;       ; 3. Инвалидация (запрос на перерисовку виджета)
-      ;       repaint_set( _this_ )
-      ;       If  ListSize(__GUI\event\binds( ))
-      ;          Post(_this_, #__EVENT_StatusChange, _row_index_, _row_address_ )
-      ;       Else
-      ;          AddEvents(_this_, #__EVENT_StatusChange, _row_index_, _row_address_ )
-      ;       EndIf
    EndMacro
-   
-   
+  
    Procedure   StatusChange( *this._s_WIDGET, *row._s_ROW )
       If Not *row : ProcedureReturn : EndIf
       Protected._s_ROW *row_sel
@@ -17124,37 +17092,22 @@ Module widgets
          
          ;
          If event = #__EVENT_MouseWheel
-            ;\\ mouse wheel verticl
-            If MouseDirection( ) > 0
-               ; Debug "wheelY " + *data
+            If *this\scroll
                If Not *this\mask & #__MASK_Hidden
-                  If *this\scroll And *this\scroll\v  
-                     If *this\scroll\v\bar\page\end
+                  ;\\ mouse wheel verticl
+                  If WheelDirection( ) > 0
+                     If *this\scroll\v And *this\scroll\v\bar\page\end
                         If bar_PageChange( *this\scroll\v, *this\scroll\v\bar\page\pos - *data, 2 )
                            repaint_set( *this )
                         EndIf
                      EndIf
-                  Else
-                     ;                         If *this\bar And bar_PageChange( *this, *this\bar\page\pos - *data, 2 )
-                     ;                            repaint_set( *this )
-                     ;                         EndIf
-                  EndIf
-               EndIf
-               ;\\ mouse wheel horizontal
-            Else
-               ; Debug "wheelX " + *data
-               If Not *this\mask & #__MASK_Hidden
-                  If *this\scroll And *this\scroll\h 
-                     ;Debug *this\scroll\h\bar\page\end
-                     If *this\scroll\h\bar\page\end
+                     ;\\ mouse wheel horizontal
+                  ElseIf WheelDirection() < 0
+                     If *this\scroll\h And *this\scroll\h\bar\page\end
                         If bar_PageChange( *this\scroll\h, *this\scroll\h\bar\page\pos - *data, 2 )
                            repaint_set( *this )
                         EndIf
                      EndIf
-                  Else
-                     ;                         If *this\bar And bar_PageChange( *this, *this\bar\page\pos - *data, 2 )
-                     ;                            repaint_set( *this )
-                     ;                         EndIf
                   EndIf
                EndIf
             EndIf
@@ -17331,17 +17284,15 @@ Module widgets
             Debug " " + PBEventString(eventtype) +" "+ eventgadget +" "+ eventdata
          EndIf
          If Entered( )
-            If eventdata < 0
-               MouseMask( ) | (#__MASK_Update|#__MASK_left)
-            ElseIf eventdata > 0
-               MouseMask( ) | (#__MASK_Update|#__MASK_Right)
+            If eventdata
+               WheelDirection( ) = -1
+               WheelData( ) = eventdata
+                If is_scrollbars_( Entered( ) )
+                  DoEvents( Entered( )\parent, #__EVENT_MouseWheel, #PB_All, eventdata )
+               Else
+                  DoEvents( Entered( ), #__EVENT_MouseWheel, #PB_All, eventdata )
+               EndIf
             EndIf
-            If is_scrollbars_( Entered( ) )
-               DoEvents( Entered( )\parent, #__EVENT_MouseWheel, #PB_All, eventdata )
-            Else
-               DoEvents( Entered( ), #__EVENT_MouseWheel, #PB_All, eventdata )
-            EndIf
-            ;MouseDirection( ) = 0
          EndIf
       EndIf
       
@@ -17350,17 +17301,15 @@ Module widgets
             Debug " " + PBEventString(eventtype) +" "+ eventgadget +" "+ eventdata
          EndIf
          If Entered( )
-            If eventdata < 0
-               MouseMask( ) | (#__MASK_Update|#__MASK_top)
-            ElseIf eventdata > 0
-               MouseMask( ) | (#__MASK_Update|#__MASK_bottom)
+            If eventdata
+               WheelDirection( ) = 1
+               WheelData( ) = eventdata
+               If is_scrollbars_( Entered( ) )
+                  DoEvents( Entered( )\parent, #__EVENT_MouseWheel, #PB_All, eventdata )
+               Else
+                  DoEvents( Entered( ), #__EVENT_MouseWheel, #PB_All, eventdata )
+               EndIf
             EndIf
-            If is_scrollbars_( Entered( ) )
-               DoEvents( Entered( )\parent, #__EVENT_MouseWheel, #PB_All, eventdata )
-            Else
-               DoEvents( Entered( ), #__EVENT_MouseWheel, #PB_All, eventdata )
-            EndIf
-            ;MouseDirection( ) = 0
          EndIf
       EndIf
       
@@ -24292,7 +24241,7 @@ Module widgets
       EndIf
    EndProcedure
    
-   
+   ;-
    ; 2,278 commit
    Procedure.i Post( *this._s_WIDGET, event.l, *btn = #PB_All, *data = #Null )
       Protected result = #True
@@ -24548,7 +24497,7 @@ Module widgets
       
       ProcedureReturn #True
    EndProcedure
-   
+  
    ;-
    Procedure   PostQuit( *root._s_ROOT = #Null )
       If __GUI\event\loop = #True
@@ -26170,9 +26119,9 @@ CompilerIf #PB_Compiler_IsMainFile
    
 CompilerEndIf
 ; IDE Options = PureBasic 6.40 (Windows - x64)
-; CursorPosition = 14522
-; FirstLine = 12395
-; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------v-----------------------------------------------------------------------------------------------------------------------------v+---u7-----------------------u0--+-------4-----6--------+-----0-u---------------8----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+; CursorPosition = 8075
+; FirstLine = 8058
+; Folding = ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+f----------------------------------------------------------------------------------------------------------------v+---u8-----------------------u0--+-------4-----6--------------------------------------------------------------------------------------------------------------------------8--0-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ; EnableXP
 ; DPIAware
 ; Executable = widgets-.app.exe

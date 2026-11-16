@@ -259,7 +259,7 @@ CompilerIf #PB_Compiler_IsMainFile
             SetText( EventWidget( ), *g1\RowFocused( )\txt(0)\text )
             
          Case #__EVENT_MouseWheel
-            If MouseDirection( ) > 0
+            If WheelDirection( ) > 0
                SetState(*g1\scroll\v, GetState( *g1\scroll\v ) - WidgetEventData( ) )
             EndIf
             
@@ -769,8 +769,8 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.40 (Windows - x64)
-; CursorPosition = 308
-; FirstLine = 298
-; Folding = ---------------
+; CursorPosition = 261
+; FirstLine = 248
+; Folding = ------------88-
 ; EnableXP
 ; DPIAware

@@ -962,7 +962,7 @@ Procedure   PropertiesButton_Events( )
          EndSelect
          
       Case #__EVENT_MouseWheel
-         If MouseDirection( ) > 0
+         If WheelDirection( ) > 0
             If Type(*g) = #__type_Spin
                Debug "PropertiesButton__EVENT_MouseWheel "+*g\class
                SetState(*g, GetState( *g ) - WidgetEventData( ))
@@ -2722,7 +2722,7 @@ Procedure   ide_events( )
          *row = __data
          ;
          If  *g\RowEntered( )
-            If  *g\RowEntered( ) = *row   : Debug "enter "+*row\txt(0)\text
+            If  *g\RowEntered( ) = *row  ; : Debug "enter "+*row\txt(0)\text
                If *g = ide_all_ELEMENTS
                   SetText( ide_help_VIEW, ide_help_VIEW_elements( GetItemText( *g, __item ) ) )
                EndIf
@@ -2745,7 +2745,7 @@ Procedure   ide_events( )
                   EndSelect
                EndIf
             EndIf
-         Else                                          : Debug "leave "+ *row\txt(0)\text
+         Else                                        ;  : Debug "leave "+ *row\txt(0)\text
             SetText( ide_help_VIEW, "inspector help" )
          EndIf
          
@@ -3380,8 +3380,8 @@ DataSection
    image_group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
 ; IDE Options = PureBasic 6.40 (Windows - x64)
-; CursorPosition = 2724
-; FirstLine = 2719
+; CursorPosition = 964
+; FirstLine = 960
 ; Folding = --------------------------------------------------------fw------
 ; EnableXP
 ; DPIAware

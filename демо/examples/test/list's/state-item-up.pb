@@ -116,7 +116,7 @@ CompilerIf #PB_Compiler_IsMainFile
             ChangeItemState( *second, GetData( EventWidget( )), 3 )
             
          Case #__event_MouseWheel
-            If MouseDirection( ) > 0
+            If WheelDirection( ) > 0
                SetState(*second\scroll\v, GetState( *second\scroll\v ) - WidgetEventData( ) )
             EndIf
       EndSelect
@@ -386,8 +386,8 @@ CompilerIf #PB_Compiler_IsMainFile
    EndIf
 CompilerEndIf
 ; IDE Options = PureBasic 6.40 (Windows - x64)
-; CursorPosition = 283
-; FirstLine = 283
+; CursorPosition = 118
+; FirstLine = 114
 ; Folding = -----------
 ; EnableXP
 ; DPIAware
