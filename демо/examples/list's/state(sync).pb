@@ -28,7 +28,9 @@ CompilerIf #PB_Compiler_IsMainFile
       
       Select WidgetEvent( )
          Case #__EVENT_Focus : PropertiesItems_StatusChange( *g2, GetData(*this), #__s_2)
+            Debug " >>> "+*this\class
          Case #__EVENT_LostFocus : PropertiesItems_StatusChange( *g2, GetData(*this), #__s_3)
+            Debug " <<< "+*this\class
             
       EndSelect
       
@@ -417,41 +419,41 @@ CompilerIf #PB_Compiler_IsMainFile
    ;             Debug ""+*row\index +" Press" 
    ;          EndIf
    ;       Next
-   
-   Button(330, 10, 60, 30,"multi")
-   Button(330, 50, 60, 30,"click")
-   Button(330, 90, 60, 30,"single")
-   
-   Procedure event_first_item()
-      Debug"---->>>---"
-      SetState( *g1, 0)
-      ;SetActive(*g1)
-      ;Repaint( )
-      Debug"----<<<---"
-   EndProcedure
-   Bind(Button(330, 130, 20, 30,"<"), @event_first_item(), #__EVENT_Down)
-   Procedure event_reset_item()
-      Debug"---->>>---"
-      SetState( *g1,  -1)
-      ;SetActive(*g1)
-      ;Repaint( )
-      Debug"----<<<---"
-   EndProcedure
-   Bind(Button(350, 130, 20, 30,"|"), @event_reset_item(), #__EVENT_Down)
-   Procedure event_last_item()
-      Debug"---->>>---"
-      SetState( *g1, CountItems(*g1))
-      ;SetActive(*g1)
-      ;Repaint( )
-      Debug"----<<<---"
-   EndProcedure
-   Bind(Button(370, 130, 20, 30,">"), @event_last_item(), #__EVENT_Down)
-   
+;    
+;    Button(330, 10, 60, 30,"multi")
+;    Button(330, 50, 60, 30,"click")
+;    Button(330, 90, 60, 30,"single")
+;    
+;    Procedure event_first_item()
+;       Debug"---->>>---"
+;       SetState( *g1, 0)
+;       ;SetActive(*g1)
+;       ;Repaint( )
+;       Debug"----<<<---"
+;    EndProcedure
+;    Bind(Button(330, 130, 20, 30,"<"), @event_first_item(), #__EVENT_Down)
+;    Procedure event_reset_item()
+;       Debug"---->>>---"
+;       SetState( *g1,  -1)
+;       ;SetActive(*g1)
+;       ;Repaint( )
+;       Debug"----<<<---"
+;    EndProcedure
+;    Bind(Button(350, 130, 20, 30,"|"), @event_reset_item(), #__EVENT_Down)
+;    Procedure event_last_item()
+;       Debug"---->>>---"
+;       SetState( *g1, CountItems(*g1))
+;       ;SetActive(*g1)
+;       ;Repaint( )
+;       Debug"----<<<---"
+;    EndProcedure
+;    Bind(Button(370, 130, 20, 30,">"), @event_last_item(), #__EVENT_Down)
+;    
    WaitClose(@all_events())
 CompilerEndIf
-; IDE Options = PureBasic 6.40 (Windows - x64)
-; CursorPosition = 180
-; FirstLine = 144
-; Folding = ---v47-Ht--
+; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
+; CursorPosition = 450
+; FirstLine = 286
+; Folding = -37v47-Ht-
 ; EnableXP
 ; DPIAware

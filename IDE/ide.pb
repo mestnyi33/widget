@@ -2721,8 +2721,8 @@ Procedure   ide_events( )
       Case #__EVENT_StatusChange
          *row = __data
          ;
-         If  *g\RowEntered( )
-            If  *g\RowEntered( ) = *row  ; : Debug "enter "+*row\txt(0)\text
+         If *g\RowEntered( )
+            If *g\RowEntered( ) = *row  ; : Debug "enter "+*row\txt(0)\text
                If *g = ide_all_ELEMENTS
                   SetText( ide_help_VIEW, ide_help_VIEW_elements( GetItemText( *g, __item ) ) )
                EndIf
@@ -2746,7 +2746,13 @@ Procedure   ide_events( )
                EndIf
             EndIf
          Else                                        ;  : Debug "leave "+ *row\txt(0)\text
-            SetText( ide_help_VIEW, "inspector help" )
+            If *g\RowFocused( ) And *g\RowFocused( )\ColorState( ) = #__s_2
+               If *g = ide_all_ELEMENTS
+                  SetText( ide_help_VIEW, ide_help_VIEW_elements( GetItemText( *g, *g\RowFocused( )\index ) ) )
+               EndIf
+            Else
+               SetText( ide_help_VIEW, "inspector help" )
+            EndIf
          EndIf
          
    EndSelect
@@ -3379,10 +3385,10 @@ DataSection
    image_group_width:      : IncludeBinary "group/group_width.png"
    image_group_height:     : IncludeBinary "group/group_height.png"
 EndDataSection
-; IDE Options = PureBasic 6.40 (Windows - x64)
-; CursorPosition = 964
-; FirstLine = 960
+; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
+; CursorPosition = 2750
+; FirstLine = 2730
 ; Folding = --------------------------------------------------------fw------
 ; EnableXP
 ; DPIAware
-; Executable = ..\..\2_621.exe
+; Executable = ../../2_621.exe
