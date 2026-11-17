@@ -20735,9 +20735,6 @@ Module widgets
    
    Procedure.b Draw( *this._s_WIDGET )
       Protected arrow_right
-      If MousePress() ; *this\mask & #__MASK_Press
-         Debug " DRAW "+*this\class
-      EndIf
       
       With *this
          If *this\root\drawmode & 1<<2

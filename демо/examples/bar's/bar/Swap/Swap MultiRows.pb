@@ -43,7 +43,7 @@ EndStructure
 Structure _s_BTN Extends _s_BOX
    ;color._s_color
    ;arrow._s_arrow
-   type.l       
+   Type.l       
 EndStructure
      
 Structure _s_TAB  Extends _s_BOX
@@ -85,7 +85,7 @@ Structure _s_WIDGET Extends _s_COORDINATE
    change.b
    padding.a
    ;    spacing.a             
-   tab._s_TABS
+   Tab._s_TABS
    dragOffSet.i     ; Точка захвата мыши
    
    canvasID     .i  
@@ -244,21 +244,21 @@ Procedure.i TotalSize(*this._s_WIDGET, gWidth)
    ProcedureReturn DesktopUnscaledY(maxheight + BottonSpacing)
 EndProcedure
 
-Procedure AddBTN( type.l, size.l)
+Procedure AddBTN( Type.l, size.l)
    Protected._s_BTN *btn = AllocateStructure(_s_BTN) 
-   *btn\type = type
+   *btn\type = Type
    *btn\size = size
    ProcedureReturn *btn
 EndProcedure
 
 ; добавление вкладки и автоматическое создание её контейнера под холстом
-Procedure AddTab(*this._s_WIDGET, title$,  image.i = 0, tabcolor.l=0);$ffffffff)
+Procedure AddTab(*this._s_WIDGET, title$,  Image.i = 0, tabcolor.l=0);$ffffffff)
    Protected._s_TAB *tab = AddElement(*this\tab\_s())
    
    *tab\btn = AddBTN( #__BTN_Close, DesktopScaledX(7))
    
    *tab\txt\text = title$
-   *tab\img\image = image ; записываем ID картинки
+   *tab\img\image = Image ; записываем ID картинки
    
    If Not tabcolor
       tabcolor = RGB(Random(50)+200, Random(50)+200, Random(50)+200)
@@ -326,7 +326,7 @@ EndProcedure
 
 ;-
 ; полностью адаптивная процедура рендеринга ретро-трапеции
-Procedure ChromeBox(vertical.b, x, y, w, h, isactive, currentcolor.l, localslant.a, GradientDepth = 25, outerbordercolor.l = -1, innerhighlightcolor.l = -1)
+Procedure ChromeBox(vertical.b, X, Y, w, h, isactive, currentcolor.l, localslant.a, GradientDepth = 25, outerbordercolor.l = -1, innerhighlightcolor.l = -1)
   Protected dy, dh = h - 1, dw = w - 1
    
   ; dh = h
@@ -387,10 +387,10 @@ Procedure ChromeBox(vertical.b, x, y, w, h, isactive, currentcolor.l, localslant
       ; Отрисовка линии в зависимости от направления
       If vertical
          ; Рисуем вертикальные полоски слева направо
-         Line(x + stepVar, y + currentSlantVal, 1, currentLength, color)
+         Line(X + stepVar, Y + currentSlantVal, 1, currentLength, color)
       Else
          ; Рисуем горизонтальные полоски сверху вниз
-         Line(x + currentSlantVal, y + stepVar, currentLength, 1, color)
+         Line(X + currentSlantVal, Y + stepVar, currentLength, 1, color)
       EndIf
       
       ColorAccum + ColorStepFixed
@@ -400,31 +400,31 @@ Procedure ChromeBox(vertical.b, x, y, w, h, isactive, currentcolor.l, localslant
    ; 4. Отрисовка контуров
    If vertical
       ; === ВЕРТИКАЛЬНЫЙ РЕЖИМ (Вкладка «смотрит» вверх, основание справа) ===
-      LineXY(x + dw, y, x, y + localslant, outerbordercolor)             
-      LineXY(x, y + localslant, x, y + h - 1 - localslant, outerbordercolor)         
-      LineXY(x, y + h - 1 - localslant, x + dw, y + h - 1, outerbordercolor)     
+      LineXY(X + dw, Y, X, Y + localslant, outerbordercolor)             
+      LineXY(X, Y + localslant, X, Y + h - 1 - localslant, outerbordercolor)         
+      LineXY(X, Y + h - 1 - localslant, X + dw, Y + h - 1, outerbordercolor)     
       
       If isactive
-         LineXY(x + dw, y + 1, x + 1, y + localslant + 1, innerhighlightcolor)
-         LineXY(x + 1, y + localslant + 1, x + 1, y + h - 1 - localslant - 1, innerhighlightcolor)
-         LineXY(x + 1, y + h - 1 - localslant - 1, x + dw, y + h - 2, innerhighlightcolor)
+         LineXY(X + dw, Y + 1, X + 1, Y + localslant + 1, innerhighlightcolor)
+         LineXY(X + 1, Y + localslant + 1, X + 1, Y + h - 1 - localslant - 1, innerhighlightcolor)
+         LineXY(X + 1, Y + h - 1 - localslant - 1, X + dw, Y + h - 2, innerhighlightcolor)
       Else
          ; Замыкающая линия справа (стык с панелью)
-         LineXY(x + dw, y, x + dw, y + h - 1, outerbordercolor)
+         LineXY(X + dw, Y, X + dw, Y + h - 1, outerbordercolor)
       EndIf
    Else
       ; === ГОРИЗОНТАЛЬНЫЙ РЕЖИМ (Классический Chrome) ===
-      LineXY(x, y + dh, x + localslant, y, outerbordercolor)             
-      LineXY(x + localslant, y, x + w - 1 - localslant, y, outerbordercolor)         
-      LineXY(x + w - 1 - localslant, y, x + w - 1, y + dh, outerbordercolor)     
+      LineXY(X, Y + dh, X + localslant, Y, outerbordercolor)             
+      LineXY(X + localslant, Y, X + w - 1 - localslant, Y, outerbordercolor)         
+      LineXY(X + w - 1 - localslant, Y, X + w - 1, Y + dh, outerbordercolor)     
       
       If isactive
-         LineXY(x + 1, y + dh, x + localslant + 1, y + 1, innerhighlightcolor)
-         LineXY(x + localslant + 1, y + 1, x + w - 1 - localslant - 1, y + 1, innerhighlightcolor)
-         LineXY(x + w - 1 - localslant - 1, y + 1, x + w - 2, y + dh, innerhighlightcolor)
+         LineXY(X + 1, Y + dh, X + localslant + 1, Y + 1, innerhighlightcolor)
+         LineXY(X + localslant + 1, Y + 1, X + w - 1 - localslant - 1, Y + 1, innerhighlightcolor)
+         LineXY(X + w - 1 - localslant - 1, Y + 1, X + w - 2, Y + dh, innerhighlightcolor)
       Else
          ; Замыкающая линия снизу
-         LineXY(x, y + dh, x + w - 1, y + dh, outerbordercolor)
+         LineXY(X, Y + dh, X + w - 1, Y + dh, outerbordercolor)
       EndIf
    EndIf
 EndProcedure
@@ -469,7 +469,7 @@ EndProcedure
 ;-
 Procedure draw_TabButton(*tab._s_TAB, bgcolor.l)
    ; Высчитываем цвет точно так же, как для неактивного таба
-   Protected.l pluscolor = MakeColor(bgcolor, 10 + (*tab\mask & #__MASK_Hover)  *30) ; RGB(nabaser, nabaseg, nabaseb)
+   Protected.l pluscolor = MakeColor(bgcolor, 10 + (*tab\mask & #__MASK_Hover) * 30) ; RGB(nabaser, nabaseg, nabaseb)
    
    ; Трюк со Slant: подменяем его локально только на время отрисовки этой кнопки
    ChromeBox(0, *tab\x, *tab\y, *tab\Width, *tab\Height, 0, pluscolor, 8)
@@ -818,9 +818,9 @@ If OpenWindow(0, 0, 0, windoww, windowh, "chrome tabs with container logic", #PB
       EndSelect
    ForEver
 EndIf
-; IDE Options = PureBasic 6.40 (Windows - x64)
-; CursorPosition = 437
-; FirstLine = 326
+; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
+; CursorPosition = 470
+; FirstLine = 365
 ; Folding = ------8-----------
 ; EnableXP
 ; DPIAware

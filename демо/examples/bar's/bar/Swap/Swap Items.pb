@@ -66,6 +66,7 @@ EndEnumeration
 #__maskrow_collapsed = 1 << 24        ; Свернуто (Узел/Ветка)
 
 #__MASK_change    = #__maskrow_change
+#__MASK_UpdateTotalSize = 1<<25
 
 ; =====================================================================
 ; 2. СТРУКТУРЫ ДАННЫХ
@@ -92,7 +93,7 @@ EndStructure
 Structure _s_BTN Extends _s_BOX
    ;color._s_color
    ;arrow._s_arrow
-   type.l       
+   Type.l       
 EndStructure
      
 Structure _s_TAB  Extends _s_BOX
@@ -131,6 +132,7 @@ Structure _s_TABS
 EndStructure
 
 Structure _s_WIDGET Extends _s_COORDINATE
+   mask.q
    change.b
    ;    padding.a
    ;    spacing.a             
@@ -175,7 +177,8 @@ Procedure.i MakeAlignPosition(alignFlags.l, contentSize.i, objectSize.i, Offset.
    EndIf
 EndProcedure
 
-Procedure ChromeBox(vertical.b, x, y, w, h, isactive, currentcolor.l, localslant.a, GradientDepth = 65, outerbordercolor.l = -1, innerhighlightcolor.l = -1)
+;-
+Procedure ChromeBox(vertical.b, X, Y, w, h, isactive, currentcolor.l, localslant.a, GradientDepth = 65, outerbordercolor.l = -1, innerhighlightcolor.l = -1)
    Protected dy, dh = h - 1, dw = w - 1
    If h <= 0 Or w <= 0 : ProcedureReturn : EndIf 
    
@@ -234,10 +237,10 @@ Procedure ChromeBox(vertical.b, x, y, w, h, isactive, currentcolor.l, localslant
       ; Отрисовка линии в зависимости от направления
       If vertical
          ; Рисуем вертикальные полоски слева направо
-         Line(x + stepVar, y + currentSlantVal, 1, currentLength, color)
+         Line(X + stepVar, Y + currentSlantVal, 1, currentLength, color)
       Else
          ; Рисуем горизонтальные полоски сверху вниз
-         Line(x + currentSlantVal, y + stepVar, currentLength, 1, color)
+         Line(X + currentSlantVal, Y + stepVar, currentLength, 1, color)
       EndIf
       
       ColorAccum + ColorStepFixed
@@ -247,31 +250,31 @@ Procedure ChromeBox(vertical.b, x, y, w, h, isactive, currentcolor.l, localslant
    ; 4. Отрисовка контуров
    If vertical
       ; === ВЕРТИКАЛЬНЫЙ РЕЖИМ (Вкладка «смотрит» вверх, основание справа) ===
-      LineXY(x + dw, y, x, y + localslant, outerbordercolor)             
-      LineXY(x, y + localslant, x, y + h - 1 - localslant, outerbordercolor)         
-      LineXY(x, y + h - 1 - localslant, x + dw, y + h - 1, outerbordercolor)     
+      LineXY(X + dw, Y, X, Y + localslant, outerbordercolor)             
+      LineXY(X, Y + localslant, X, Y + h - 1 - localslant, outerbordercolor)         
+      LineXY(X, Y + h - 1 - localslant, X + dw, Y + h - 1, outerbordercolor)     
       
       If isactive
-         LineXY(x + dw, y + 1, x + 1, y + localslant + 1, innerhighlightcolor)
-         LineXY(x + 1, y + localslant + 1, x + 1, y + h - 1 - localslant - 1, innerhighlightcolor)
-         LineXY(x + 1, y + h - 1 - localslant - 1, x + dw, y + h - 2, innerhighlightcolor)
+         LineXY(X + dw, Y + 1, X + 1, Y + localslant + 1, innerhighlightcolor)
+         LineXY(X + 1, Y + localslant + 1, X + 1, Y + h - 1 - localslant - 1, innerhighlightcolor)
+         LineXY(X + 1, Y + h - 1 - localslant - 1, X + dw, Y + h - 2, innerhighlightcolor)
       Else
          ; Замыкающая линия справа (стык с панелью)
-         LineXY(x + dw, y, x + dw, y + h - 1, outerbordercolor)
+         LineXY(X + dw, Y, X + dw, Y + h - 1, outerbordercolor)
       EndIf
    Else
       ; === ГОРИЗОНТАЛЬНЫЙ РЕЖИМ (Классический Chrome) ===
-      LineXY(x, y + dh, x + localslant, y, outerbordercolor)             
-      LineXY(x + localslant, y, x + w - 1 - localslant, y, outerbordercolor)         
-      LineXY(x + w - 1 - localslant, y, x + w - 1, y + dh, outerbordercolor)     
+      LineXY(X, Y + dh, X + localslant, Y, outerbordercolor)             
+      LineXY(X + localslant, Y, X + w - 1 - localslant, Y, outerbordercolor)         
+      LineXY(X + w - 1 - localslant, Y, X + w - 1, Y + dh, outerbordercolor)     
       
       If isactive
-         LineXY(x + 1, y + dh, x + localslant + 1, y + 1, innerhighlightcolor)
-         LineXY(x + localslant + 1, y + 1, x + w - 1 - localslant - 1, y + 1, innerhighlightcolor)
-         LineXY(x + w - 1 - localslant - 1, y + 1, x + w - 2, y + dh, innerhighlightcolor)
+         LineXY(X + 1, Y + dh, X + localslant + 1, Y + 1, innerhighlightcolor)
+         LineXY(X + localslant + 1, Y + 1, X + w - 1 - localslant - 1, Y + 1, innerhighlightcolor)
+         LineXY(X + w - 1 - localslant - 1, Y + 1, X + w - 2, Y + dh, innerhighlightcolor)
       Else
          ; Замыкающая линия снизу
-         LineXY(x, y + dh, x + w - 1, y + dh, outerbordercolor)
+         LineXY(X, Y + dh, X + w - 1, Y + dh, outerbordercolor)
       EndIf
    EndIf
 EndProcedure
@@ -418,6 +421,7 @@ Procedure TotalSize(*this._s_WIDGET)
    EndIf
 EndProcedure
 
+;-
 Procedure DrawTab(*tab._s_TAB, slant, bgColor.l=$FF808080, vertical.b=0, isActive.b=0)
    Protected txColor 
    
@@ -465,7 +469,12 @@ Procedure DrawTabs(*this._s_WIDGET, *current_tab._s_TAB)
          DrawTab(*tab, *this\tab\slant, bgColor, vertical, 0)
       EndIf
    Next
-   
+     
+   If *this\mask & #__MASK_UpdateTotalSize
+      *this\mask &~ #__MASK_UpdateTotalSize
+      TotalSize(*this)
+   EndIf
+
    ; Слой 2: Летящая поверх
    If *current_tab
       DrawTab(*current_tab, *this\tab\slant, *current_tab\data, vertical, 1)
@@ -649,7 +658,8 @@ Procedure DoEventTAB(*this._s_WIDGET, *hoverTAB._s_TAB, event.i, mousePos.i)
             *this\tab\press = #Null
             
             ; Вызываем внутренние процедуры обновления состояния и перерисовки
-            TotalSize(*this)
+            *this\mask | #__MASK_UpdateTotalSize
+            ReDraw(*this)
             ProcedureReturn #True
          EndIf
          
@@ -779,17 +789,18 @@ Procedure AddTab(*this._s_WIDGET, ID.i, Text.s, size.i, Image.i = 0, align.a = #
    EndIf
    
    *tab\data =RGBA(Random(50)+200, Random(50)+200, Random(50)+200, 255)
+   *this\mask | #__MASK_UpdateTotalSize
    ProcedureReturn *tab
 EndProcedure
 
-Procedure CreateTab( Canvas, x.l,y.l,width.l,height.l )
+Procedure CreateTab( Canvas, X.l,Y.l,Width.l,Height.l )
    Protected *this._s_WIDGET = AllocateStructure(_s_WIDGET)
    *this\tab\vertical = 0
    *this\canvasid  = Canvas
-   *this\X = DesktopScaledX(x)
-   *this\y = DesktopScaledY(y)
-   *this\Width = DesktopScaledX(width)
-   *this\Height = DesktopScaledY(height)
+   *this\X = DesktopScaledX(X)
+   *this\y = DesktopScaledY(Y)
+   *this\Width = DesktopScaledX(Width)
+   *this\Height = DesktopScaledY(Height)
    
    *this\tab\slant = DesktopScaledX(20)
    *this\tab\indent = DesktopScaledX(50) ; Отступ панели слева
@@ -808,16 +819,23 @@ EndProcedure
 #Canvas = 0
 
 
-Procedure Resize_(*this._s_WIDGET)
-   *this\change = 1
-   *this\Width = 240
-   *this\Height = 40
-   TotalSize(*this)
-   Define w = *this\Width
-   Define h = *this\Height
+Procedure Resize_(w,h)
    ResizeWindow(#Win, #PB_Ignore, #PB_Ignore, w + 40, h + 40)
    ResizeGadget(#Canvas, #PB_Ignore, #PB_Ignore, w + 20, h + 20)
    HideWindow(#Win, 0, #PB_Window_ScreenCentered)
+EndProcedure
+
+Procedure Update(*this._s_WIDGET)
+   *this\change = 1
+   *this\Width = 240
+   *this\Height = 40
+   
+   ReDraw(*this)
+   
+   
+   Define w = *this\Width
+   Define h = *this\Height
+   Resize_(w,h)
    ReDraw( *this)
 EndProcedure
 
@@ -831,8 +849,7 @@ If OpenWindow(#Win, 0,0,0,0, "Наглядный Демо-Пример", #PB_Win
    AddTab(*this, 2, "2 - 150", 150, (1), #__MASK_Right)
    AddTab(*this, 3, "3 - 90", 90, (1))
    ;
-   ReDraw(*this)
-   Resize_(*this)
+   Update(*this)
    
    Repeat
       Define Event = WaitWindowEvent()
@@ -847,8 +864,7 @@ If OpenWindow(#Win, 0,0,0,0, "Наглядный Демо-Пример", #PB_Win
             AddTab(*this, 2, "2 - 150", 150, (1), #__MASK_Right)
             AddTab(*this, 3, "3 - 90", 90, (1))
             ;
-            ReDraw(*this)
-            Resize_( *this )
+            Update( *this )
          EndIf
          
          If DoEvent( *this, EventType(),
@@ -860,9 +876,9 @@ If OpenWindow(#Win, 0,0,0,0, "Наглядный Демо-Пример", #PB_Win
       
    Until Event = #PB_Event_CloseWindow
 EndIf
-; IDE Options = PureBasic 6.40 (Windows - x64)
-; CursorPosition = 101
-; FirstLine = 90
+; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
+; CursorPosition = 505
+; FirstLine = 499
 ; Folding = --------------------
 ; EnableXP
 ; EnableOnError
