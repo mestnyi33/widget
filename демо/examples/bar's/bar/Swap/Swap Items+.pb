@@ -14,7 +14,7 @@ EndIf
 ; =====================================================================
 Enumeration
    #__BTN_Title    ; Сам заголовок (Иконка + Текст). Занимает всё свободное место!
-                  ; --- Кнопки управления (выстраиваются справа) ---
+                   ; --- Кнопки управления (выстраиваются справа) ---
    #__BTN_Close
    #__BTN_Maximize
    #__BTN_Minimize
@@ -83,6 +83,11 @@ Structure _s_IMG Extends _s_COORDINATE
    change.b
 EndStructure
 
+Structure _s_MOUSE
+   *press._s_TAB  ; Указатель на перетаскиваемую вкладку
+   *enter._s_TAB
+EndStructure
+
 Structure _s_BOX Extends _s_COORDINATE
    size.l
    round.a
@@ -95,20 +100,20 @@ Structure _s_BTN Extends _s_BOX
    ;arrow._s_arrow
    Type.l       
 EndStructure
-     
+
 Structure _s_TAB  Extends _s_BOX
    ID.i          ; Номер элемента в списке данных строки (0, 1, 2...) 
    pos.l
    
-    ; Поля для идеальной математики плавного сдвига
+   ; Поля для идеальной математики плавного сдвига
    offset.l        ; Динамический визуальный сдвиг
    minOffset.l     ; Левый ограничитель хода
    maxOffset.l     ; Правый ограничитель хода
    
    txt._s_TXT    ; Имя поля заголовка
    img._s_IMG
-  ;  List btn._s_BTN()
- 
+   ;  List btn._s_BTN()
+   
    StructureUnion
       *data 
       ContainerID.i  ; id контейнера, привязанного к этой вкладке
@@ -117,7 +122,6 @@ EndStructure
 
 Structure _s_TABS
    *active._s_TAB   
-   *press._s_TAB  ; Указатель на перетаскиваемую вкладку
    plus._s_TAB    ; <--- Одиночная структура кнопки ПЛЮС
    
    slant.a
@@ -146,7 +150,13 @@ Structure _s_WIDGET Extends _s_COORDINATE
 EndStructure
 
 Global bottomSpacing.i = DesktopScaledX(3) 
-
+Global mouse._s_MOUSE
+Macro PressedTAB( )
+   mouse\press
+EndMacro
+Macro EnteredTAB( )
+   mouse\enter
+EndMacro
 
 ; =====================================================================
 ; 3. ЛОГИКА АЛГОРИТМА И ОТРИСОВКИ
@@ -342,85 +352,7 @@ Procedure UpdateContentPos(*tab._s_TAB, indent.a, Spacing.a, vertical.b)
    EndIf
 EndProcedure
 
-Procedure UpdateTab(*this._s_WIDGET, *tab._s_TAB, position.l, change.b=0)
-   Protected contentX.l, contentY.l
-   Protected gWidth.l =*this\Width
-   Protected gHeight.l = *this\Height
-   Protected indent.a = *this\tab\slant
-   Protected vertical.b = *this\tab\vertical
-   
-   Protected._s_TXT *txt = *tab\txt
-   Protected._s_IMG *img = *tab\img
-   
-   If *txt\change Or *img\change Or change
-      *tab\pos = position 
-      
-      ; 1. Замеры метрик (Пишем сразу в структуру только при изменениях)
-      UpdateContentSize(*tab)
-      
-      ; 2. Расчет отступа и размеров таба напрямую через структуру
-      If *img\width And *txt\width
-         Protected Spacing.i  = DesktopScaledX(6)
-      EndIf
-      
-      Protected tab_size = Spacing + indent * 2
-      If vertical 
-         tab_size + *img\height + *txt\height 
-      Else 
-         tab_size + *img\width + *txt\width 
-      EndIf
-      
-      ; Твоя проверенная защита фиксированного размера
-      If *tab\size < tab_size : *tab\size = tab_size : EndIf
-      
-      ; Общие размеры самой вкладки
-      If vertical
-         *tab\y = *this\y + *this\tab\indent + position
-         *tab\width = gWidth - BottomSpacing
-         *tab\height = *tab\size
-      Else
-         *tab\x = *this\x + *this\tab\indent + position
-         *tab\width = *tab\size
-         *tab\height = gHeight - BottomSpacing
-      EndIf 
-      
-      ; 3. ЕДИНОВРЕМЕННОЕ ВНУТРЕННЕЕ ПЕРЕСТРОЕНИЕ (Работаем напрямую со структурой)
-      UpdateContentPos(*tab, indent, Spacing, vertical)
-   EndIf
-   
-   ProcedureReturn (*tab\size - *this\tab\slant) + *this\tab\spacing
-EndProcedure
-
-
 ; Функция линейного расчета базовых координат X
-Procedure TotalSize(*this._s_WIDGET)
-   Protected position.i
-   Protected *tab._s_TAB
-   
-   ForEach *this\tab\_s()
-      *tab = @*this\tab\_s()
-      *tab\pos = position 
-      
-      If *this\tab\vertical
-         *tab\x = *this\x
-         *tab\y =  *this\y + *this\tab\indent  + *tab\pos
-      Else
-         *tab\y = *this\y
-         *tab\x =  *this\x + *this\tab\indent  + *tab\pos
-      EndIf
-      
-      position + (*tab\size - *this\tab\slant) + *this\tab\spacing
-   Next
-   
-   ; Чистый размер блока вкладок с учетом финального скоса
-   *this\tab\TotalSize = position + *this\tab\slant - *this\tab\spacing
-   If *this\tab\vertical
-      *this\Height =  *this\tab\TotalSize +  *this\tab\indent * 2
-   Else
-      *this\Width =  *this\tab\TotalSize +  *this\tab\indent * 2
-   EndIf
-EndProcedure
-
 ;-
 Procedure DrawTab(*tab._s_TAB, slant, bgColor.l=$FF808080, vertical.b=0, isActive.b=0)
    Protected txColor 
@@ -446,54 +378,118 @@ EndProcedure
 
 
 Procedure DrawTabs(*this._s_WIDGET, *current_tab._s_TAB)
-   Protected position.i, change
+   Protected position.i, widgetChanged.b, shiftTabs.b, updateSize.b
    Protected *tab._s_TAB
    Protected vertical.b = *this\tab\vertical
    Protected bgColor.l = *this\bgcolor
-   ; линия пола
-   Protected floorcolor =  MakeColor( bgColor, -30)
-   
-   ;LineXY(*this\x, *this\y+*this\Height - 1, *this\x+*this\Width, *this\y+*this\Height - 1, $ff000000);floorcolor)
+   Protected floorcolor = MakeColor(bgColor, -30)
+   Protected gWidth.l = *this\Width
+   Protected gHeight.l = *this\Height
+   Protected indent.a = *this\tab\slant
+   Protected Spacing.i, tab_size.i
+
+   ; 1. Сохраняем факт глобального изменения виджета до сброса флага
    If *this\change 
-      change = *this\change
+      widgetChanged = #True
+      shiftTabs = #True
+      updateSize = #True
       *this\change = 0
    EndIf
    
+   ; 2. Если стоит маска пересчета — сдвигаем все вкладки и обновляем общий размер
+   If *this\mask & #__MASK_UpdateTotalSize
+      *this\mask &~ #__MASK_UpdateTotalSize
+      shiftTabs = #True
+      updateSize = #True
+   EndIf
+  
    ForEach *this\tab\_s()
       *tab = @*this\tab\_s()
-      ;
-      position + UpdateTab(*this, *tab, position, change)
+      Protected._s_TXT *txt = *tab\txt
+      Protected._s_IMG *img = *tab\img
       
+      ; Проверяем, нужно ли заново замерить текст/картинку конкретно этой вкладки
+      If *txt\change Or *img\change Or widgetChanged
+         UpdateContentSize(*tab)
+         *txt\change = 0
+         *img\change = 0
+         
+         ; Раз размер этой вкладки мог измениться, сдвигаем её и все последующие
+         shiftTabs = #True
+         updateSize = #True
+      EndIf
+      
+      ; Пересчитываем геометрию и позицию вкладки, если сработал любой из триггеров
+      If shiftTabs
+         *tab\pos = position 
+         
+         If *img\width And *txt\width
+            Spacing = DesktopScaledX(6)
+         Else
+            Spacing = 0
+         EndIf
+         
+         tab_size = Spacing + indent * 2
+         If vertical 
+            tab_size + *img\height + *txt\height 
+         Else 
+            tab_size + *img\width + *txt\width 
+         EndIf
+         If *tab\size < tab_size : *tab\size = tab_size : EndIf
+         
+         If vertical
+            *tab\x = *this\x
+            *tab\y = *this\y + *this\tab\indent + position
+            *tab\width = gWidth - BottomSpacing
+            *tab\height = *tab\size
+         Else
+            *tab\y = *this\y
+            *tab\x = *this\x + *this\tab\indent + position
+            *tab\width = *tab\size
+            *tab\height = gHeight - BottomSpacing
+         EndIf 
+         
+         UpdateContentPos(*tab, indent, Spacing, vertical)
+      EndIf
+      
+      ; Считаем позицию всегда, на каждой итерации
+      position + (*tab\size - *this\tab\slant) + *this\tab\spacing
+    
       ; Слой 1: Статичные
       If *tab <> *current_tab
          DrawTab(*tab, *this\tab\slant, bgColor, vertical, 0)
       EndIf
    Next
-     
-   If *this\mask & #__MASK_UpdateTotalSize
-      *this\mask &~ #__MASK_UpdateTotalSize
-      TotalSize(*this)
+   
+   If updateSize
+      If ListSize(*this\tab\_s()) > 0
+         *this\tab\TotalSize = position + *this\tab\slant - *this\tab\spacing
+      Else
+         *this\tab\TotalSize = 0
+      EndIf
+      
+      If *this\tab\vertical
+         *this\Height = *this\tab\TotalSize + *this\tab\indent * 2
+      Else
+         *this\Width = *this\tab\TotalSize + *this\tab\indent * 2
+      EndIf
    EndIf
-
+   
    ; Слой 2: Летящая поверх
    If *current_tab
       DrawTab(*current_tab, *this\tab\slant, *current_tab\data, vertical, 1)
       Protected lineX, lineY
       floorcolor = $ff000000
       If vertical
-         ; ВЕРТИКАЛЬНЫЙ РЕЖИМ: Линия пола строится по оси Y справа от вкладки, обходя её
-         lineX = *current_tab\x + *current_tab\Width+BottomSpacing - 1
+         lineX = *current_tab\x + *current_tab\Width + BottomSpacing - 1
          lineY = *current_tab\y + *current_tab\Height
-         ; Верхний отрезок пола (от начала виджета до начала активного таба)
          Line(lineX, *this\y, 1, *current_tab\y - *this\y, floorcolor) 
-         ; Нижний отрезок пола (от конца активного таба до конца виджета)
          Line(lineX, lineY, 1, (*this\y + *this\Height) - lineY, floorcolor)
       Else
-         ; ГОРИЗОНТАЛЬНЫЙ РЕЖИМ: Твоя оригинальная попиксельная логика
-         lineX = *current_tab\x+*current_tab\Width
-         lineY = *current_tab\y + *current_tab\Height+BottomSpacing - 1
-         Line(*this\x, lineY, *current_tab\x-*this\x, 1, floorcolor) 
-         Line(lineX, lineY, (*this\x+*this\Width)-lineX, 1, floorcolor) 
+         lineX = *current_tab\x + *current_tab\Width
+         lineY = *current_tab\y + *current_tab\Height + BottomSpacing - 1
+         Line(*this\x, lineY, *current_tab\x - *this\x, 1, floorcolor) 
+         Line(lineX, lineY, (*this\x + *this\Width) - lineX, 1, floorcolor) 
       EndIf
    EndIf
 EndProcedure
@@ -514,6 +510,7 @@ Procedure ReDraw(*this._s_WIDGET)
       DrawTabs(*this, *this\tab\active)
       StopDrawing()
    EndIf
+   
 EndProcedure
 
 ;-
@@ -552,7 +549,7 @@ Procedure DoEventTAB(*this._s_WIDGET, *hoverTAB._s_TAB, event.i, mousePos.i)
          ;          Next
          
          
-         *current_tab = *this\tab\press
+         *current_tab = PressedTAB( )
          If *current_tab
             stepSize = (*current_tab\size - slant) + *this\tab\spacing
             ;
@@ -595,7 +592,7 @@ Procedure DoEventTAB(*this._s_WIDGET, *hoverTAB._s_TAB, event.i, mousePos.i)
          Next
          ;          Debug " - "+*hoverTAB
          *this\tab\active = *hoverTAB
-         *this\tab\press = *hoverTAB
+         PressedTAB( ) = *hoverTAB
          
          ; ЦИКЛ 2: Выполняем раздвижку, лимиты и расчет стартового offset за один проход
          If *hoverTAB
@@ -642,7 +639,7 @@ Procedure DoEventTAB(*this._s_WIDGET, *hoverTAB._s_TAB, event.i, mousePos.i)
          EndIf
          
       Case #PB_EventType_LeftButtonUp
-         *current_tab = *this\tab\press
+         *current_tab = PressedTAB( )
          If *current_tab
             ; Переносим визуальный сдвиг в постоянную координату X и обнуляем offset
             ForEach *this\tab\_s()
@@ -655,7 +652,7 @@ Procedure DoEventTAB(*this._s_WIDGET, *hoverTAB._s_TAB, event.i, mousePos.i)
             SortStructuredList(*this\tab\_s(), #PB_Sort_Ascending, OffsetOf(_s_tab\pos), TypeOf(_s_tab\pos))
             
             ; Сбрасываем указатель перетаскивания
-            *this\tab\press = #Null
+            PressedTAB( ) = #Null
             
             ; Вызываем внутренние процедуры обновления состояния и перерисовки
             *this\mask | #__MASK_UpdateTotalSize
@@ -663,7 +660,7 @@ Procedure DoEventTAB(*this._s_WIDGET, *hoverTAB._s_TAB, event.i, mousePos.i)
          EndIf
          
    EndSelect
- EndProcedure
+EndProcedure
 
 Procedure DoEvent( *this._s_WIDGET, event, mx, my)
    Protected *btn._s_TAB; = *this\tab\bar
@@ -679,9 +676,7 @@ Procedure DoEvent( *this._s_WIDGET, event, mx, my)
       Case #PB_EventType_MouseMove, #PB_EventType_MouseEnter, #PB_EventType_MouseLeave, #PB_EventType_LeftButtonUp
          
          Protected._s_TAB *tab
-         Static._s_TAB *hoverTAB
-         
-         Protected localslant = *this\Tab\slant
+         Protected localslant = *this\tab\slant
          
          ; ЦИКЛ 1: Находим вкладку под курсором и сбрасываем старые ховеры
          ForEach *this\tab\_s() : *tab = @*this\tab\_s()
@@ -704,7 +699,6 @@ Procedure DoEvent( *this._s_WIDGET, event, mx, my)
             
             ; Если состояние маски не совпадает с реальным положением мыши
             If Bool(*tab\mask & #__MASK_Hover) <> atPoint
-               *this\mask | #__MASK_Redraw
                *tab\mask ! #__MASK_Hover ; Переключаем тумблер (XOR)
                
                If *tab\mask & #__MASK_Hover
@@ -717,33 +711,27 @@ Procedure DoEvent( *this._s_WIDGET, event, mx, my)
                   EndIf
                   
                   ; Если была другая активная вкладка, сбрасываем её принудительно
-                  If *hoverTAB And *hoverTAB <> *tab And (*hoverTAB\mask & #__MASK_Hover)
-                     *hoverTAB\mask &~ #__MASK_Hover
-                     DoEventTAB( *this, *hoverTAB, #PB_EventType_MouseLeave, mousePos )
+                  If EnteredTAB( ) And EnteredTAB( ) <> *tab And (EnteredTAB( )\mask & #__MASK_Hover)
+                     EnteredTAB( )\mask &~ #__MASK_Hover
+                     DoEventTAB( *this, EnteredTAB( ), #PB_EventType_MouseLeave, mousePos )
                   EndIf
                   
-                  *hoverTAB = *tab
+                  EnteredTAB( ) = *tab
                   DoEventTAB( *this, *tab, #PB_EventType_MouseEnter, mousePos )
                Else
                   ; --- МЫШКА ВЫШЛА ИЗ ВКЛАДКИ ---
                   DoEventTAB( *this, *tab, #PB_EventType_MouseLeave, mousePos )
-                  If *hoverTAB = *tab
-                     *hoverTAB = 0
+                  If EnteredTAB( ) = *tab
+                     EnteredTAB( ) = 0
                   EndIf
                EndIf
                
+               *this\mask | #__MASK_Redraw
                ; ВАЖНО: Убран Break! Цикл должен проверить ВСЕ вкладки, 
                ; чтобы одновременно включить одну и выключить другую.
             EndIf
          Next
-         
-         
-         
-         ; Всего ОДИН цикл для поиска и одновременного сброса/включения ховеров
-         If *hoverTAB And *hoverTAB\mask & #__MASK_Hover
-
-         EndIf
-         
+       
       Case #PB_EventType_LeftButtonDown
          If *hoverBTN
             DoEventBTN( *hoverBTN, event )
@@ -753,26 +741,25 @@ Procedure DoEvent( *this._s_WIDGET, event, mx, my)
    
    If Not *hoverBTN
       If *this\tab\vertical
-         If DoEventTAB( *this, *hoverTAB, event, my)
+         If DoEventTAB( *this, EnteredTAB( ), event, my)
             *this\mask | #__MASK_Redraw ; ProcedureReturn #True
          EndIf
       Else
-         If DoEventTAB( *this, *hoverTAB, event, mx)
+         If DoEventTAB( *this, EnteredTAB( ), event, mx)
             *this\mask | #__MASK_Redraw ; ProcedureReturn #True
          EndIf
       EndIf
    EndIf
-   
-     
    
    If *this\mask & #__MASK_Redraw
       *this\mask &~ #__MASK_Redraw
       ReDraw(*this)
       ProcedureReturn #True
    EndIf
- 
+   
 EndProcedure
 
+;-
 Procedure AddTab(*this._s_WIDGET, ID.i, Text.s, size.i, Image.i = 0, align.a = #__MASK_Left)
    Protected *tab._s_TAB = AddElement(*this\tab\_s())
    
@@ -800,6 +787,7 @@ EndProcedure
 
 Procedure CreateTab( Canvas, X.l,Y.l,Width.l,Height.l )
    Protected *this._s_WIDGET = AllocateStructure(_s_WIDGET)
+   ; *this\change = 1
    *this\tab\vertical = 0
    *this\canvasid  = Canvas
    *this\X = DesktopScaledX(X)
@@ -823,24 +811,13 @@ EndProcedure
 #Win = 0
 #Canvas = 0
 
-
-Procedure Resize_(w,h)
+Procedure ResizeCanvas(*this._s_WIDGET)
+   ReDraw(*this)
+   Define w = DesktopUnscaledX(*this\Width)
+   Define h = DesktopUnscaledY(*this\Height)
    ResizeWindow(#Win, #PB_Ignore, #PB_Ignore, w + 40, h + 40)
    ResizeGadget(#Canvas, #PB_Ignore, #PB_Ignore, w + 20, h + 20)
    HideWindow(#Win, 0, #PB_Window_ScreenCentered)
-EndProcedure
-
-Procedure Update(*this._s_WIDGET)
-   *this\change = 1
-   *this\Width = 240
-   *this\Height = 40
-   
-   ReDraw(*this)
-   
-   
-   Define w = *this\Width
-   Define h = *this\Height
-   Resize_(w,h)
    ReDraw( *this)
 EndProcedure
 
@@ -854,7 +831,7 @@ If OpenWindow(#Win, 0,0,0,0, "Наглядный Демо-Пример", #PB_Win
    AddTab(*this, 2, "2 - 150", 150, (1), #__MASK_Right)
    AddTab(*this, 3, "3 - 90", 90, (1))
    ;
-   Update(*this)
+   ResizeCanvas(*this)
    
    Repeat
       Define Event = WaitWindowEvent()
@@ -863,13 +840,14 @@ If OpenWindow(#Win, 0,0,0,0, "Наглядный Демо-Пример", #PB_Win
          If EventType() = #PB_EventType_RightClick
             HideWindow(#Win, 1)
             *this\tab\vertical ! 1
+            Swap *this\Width, *this\Height
             ClearList(*this\Tab\_s())
             AddTab(*this, 0, "0 - 60", 60)
             AddTab(*this, 1, "1 - 160", 160, (1), #__MASK_Center)
             AddTab(*this, 2, "2 - 150", 150, (1), #__MASK_Right)
             AddTab(*this, 3, "3 - 90", 90, (1))
             ;
-            Update( *this )
+            ResizeCanvas( *this )
          EndIf
          
          If DoEvent( *this, EventType(),
@@ -880,9 +858,9 @@ If OpenWindow(#Win, 0,0,0,0, "Наглядный Демо-Пример", #PB_Win
       
    Until Event = #PB_Event_CloseWindow
 EndIf
-; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 706
-; FirstLine = 693
-; Folding = --------------------
+; IDE Options = PureBasic 6.40 (Windows - x64)
+; CursorPosition = 437
+; FirstLine = 270
+; Folding = ---8--80--83----4-0-
 ; EnableXP
 ; DPIAware

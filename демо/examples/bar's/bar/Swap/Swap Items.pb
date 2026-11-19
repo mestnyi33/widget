@@ -66,7 +66,6 @@ EndEnumeration
 #__maskrow_collapsed = 1 << 24        ; Свернуто (Узел/Ветка)
 
 #__MASK_change    = #__maskrow_change
-#__MASK_UpdateTotalSize = 1<<25
 
 ; =====================================================================
 ; 2. СТРУКТУРЫ ДАННЫХ
@@ -132,7 +131,6 @@ Structure _s_TABS
 EndStructure
 
 Structure _s_WIDGET Extends _s_COORDINATE
-   mask.q
    change.b
    ;    padding.a
    ;    spacing.a             
@@ -177,7 +175,6 @@ Procedure.i MakeAlignPosition(alignFlags.l, contentSize.i, objectSize.i, Offset.
    EndIf
 EndProcedure
 
-;-
 Procedure ChromeBox(vertical.b, X, Y, w, h, isactive, currentcolor.l, localslant.a, GradientDepth = 65, outerbordercolor.l = -1, innerhighlightcolor.l = -1)
    Protected dy, dh = h - 1, dw = w - 1
    If h <= 0 Or w <= 0 : ProcedureReturn : EndIf 
@@ -421,7 +418,6 @@ Procedure TotalSize(*this._s_WIDGET)
    EndIf
 EndProcedure
 
-;-
 Procedure DrawTab(*tab._s_TAB, slant, bgColor.l=$FF808080, vertical.b=0, isActive.b=0)
    Protected txColor 
    
@@ -469,12 +465,7 @@ Procedure DrawTabs(*this._s_WIDGET, *current_tab._s_TAB)
          DrawTab(*tab, *this\tab\slant, bgColor, vertical, 0)
       EndIf
    Next
-     
-   If *this\mask & #__MASK_UpdateTotalSize
-      *this\mask &~ #__MASK_UpdateTotalSize
-      TotalSize(*this)
-   EndIf
-
+   
    ; Слой 2: Летящая поверх
    If *current_tab
       DrawTab(*current_tab, *this\tab\slant, *current_tab\data, vertical, 1)
@@ -658,8 +649,7 @@ Procedure DoEventTAB(*this._s_WIDGET, *hoverTAB._s_TAB, event.i, mousePos.i)
             *this\tab\press = #Null
             
             ; Вызываем внутренние процедуры обновления состояния и перерисовки
-            *this\mask | #__MASK_UpdateTotalSize
-            ReDraw(*this)
+            TotalSize(*this)
             ProcedureReturn #True
          EndIf
          
@@ -789,7 +779,6 @@ Procedure AddTab(*this._s_WIDGET, ID.i, Text.s, size.i, Image.i = 0, align.a = #
    EndIf
    
    *tab\data =RGBA(Random(50)+200, Random(50)+200, Random(50)+200, 255)
-   *this\mask | #__MASK_UpdateTotalSize
    ProcedureReturn *tab
 EndProcedure
 
@@ -819,23 +808,17 @@ EndProcedure
 #Canvas = 0
 
 
-Procedure Resize_(w,h)
-   ResizeWindow(#Win, #PB_Ignore, #PB_Ignore, w + 40, h + 40)
-   ResizeGadget(#Canvas, #PB_Ignore, #PB_Ignore, w + 20, h + 20)
-   HideWindow(#Win, 0, #PB_Window_ScreenCentered)
-EndProcedure
-
-Procedure Update(*this._s_WIDGET)
+Procedure Resize_(*this._s_WIDGET)
    *this\change = 1
    *this\Width = 240
    *this\Height = 40
-   
    ReDraw(*this)
-   
-   
+   TotalSize(*this)
    Define w = *this\Width
    Define h = *this\Height
-   Resize_(w,h)
+   ResizeWindow(#Win, #PB_Ignore, #PB_Ignore, w + 40, h + 40)
+   ResizeGadget(#Canvas, #PB_Ignore, #PB_Ignore, w + 20, h + 20)
+   HideWindow(#Win, 0, #PB_Window_ScreenCentered)
    ReDraw( *this)
 EndProcedure
 
@@ -849,7 +832,7 @@ If OpenWindow(#Win, 0,0,0,0, "Наглядный Демо-Пример", #PB_Win
    AddTab(*this, 2, "2 - 150", 150, (1), #__MASK_Right)
    AddTab(*this, 3, "3 - 90", 90, (1))
    ;
-   Update(*this)
+   Resize_(*this)
    
    Repeat
       Define Event = WaitWindowEvent()
@@ -864,7 +847,7 @@ If OpenWindow(#Win, 0,0,0,0, "Наглядный Демо-Пример", #PB_Win
             AddTab(*this, 2, "2 - 150", 150, (1), #__MASK_Right)
             AddTab(*this, 3, "3 - 90", 90, (1))
             ;
-            Update( *this )
+            Resize_( *this )
          EndIf
          
          If DoEvent( *this, EventType(),
@@ -876,10 +859,10 @@ If OpenWindow(#Win, 0,0,0,0, "Наглядный Демо-Пример", #PB_Win
       
    Until Event = #PB_Event_CloseWindow
 EndIf
-; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 505
-; FirstLine = 499
-; Folding = --------------------
+; IDE Options = PureBasic 6.40 (Windows - x64)
+; CursorPosition = 393
+; FirstLine = 334
+; Folding = -----fv-------------
 ; EnableXP
 ; EnableOnError
 ; EnableUnicode

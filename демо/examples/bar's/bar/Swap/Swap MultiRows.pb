@@ -469,7 +469,7 @@ EndProcedure
 ;-
 Procedure draw_TabButton(*tab._s_TAB, bgcolor.l)
    ; Высчитываем цвет точно так же, как для неактивного таба
-   Protected.l pluscolor = MakeColor(bgcolor, 10 + (*tab\mask & #__MASK_Hover) * 30) ; RGB(nabaser, nabaseg, nabaseb)
+   Protected.l pluscolor = MakeColor(bgcolor, 10 + (*tab\mask & #__MASK_Hover)  *30) ; RGB(nabaser, nabaseg, nabaseb)
    
    ; Трюк со Slant: подменяем его локально только на время отрисовки этой кнопки
    ChromeBox(0, *tab\x, *tab\y, *tab\Width, *tab\Height, 0, pluscolor, 8)
@@ -737,7 +737,7 @@ Procedure DoEvent(*this._s_WIDGET, event, mx.l,my.l)
    EndIf
 EndProcedure
 
-Procedure Create( *this._s_WIDGET, X.l, Y.l, Width.l, Height.l, text.s, flags.l = 0, image.i = 0)
+Procedure Create( *this._s_WIDGET, X.l, Y.l, Width.l, Height.l, Text.s, flags.l = 0, Image.i = 0)
    With *this
       \fontID = FontID(0)
       \X = DesktopScaledX(X)
@@ -818,9 +818,9 @@ If OpenWindow(0, 0, 0, windoww, windowh, "chrome tabs with container logic", #PB
       EndSelect
    ForEver
 EndIf
-; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 470
-; FirstLine = 365
+; IDE Options = PureBasic 6.40 (Windows - x64)
+; CursorPosition = 128
+; FirstLine = 224
 ; Folding = ------8-----------
 ; EnableXP
 ; DPIAware
