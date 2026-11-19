@@ -429,6 +429,7 @@ Procedure ChromeBox(vertical.b, X, Y, w, h, isactive, currentcolor.l, localslant
    EndIf
 EndProcedure
 
+;-
 Procedure draw_closeButton(*tab._s_TAB, bgColor.l, slant)
    Protected h = *tab\Height
    Protected radius = *tab\btn\size
@@ -466,7 +467,6 @@ Procedure draw_closeButton(*tab._s_TAB, bgColor.l, slant)
    LineXY(closex + close_size - 1, closey, closex - 1, closey + close_size, crossColor)
 EndProcedure
 
-;-
 Procedure draw_TabButton(*tab._s_TAB, bgcolor.l)
    ; Высчитываем цвет точно так же, как для неактивного таба
    Protected.l pluscolor = MakeColor(bgcolor, 10 + (*tab\mask & #__MASK_Hover)  *30) ; RGB(nabaser, nabaseg, nabaseb)
@@ -567,7 +567,6 @@ Procedure DrawTabs(*this._s_WIDGET, *currentTAB._s_TAB, gWidth, gHeight, bgColor
       
 EndProcedure
 
-;-
 Procedure ReDraw(*this._s_WIDGET)
    Protected gWidth = DesktopScaledX(GadgetWidth(*this\canvasID))
    Protected gHeight = DesktopScaledY(GadgetHeight(*this\canvasID))
@@ -583,16 +582,18 @@ Procedure ReDraw(*this._s_WIDGET)
    EndIf
 EndProcedure
 
+;-
 Procedure DoResize(*this._s_WIDGET, windowID)
    Protected._s_TAB *tab
    Protected gWidth = WindowWidth(windowID)
    Protected gHeight = WindowHeight(windowID) 
-   Protected newheight = TotalSize(*this, gWidth)
-   ResizeGadget(*this\canvasID, #PB_Ignore, #PB_Ignore, gWidth, newheight)
    
+   Protected newheight = TotalSize(*this, gWidth)
+   
+   ResizeGadget(*this\canvasID, #PB_Ignore, #PB_Ignore, gWidth, newheight)
    ; корректируем размеры всех контейнеров в зависимости от новой высоты холста
    ForEach *this\tab\_s() : *tab = @*this\tab\_s()
-      ResizeGadget(*tab\containerID, 0, newheight, gWidth, gHeight- newheight)
+     ResizeGadget(*tab\containerID, 0, newheight, gWidth, gHeight- newheight)
    Next
    
    ReDraw(*this)
@@ -818,9 +819,9 @@ If OpenWindow(0, 0, 0, windoww, windowh, "chrome tabs with container logic", #PB
       EndSelect
    ForEver
 EndIf
-; IDE Options = PureBasic 6.40 (Windows - x64)
-; CursorPosition = 128
-; FirstLine = 224
-; Folding = ------8-----------
+; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
+; CursorPosition = 430
+; FirstLine = 328
+; Folding = ------8--8--------
 ; EnableXP
 ; DPIAware
