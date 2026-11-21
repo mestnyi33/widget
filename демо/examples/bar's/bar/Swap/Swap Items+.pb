@@ -104,6 +104,7 @@ EndStructure
 Structure _s_TAB  Extends _s_BOX
    ID.i          ; Номер элемента в списке данных строки (0, 1, 2...) 
    pos.l
+   padding.b
    
    ; Поля для идеальной математики плавного сдвига
    offset.l        ; Динамический визуальный сдвиг
@@ -188,7 +189,71 @@ Procedure.i MakeAlignPosition(alignFlags.l, contentSize.i, objectSize.i, Offset.
 EndProcedure
 
 ;-
-Procedure ChromeBox(vertical.b, X, Y, w, h, isactive, currentcolor.l, localslant.a, GradientDepth = 65, outerbordercolor.l = -1, innerhighlightcolor.l = -1)
+;-
+Procedure UpdateContentSize(*tab._s_TAB)
+   Protected._s_TXT *txt = *tab\txt
+   Protected._s_IMG *img = *tab\img
+   
+   ; 1. Замеры метрик (Пишем сразу в структуру только при изменениях)
+   If *txt\change 
+      *txt\change = #False
+      If *txt\Text 
+         *txt\width  = TextWidth(*txt\Text)
+         *txt\height = TextHeight(*txt\Text)
+      Else
+         *txt\width  = 0 : *txt\height = 0
+      EndIf
+   EndIf
+   
+   If *img\change
+      *img\change = #False
+      If IsImage(*img\Image)
+         *img\width  = ImageWidth(*img\Image)
+         *img\height = ImageHeight(*img\Image)
+      Else
+         *img\width  = 0 : *img\height = 0
+      EndIf
+   EndIf
+EndProcedure
+
+Procedure UpdateContentPos(*tab._s_TAB, indent.a, Spacing.a, vertical.b)
+   Protected contentX.l, contentY.l
+   Protected._s_TXT *txt = *tab\txt
+   Protected._s_IMG *img = *tab\img
+   If Not (*img\width And *txt\width) : Spacing  = 0 : EndIf
+   
+   ; 3. ЕДИНОВРЕМЕННОЕ ВНУТРЕННЕЕ ПЕРЕСТРОЕНИЕ (Работаем напрямую со структурой)
+   If vertical
+      *txt\x = (*tab\width - *txt\width) >> 1
+      *img\x = (*tab\width - *img\width) >> 1
+      
+      contentY = MakeAlignPosition(*tab\mask, *tab\Height, *img\height + *txt\height + Spacing, indent)
+      *txt\y = contentY
+      *img\y = contentY
+      
+      If Not (*tab\mask & #__MASK_Bottom)
+         If *img\height > 0 : *txt\y + *img\height + Spacing : EndIf
+      Else
+         If *txt\height > 0 : *img\y + *txt\height + Spacing : EndIf
+      EndIf
+   Else
+      *txt\y = (*tab\height - *txt\height) >> 1
+      *img\y = (*tab\height - *img\height) >> 1
+      
+      contentX = MakeAlignPosition(*tab\mask, *tab\Width, *img\width + *txt\width + Spacing, indent)
+      *txt\x = contentX
+      *img\x = contentX
+      
+      If Not (*tab\mask & #__MASK_Right)
+         If *img\width > 0 : *txt\x + *img\width + Spacing : EndIf
+      Else
+         If *txt\width > 0 : *img\x + *txt\width + Spacing : EndIf
+      EndIf
+   EndIf
+EndProcedure
+
+;-
+Procedure DrawChromeBox(vertical.b, X, Y, w, h, isactive, currentcolor.l, outerbordercolor.l = -1, localslant.a=0, GradientDepth = 65, innerhighlightcolor.l = -1)
    Protected dy, dh = h - 1, dw = w - 1
    If h <= 0 Or w <= 0 : ProcedureReturn : EndIf 
    
@@ -289,80 +354,66 @@ Procedure ChromeBox(vertical.b, X, Y, w, h, isactive, currentcolor.l, localslant
    EndIf
 EndProcedure
 
-;-
-Procedure UpdateContentSize(*tab._s_TAB)
-   Protected._s_TXT *txt = *tab\txt
-   Protected._s_IMG *img = *tab\img
+Procedure Drawtab(*tab._s_TAB, bgColor.l=$FF808080, frColor.l=$ff000000, vertical.b=0, localslant=0)
+   Protected h, txColor 
    
-   ; 1. Замеры метрик (Пишем сразу в структуру только при изменениях)
-   If *txt\change 
-      *txt\change = #False
-      If *txt\Text 
-         *txt\width  = TextWidth(*txt\Text)
-         *txt\height = TextHeight(*txt\Text)
-      Else
-         *txt\width  = 0 : *txt\height = 0
-      EndIf
+   If *tab\mask & #__MASK_Hover 
+      bgColor = MakeColor(bgColor, 30)
+   EndIf
+   If *tab\mask & #__MASK_drag
+      bgColor = $A00000FF
+   EndIf
+   If *tab\mask & #__MASK_active
+      h = bottomSpacing
    EndIf
    
-   If *img\change
-      *img\change = #False
-      If IsImage(*img\Image)
-         *img\width  = ImageWidth(*img\Image)
-         *img\height = ImageHeight(*img\Image)
-      Else
-         *img\width  = 0 : *img\height = 0
-      EndIf
-   EndIf
-EndProcedure
-
-Procedure UpdateContentPos(*tab._s_TAB, indent.a, Spacing.a, vertical.b)
-   Protected contentX.l, contentY.l
-   Protected._s_TXT *txt = *tab\txt
-   Protected._s_IMG *img = *tab\img
-   If Not (*img\width And *txt\width) : Spacing  = 0 : EndIf
-   
-   ; 3. ЕДИНОВРЕМЕННОЕ ВНУТРЕННЕЕ ПЕРЕСТРОЕНИЕ (Работаем напрямую со структурой)
-   If vertical
-      *txt\x = (*tab\width - *txt\width) >> 1
-      *img\x = (*tab\width - *img\width) >> 1
-      
-      contentY = MakeAlignPosition(*tab\mask, *tab\Height, *img\height + *txt\height + Spacing, indent)
-      *txt\y = contentY
-      *img\y = contentY
-      
-      If Not (*tab\mask & #__MASK_Bottom)
-         If *img\height > 0 : *txt\y + *img\height + Spacing : EndIf
-      Else
-         If *txt\height > 0 : *img\y + *txt\height + Spacing : EndIf
-      EndIf
-   Else
-      *txt\y = (*tab\height - *txt\height) >> 1
-      *img\y = (*tab\height - *img\height) >> 1
-      
-      contentX = MakeAlignPosition(*tab\mask, *tab\Width, *img\width + *txt\width + Spacing, indent)
-      *txt\x = contentX
-      *img\x = contentX
-      
-      If Not (*tab\mask & #__MASK_Right)
-         If *img\width > 0 : *txt\x + *img\width + Spacing : EndIf
-      Else
-         If *txt\width > 0 : *img\x + *txt\width + Spacing : EndIf
-      EndIf
-   EndIf
-EndProcedure
-
-; Функция линейного расчета базовых координат X
-;-
-Procedure DrawTab(*tab._s_TAB, slant, bgColor.l=$FF808080, vertical.b=0, isActive.b=0)
-   Protected txColor 
-   
-   If isActive Or *tab\mask & #__MASK_Hover  ; *tab\mask & #__MASK_active
+   If *tab\mask & #__MASK_Hover Or *tab\mask & #__MASK_active
       txColor = $FF000000
-      ChromeBox(vertical, *tab\x, *tab\y, *tab\width, *tab\Height+bottomSpacing, 1, bgColor, slant)
    Else
       txColor = $FFFFFFFF
-      ChromeBox(vertical, *tab\x, *tab\y, *tab\width, *tab\Height, 0, bgColor, slant)
+   EndIf
+   
+   If localslant
+      DrawChromeBox(vertical, *tab\x, *tab\y, *tab\width, *tab\Height+h, Bool(*tab\mask & #__MASK_active), bgColor, frColor, localslant, 65)
+   Else
+      Box(*tab\x, *tab\y, *tab\width, *tab\Height+h, bgColor)
+      
+      Protected X = *tab\x 
+      Protected Y = *tab\y
+      Protected w = *tab\width
+      h = *tab\Height+h
+      Protected dy, dh = h - 1, dw = w - 1
+      
+      ; 4. Отрисовка контуров
+      If vertical
+         ; === ВЕРТИКАЛЬНЫЙ РЕЖИМ (Вкладка «смотрит» вверх, основание справа) ===
+         LineXY(X + dw, Y, X, Y + localslant, frColor)             
+         LineXY(X, Y + localslant, X, Y + h - 1 - localslant, frColor)         
+         LineXY(X, Y + h - 1 - localslant, X + dw, Y + h - 1, frColor)     
+         
+         If *tab\mask & #__MASK_active
+            ;          LineXY(X + dw, Y + 1, X + 1, Y + localslant + 1, innerhighlightcolor)
+            ;          LineXY(X + 1, Y + localslant + 1, X + 1, Y + h - 1 - localslant - 1, innerhighlightcolor)
+            ;          LineXY(X + 1, Y + h - 1 - localslant - 1, X + dw, Y + h - 2, innerhighlightcolor)
+         Else
+            ; Замыкающая линия справа (стык с панелью)
+            LineXY(X + dw, Y, X + dw, Y + h - 1, frColor)
+         EndIf
+      Else
+         ; === ГОРИЗОНТАЛЬНЫЙ РЕЖИМ (Классический Chrome) ===
+         LineXY(X, Y + dh, X + localslant, Y, frColor)             
+         LineXY(X + localslant, Y, X + w - 1 - localslant, Y, frColor)         
+         LineXY(X + w - 1 - localslant, Y, X + w - 1, Y + dh, frColor)     
+         
+         If *tab\mask & #__MASK_active
+            ;          LineXY(X + 1, Y + dh, X + localslant + 1, Y + 1, innerhighlightcolor)
+            ;          LineXY(X + localslant + 1, Y + 1, X + w - 1 - localslant - 1, Y + 1, innerhighlightcolor)
+            ;          LineXY(X + w - 1 - localslant - 1, Y + 1, X + w - 2, Y + dh, innerhighlightcolor)
+         Else
+            ; Замыкающая линия снизу
+            LineXY(X, Y + dh, X + w - 1, Y + dh, frColor)
+         EndIf
+      EndIf
    EndIf
    
    ; 2. ОТРИСОВКА ИКОНКИ
@@ -377,17 +428,21 @@ Procedure DrawTab(*tab._s_TAB, slant, bgColor.l=$FF808080, vertical.b=0, isActiv
 EndProcedure
 
 
-Procedure DrawTabs(*this._s_WIDGET, *current_tab._s_TAB)
+Procedure DrawTabs(*this._s_WIDGET, *activeTAB._s_TAB)
    Protected position.i, widgetChanged.b, shiftTabs.b, updateSize.b
    Protected *tab._s_TAB
    Protected vertical.b = *this\tab\vertical
    Protected bgColor.l = *this\bgcolor
-   Protected floorcolor = MakeColor(bgColor, -30)
+   Protected frColor = MakeColor(bgColor, -30)
    Protected gWidth.l = *this\Width
    Protected gHeight.l = *this\Height
    Protected indent.a = *this\tab\slant
+   Protected localslant = *this\tab\slant
    Protected Spacing.i, tab_size.i
-
+   Protected lineX, lineY
+   frColor = $ff000000
+   bgColor = $FF808080
+   
    ; 1. Сохраняем факт глобального изменения виджета до сброса флага
    If *this\change 
       widgetChanged = #True
@@ -402,7 +457,7 @@ Procedure DrawTabs(*this._s_WIDGET, *current_tab._s_TAB)
       shiftTabs = #True
       updateSize = #True
    EndIf
-  
+   
    ForEach *this\tab\_s()
       *tab = @*this\tab\_s()
       Protected._s_TXT *txt = *tab\txt
@@ -429,7 +484,7 @@ Procedure DrawTabs(*this._s_WIDGET, *current_tab._s_TAB)
             Spacing = 0
          EndIf
          
-         tab_size = Spacing + indent * 2
+         tab_size = Spacing + indent * 2 + *tab\padding * 2
          If vertical 
             tab_size + *img\height + *txt\height 
          Else 
@@ -449,15 +504,15 @@ Procedure DrawTabs(*this._s_WIDGET, *current_tab._s_TAB)
             *tab\height = gHeight - BottomSpacing
          EndIf 
          
-         UpdateContentPos(*tab, indent, Spacing, vertical)
+         UpdateContentPos(*tab, indent+*tab\padding, Spacing, vertical)
       EndIf
       
       ; Считаем позицию всегда, на каждой итерации
       position + (*tab\size - *this\tab\slant) + *this\tab\spacing
-    
+      
       ; Слой 1: Статичные
-      If *tab <> *current_tab
-         DrawTab(*tab, *this\tab\slant, bgColor, vertical, 0)
+      If *tab <> *activeTAB
+         Drawtab(*tab, bgColor, frColor, vertical, localslant)
       EndIf
    Next
    
@@ -476,20 +531,20 @@ Procedure DrawTabs(*this._s_WIDGET, *current_tab._s_TAB)
    EndIf
    
    ; Слой 2: Летящая поверх
-   If *current_tab
-      DrawTab(*current_tab, *this\tab\slant, *current_tab\data, vertical, 1)
-      Protected lineX, lineY
-      floorcolor = $ff000000
+   If *activeTAB
+      bgColor = *activeTAB\data
+      Drawtab(*activeTAB, bgColor, frColor, vertical, localslant)
+      
       If vertical
-         lineX = *current_tab\x + *current_tab\Width + BottomSpacing - 1
-         lineY = *current_tab\y + *current_tab\Height
-         Line(lineX, *this\y, 1, *current_tab\y - *this\y, floorcolor) 
-         Line(lineX, lineY, 1, (*this\y + *this\Height) - lineY, floorcolor)
+         lineX = *activeTAB\x + *activeTAB\Width + BottomSpacing - 1
+         lineY = *activeTAB\y + *activeTAB\Height
+         Line(lineX, *this\y, 1, *activeTAB\y - *this\y, frColor) 
+         Line(lineX, lineY, 1, (*this\y + *this\Height) - lineY, frColor)
       Else
-         lineX = *current_tab\x + *current_tab\Width
-         lineY = *current_tab\y + *current_tab\Height + BottomSpacing - 1
-         Line(*this\x, lineY, *current_tab\x - *this\x, 1, floorcolor) 
-         Line(lineX, lineY, (*this\x + *this\Width) - lineX, 1, floorcolor) 
+         lineX = *activeTAB\x + *activeTAB\Width
+         lineY = *activeTAB\y + *activeTAB\Height + BottomSpacing - 1
+         Line(*this\x, lineY, *activeTAB\x - *this\x, 1, frColor) 
+         Line(lineX, lineY, (*this\x + *this\Width) - lineX, 1, frColor) 
       EndIf
    EndIf
 EndProcedure
@@ -551,6 +606,7 @@ Procedure DoEventTAB(*this._s_WIDGET, *hoverTAB._s_TAB, event.i, mousePos.i)
          
          *current_tab = PressedTAB( )
          If *current_tab
+            *current_tab\mask | #__MASK_drag
             stepSize = (*current_tab\size - slant) + *this\tab\spacing
             ;
             ForEach *this\tab\_s()
@@ -591,7 +647,13 @@ Procedure DoEventTAB(*this._s_WIDGET, *hoverTAB._s_TAB, event.i, mousePos.i)
             EndIf
          Next
          ;          Debug " - "+*hoverTAB
+         If *this\tab\active
+            *this\tab\active\mask &~ #__MASK_active
+         EndIf
+         
          *this\tab\active = *hoverTAB
+         *hoverTAB\mask | #__MASK_active
+         *hoverTAB\mask | #__MASK_press
          PressedTAB( ) = *hoverTAB
          
          ; ЦИКЛ 2: Выполняем раздвижку, лимиты и расчет стартового offset за один проход
@@ -641,6 +703,9 @@ Procedure DoEventTAB(*this._s_WIDGET, *hoverTAB._s_TAB, event.i, mousePos.i)
       Case #PB_EventType_LeftButtonUp
          *current_tab = PressedTAB( )
          If *current_tab
+            *current_tab\mask &~ #__MASK_press
+            *current_tab\mask &~ #__MASK_drag
+            
             ; Переносим визуальный сдвиг в постоянную координату X и обнуляем offset
             ForEach *this\tab\_s()
                *tab = @*this\tab\_s()
@@ -731,7 +796,7 @@ Procedure DoEvent( *this._s_WIDGET, event, mx, my)
                ; чтобы одновременно включить одну и выключить другую.
             EndIf
          Next
-       
+         
       Case #PB_EventType_LeftButtonDown
          If *hoverBTN
             DoEventBTN( *hoverBTN, event )
@@ -766,6 +831,7 @@ Procedure AddTab(*this._s_WIDGET, ID.i, Text.s, size.i, Image.i = 0, align.a = #
    *tab\ID        = ID
    *tab\mask    = align
    *tab\size      = DesktopScaledY(size)
+   *tab\padding = DesktopScaledX(5) 
    
    If Text
       *tab\txt\text  = Text
@@ -778,6 +844,7 @@ Procedure AddTab(*this._s_WIDGET, ID.i, Text.s, size.i, Image.i = 0, align.a = #
    
    If ListSize(*this\Tab\_s()) = 1
       *this\tab\active = *tab
+      *this\tab\active\mask | #__MASK_active
    EndIf
    
    *tab\data =RGBA(Random(50)+200, Random(50)+200, Random(50)+200, 255)
@@ -797,7 +864,7 @@ Procedure CreateTab( Canvas, X.l,Y.l,Width.l,Height.l )
    
    *this\tab\slant = DesktopScaledX(20)
    *this\tab\indent = DesktopScaledX(50) ; Отступ панели слева
-   *this\tab\spacing = DesktopScaledX(2) ; Расстояние между вкладками
+   ;*this\tab\spacing = DesktopScaledX(20) ; Расстояние между вкладками
    *this\fontid  = LoadFont(0, "tahoma", 12)
    *this\bgcolor = RGBA(180, 195, 215, 160)
    ProcedureReturn *this
@@ -859,8 +926,8 @@ If OpenWindow(#Win, 0,0,0,0, "Наглядный Демо-Пример", #PB_Win
    Until Event = #PB_Event_CloseWindow
 EndIf
 ; IDE Options = PureBasic 6.40 (Windows - x64)
-; CursorPosition = 437
-; FirstLine = 270
-; Folding = ---8--80--83----4-0-
+; CursorPosition = 864
+; FirstLine = 842
+; Folding = ------------0---------
 ; EnableXP
 ; DPIAware

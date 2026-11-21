@@ -563,8 +563,7 @@ Procedure DrawTabs(*this._s_WIDGET, *currentTAB._s_TAB, gWidth, gHeight, bgColor
    
    ; 2. Отрисовка кнопки ПЛЮС (вызываем её личную изолированную процедуру)
     ; draw_TabButton(*this\tab\plus, bgColor)
-    draw_tab(#False, *this\tab\plus, bgColor, *this\tab\plus\ID, 8 )
-      
+    draw_tab(#False, *this\tab\plus, bgColor, *this\tab\plus\ID, 8 )      
 EndProcedure
 
 Procedure ReDraw(*this._s_WIDGET)
@@ -583,7 +582,7 @@ Procedure ReDraw(*this._s_WIDGET)
 EndProcedure
 
 ;-
-Procedure DoResize(*this._s_WIDGET, windowID)
+Procedure ResizeCanvas(*this._s_WIDGET, windowID)
    Protected._s_TAB *tab
    Protected gWidth = WindowWidth(windowID)
    Protected gHeight = WindowHeight(windowID) 
@@ -663,13 +662,13 @@ Procedure DoEvent(*this._s_WIDGET, event, mx.l,my.l)
             Protected NewIDx = ListSize(*this\tab\_s()) + 1
             AddTab(*this, "Вкладка " + Str(NewIDx))
             
-            DoResize( *this, windowID)
+            ResizeCanvas( *this, windowID)
             needredraw = #False
          Else
             ; КЛИК ПО ОБЫЧНОМУ ТАБУ: Проверяем крестик или переключаем активность
             If *hoverTAB\btn\mask & #__MASK_Hover
                CloseTab(*this, *hoverTAB)
-               DoResize( *this, windowID)
+               ResizeCanvas( *this, windowID)
             Else
                If  ActivateTab(*this, *hoverTAB)
                   needredraw = #True
@@ -756,6 +755,14 @@ Procedure Create( *this._s_WIDGET, X.l, Y.l, Width.l, Height.l, Text.s, flags.l 
    EndWith
 EndProcedure
 
+Procedure OpenList( *this._s_WIDGET, item.i)
+   SelectElement(*this\tab\_s(), item)
+   OpenGadgetList(*this\tab\_s()\containerID)
+EndProcedure
+
+Procedure CloseList( )
+   CloseGadgetList()
+EndProcedure
 
 ; обновление размеров холста и всех контейнеров под размеры окна
 
@@ -783,21 +790,20 @@ If OpenWindow(0, 0, 0, windoww, windowh, "chrome tabs with container logic", #PB
    AddTab(@MyThis, "система 4")
    AddTab(@MyThis, "логи работы 5")
    ;   
-   ; настраиваем начальные размеры всего интерфейса
-   DoResize(@MyThis, 0)
    
    ; наполним первый и второй контейнер чем-нибудь для теста
    ; для этого временно переключаемся на нужный контейнер через opengadgetlist
-   SelectElement(MyThis\tab\_s(), 0)
-   OpenGadgetList(MyThis\tab\_s()\containerID)
+   OpenList(@MyThis, 0)
    ButtonGadget(#PB_Any, 20, 20, 150, 30, "кнопка на вкладке 1")
    StringGadget(#PB_Any, 20, 60, 200, 25, "текст на вкладке 1")
-   CloseGadgetList()
+   CloseList()
    
-   SelectElement(MyThis\tab\_s(), 1)
-   OpenGadgetList(MyThis\tab\_s()\containerID)
+   OpenList(@MyThis, 1)
    CheckBoxGadget(#PB_Any, 20, 20, 200, 20, "галочка на второй вкладке")
-   CloseGadgetList()
+   CloseList()
+   
+   ; настраиваем начальные размеры всего интерфейса
+   ResizeCanvas(@MyThis, 0)
    
    Define event.i, mx.i, my.i, needRedraw.b
    Repeat
@@ -812,16 +818,16 @@ If OpenWindow(0, 0, 0, windoww, windowh, "chrome tabs with container logic", #PB
             
          Case #PB_Event_SizeWindow
             ; вызываем единую процедуру ресайза для холста и дочерних контейнеров
-            DoResize(@MyThis, 0)
+            ResizeCanvas(@MyThis, 0)
             
          Case #PB_Event_CloseWindow
             End
       EndSelect
    ForEver
 EndIf
-; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 430
-; FirstLine = 328
-; Folding = ------8--8--------
+; IDE Options = PureBasic 6.40 (Windows - x64)
+; CursorPosition = 739
+; FirstLine = 439
+; Folding = ------8--8-b----0-
 ; EnableXP
 ; DPIAware
