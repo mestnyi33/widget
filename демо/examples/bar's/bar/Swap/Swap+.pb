@@ -115,7 +115,7 @@ Structure _s_TAB  Extends _s_BOX
    img._s_IMG
    List btn._s_BTN()
    ;btn._s_BTN      ; Кнопка закрытия (вложенная структура — не требует AllocateStructure!)
-   
+   padding.b
    StructureUnion
       *data 
       ContainerID.i  ; id контейнера, привязанного к этой вкладке
@@ -133,7 +133,7 @@ Structure _s_TABS
    padding.b
    
    vertical.b
-   TotalSize.l       
+   ;TotalSize.l       
    
    List _s._s_TAB()  ; Заголовки вкладок
 EndStructure
@@ -190,85 +190,6 @@ Procedure.i MakeAlignPosition(alignFlags.l, contentSize.i, objectSize.i, Offset.
 EndProcedure
 
 ;-
-Procedure.l UpdateBTNPos(*tab._s_TAB, indent.a, btnSpacing.a, vertical.b)
-   Protected._s_BTN *btn
-   Protected mainSize.l, crossSize.l, maxBtn.l
-   
-   If vertical
-      mainSize  = *tab\Height
-      crossSize = *tab\Width
-      maxBtn    = DesktopScaledY(16)
-   Else
-      mainSize  = *tab\Width
-      crossSize = *tab\Height
-      maxBtn    = DesktopScaledX(16)
-   EndIf
-   
-   ; Если кнопок нет — возвращаем всю длину вкладки без вычетов
-   If ListSize(*tab\btn()) = 0
-      ProcedureReturn mainSize
-   EndIf
-   
-   Protected pos.l = mainSize - indent
-   Protected btnSize.l = crossSize - indent * 2
-   If btnSize > maxBtn : btnSize = maxBtn : EndIf
-   
-   pos + btnSpacing
-   ForEach *tab\btn()
-      *btn = @*tab\btn()
-      *btn\Width  = btnSize
-      *btn\Height = btnSize
-      ;pos - btnSpacing - btnSize
-      
-      If vertical
-         *btn\X = (crossSize - btnSize) >> 1
-         *btn\Y = pos
-      Else
-         *btn\X = pos
-         *btn\Y = (crossSize - btnSize) >> 1
-      EndIf
-   Next
-   
-   ProcedureReturn pos ;- DesktopScaledX(6) + indent
-EndProcedure
-
-Procedure UpdateContentPos(*tab._s_TAB, indent.a, Spacing.a, btnSpacing.a, vertical.b)
-   Protected contentX.l, contentY.l
-   Protected._s_TXT *txt = *tab\txt
-   Protected._s_IMG *img = *tab\img
-   If Not (*img\width And *txt\width) : Spacing = 0 : EndIf
-   
-   Protected contentLimit.l = UpdateBTNPos(*tab, indent, btnSpacing, vertical)
-   
-   If vertical
-      *txt\x = (*tab\width - *txt\width) >> 1
-      *img\x = (*tab\width - *img\width) >> 1
-      
-      contentY = MakeAlignPosition(*tab\mask, contentLimit, *img\height + *txt\height + Spacing, indent)
-      *txt\y = contentY
-      *img\y = contentY
-      
-      If Not (*tab\mask & #__MASK_Bottom)
-         If *img\height > 0 : *txt\y + *img\height + Spacing : EndIf
-      Else
-         If *txt\height > 0 : *img\y + *txt\height + Spacing : EndIf
-      EndIf
-   Else
-      *txt\y = (*tab\height - *txt\height) >> 1
-      *img\y = (*tab\height - *img\height) >> 1
-      
-      contentX = MakeAlignPosition(*tab\mask, contentLimit, *img\width + *txt\width + Spacing, indent)
-      *txt\x = contentX
-      *img\x = contentX
-      
-      If Not (*tab\mask & #__MASK_Right)
-         If *img\width > 0 : *txt\x + *img\width + Spacing : EndIf
-      Else
-         If *txt\width > 0 : *img\x + *txt\width + Spacing : EndIf
-      EndIf
-   EndIf
-EndProcedure
-
 Procedure UpdateContentSize(*tab._s_TAB)
    Protected._s_TXT *txt = *tab\txt
    Protected._s_IMG *img = *tab\img
@@ -293,6 +214,148 @@ Procedure UpdateContentSize(*tab._s_TAB)
          *img\width  = 0 : *img\height = 0
       EndIf
    EndIf
+EndProcedure
+
+Procedure UpdateTabPos(*this._s_WIDGET, *tab._s_TAB, position)
+  Protected Spacing.i, tab_size.i, contentX.l, contentY.l
+  Protected gWidth.l      = *this\Width
+  Protected gHeight.l     = *this\Height
+  Protected indent.i      = *this\tab\indent
+  Protected localslant    = *this\tab\slant
+  Protected vertical.b    = *this\tab\vertical
+  Protected padding.i     = *this\tab\padding
+  Protected._s_TXT *txt   = *tab\txt
+  Protected._s_IMG *img   = *tab\img
+  Protected._s_BTN *btn
+  ;Protected BottomSpacing = 0 ; Укажите нужное значение или берите из *this
+  
+  ; 1. Отступ между иконкой и текстом
+  If *img\width And *txt\width
+    If vertical
+      Spacing = DesktopScaledY(6)
+    Else
+      Spacing = DesktopScaledX(6)
+    EndIf
+  Else
+    Spacing = 0
+  EndIf
+  
+  ; 2. Считаем место, которое займут кнопки вкладки
+  Protected btnCount.i     = ListSize(*tab\btn())
+  Protected btnTotalSize.i = 0
+  
+  If btnCount > 0
+    ForEach *tab\btn()
+      If vertical
+        btnTotalSize + *tab\btn()\Height
+      Else
+        btnTotalSize + *tab\btn()\Width
+      EndIf
+    Next
+    
+    ; Отступы между кнопками + отступ от текста (если нет скоса slant)
+    btnTotalSize + (padding * (btnCount - 1))
+    If localslant = 0
+      btnTotalSize + padding
+    EndIf
+  EndIf
+  
+  *tab\pos = position
+  
+  ; 3. Расчет минимального размера вкладки
+  tab_size = Spacing + btnTotalSize + (padding * 2) 
+  If vertical
+    tab_size + *img\height + *txt\height
+  Else
+    tab_size + *img\width + *txt\width
+  EndIf
+  
+  If *tab\size < tab_size 
+    *tab\size = tab_size 
+  EndIf
+  
+  ; 4. Позиционирование самой вкладки
+  If vertical
+    *tab\x      = *this\x
+    *tab\y      = *this\y + indent + position
+    *tab\width  = gWidth - BottomSpacing
+    *tab\height = *tab\size + (localslant * 2)
+  Else
+    *tab\y      = *this\y
+    *tab\x      = *this\x + indent + position
+    *tab\width  = *tab\size + (localslant * 2)
+    *tab\height = gHeight - BottomSpacing
+  EndIf
+  
+  ; 5. Позиционирование кнопок и расчет доступной области (contentLimit)
+  Protected innerIndent.i  = localslant + padding
+  Protected innerBtnSpace.i = Bool(localslant <> 0) * padding
+  Protected mainSize.l, crossSize.l, contentLimit.l
+  
+  If vertical
+    mainSize  = *tab\height
+    crossSize = *tab\width
+  Else
+    mainSize  = *tab\width
+    crossSize = *tab\height
+  EndIf
+  
+  If btnCount
+     Protected btnPos.l = mainSize - innerIndent + innerBtnSpace
+     Protected isFirst.b = #True
+     
+     ForEach *tab\btn()
+        *btn = @*tab\btn()
+        
+        If Not isFirst
+           btnPos - padding ; Зазор между соседними кнопками
+        EndIf
+        isFirst = #False
+        
+        If vertical
+           btnPos - *btn\Height
+           *btn\X = (crossSize - *btn\Width) >> 1
+           *btn\Y = btnPos
+        Else
+           btnPos - *btn\Width
+           *btn\Y = (crossSize - *btn\Height) >> 1
+           *btn\X = btnPos
+        EndIf
+     Next
+     
+     contentLimit = btnPos + localslant
+  Else
+     contentLimit = mainSize
+  EndIf
+  
+  ; 6. Позиционирование текста и иконки
+  If vertical
+    *txt\x = (*tab\width - *txt\width) >> 1
+    *img\x = (*tab\width - *img\width) >> 1
+    
+    contentY = MakeAlignPosition(*tab\mask, contentLimit, *img\height + *txt\height + Spacing, innerIndent)
+    *txt\y = contentY
+    *img\y = contentY
+    
+    If Not (*tab\mask & #__MASK_Bottom)
+      If *img\height > 0 : *txt\y + *img\height + Spacing : EndIf
+    Else
+      If *txt\height > 0 : *img\y + *txt\height + Spacing : EndIf
+    EndIf
+  Else
+    *txt\y = (*tab\height - *txt\height) >> 1
+    *img\y = (*tab\height - *img\height) >> 1
+    
+    contentX = MakeAlignPosition(*tab\mask, contentLimit, *img\width + *txt\width + Spacing, innerIndent)
+    *txt\x = contentX
+    *img\x = contentX
+    
+    If Not (*tab\mask & #__MASK_Right)
+      If *img\width > 0 : *txt\x + *img\width + Spacing : EndIf
+    Else
+      If *txt\width > 0 : *img\x + *txt\width + Spacing : EndIf
+    EndIf
+  EndIf
 EndProcedure
 
 ;-
@@ -523,7 +586,6 @@ Procedure DrawTAB(*tab._s_TAB, bgColor.l = $FF808080, frColor.l = $FF000000, ver
    EndIf
 EndProcedure
 
-
 Procedure DrawTabs(*this._s_WIDGET, *activeTAB._s_TAB)
    Protected position.i, widgetChanged.b, shiftTabs.b, updateSize.b
    Protected *tab._s_TAB
@@ -536,9 +598,10 @@ Procedure DrawTabs(*this._s_WIDGET, *activeTAB._s_TAB)
    Protected localslant = *this\tab\slant
    Protected Spacing.i
    Protected tab_size.i
+   Protected totalSize.i
    Protected lineX, lineY
    frColor = $ff000000
-   bgColor = $FF808080
+   ;bgColor = $FF808080
    
    ; 1. Сохраняем факт глобального изменения виджета до сброса флага
    If *this\change 
@@ -560,7 +623,7 @@ Procedure DrawTabs(*this._s_WIDGET, *activeTAB._s_TAB)
       Protected._s_TXT *txt = *tab\txt
       Protected._s_IMG *img = *tab\img
       
-      ; Проверяем, нужно ли заново замерить текст/картинку конкретно этой вкладки
+       ; Проверяем, нужно ли заново замерить текст/картинку конкретно этой вкладки
       If *txt\change Or *img\change Or widgetChanged
          UpdateContentSize(*tab)
          *txt\change = 0
@@ -572,55 +635,7 @@ Procedure DrawTabs(*this._s_WIDGET, *activeTAB._s_TAB)
       
       ; Пересчитываем геометрию и позицию вкладки
       If shiftTabs
-         *tab\pos = position 
-         
-         If *img\width And *txt\width
-            Spacing = DesktopScaledX(6)
-         Else
-            Spacing = 0
-         EndIf
-         
-         ; Считаем место, которое займут кнопки вкладки
-         Protected btnCount = ListSize(*tab\btn())
-         Protected btnTotalSize.i = 0
-         Protected btnSize.i = 0
-         Protected btnSpacing.i = DesktopScaledX(4)
-         
-         If btnCount > 0
-            If vertical
-               btnSize = gWidth - BottomSpacing - *this\tab\padding * 2
-            Else
-               btnSize = gHeight - BottomSpacing - *this\tab\padding * 2
-            EndIf
-            If btnSize > DesktopScaledX(16) : btnSize = DesktopScaledX(16) : EndIf ; ограничиваем макс. размер кнопки на вкладке
-            
-            btnTotalSize = btnCount * btnSize + (btnCount - 1) * btnSpacing
-            If *img\width Or *txt\width
-               btnTotalSize + DesktopScaledX(6) ; отступ между текстом/иконкой и блоком кнопок
-            EndIf
-         EndIf
-         
-         tab_size = Spacing + *this\tab\padding * 2 + btnTotalSize
-         If vertical 
-            tab_size + *img\height + *txt\height 
-         Else 
-            tab_size + *img\width + *txt\width 
-         EndIf
-         If *tab\size < tab_size : *tab\size = tab_size : EndIf
-         
-         If vertical
-            *tab\x = *this\x
-            *tab\y = *this\y + indent + position
-            *tab\width = gWidth - BottomSpacing
-            *tab\height = *tab\size +  localslant * 2
-         Else
-            *tab\y = *this\y
-            *tab\x = *this\x + indent + position 
-            *tab\width = *tab\size + localslant * 2
-            *tab\height = gHeight - BottomSpacing
-         EndIf 
-         
-         UpdateContentPos(*tab, localslant + *this\tab\padding, Spacing, btnSpacing, vertical)
+         UpdateTabPos(*this, *tab, position)
       EndIf
       
       ; Сдвигаем позицию на полную ширину/высоту вкладки (включая оба скоса) + spacing
@@ -634,19 +649,19 @@ Procedure DrawTabs(*this._s_WIDGET, *activeTAB._s_TAB)
    
    If updateSize
       If ListSize(*this\tab\_s()) > 0
-         *this\tab\TotalSize = position + localslant * 2 - *this\tab\spacing
+         totalSize = position + localslant * 2 - *this\tab\spacing
       Else
-         *this\tab\TotalSize = 0
+         totalSize = 0
       EndIf
       
       If *this\tab\vertical
-         *this\Height = *this\tab\TotalSize + *this\tab\indent * 2
+         *this\Height = totalSize + *this\tab\indent * 2
       Else
-         *this\Width = *this\tab\TotalSize + *this\tab\indent * 2
+         *this\Width = totalSize + *this\tab\indent * 2
       EndIf
    EndIf
    
-   ; Слой 2: Летящая поверх
+    ; Слой 2: Летящая поверх
    If *activeTAB
       bgColor = *activeTAB\data
       DrawTAB(*activeTAB, bgColor, frColor, vertical, localslant)
@@ -663,7 +678,7 @@ Procedure DrawTabs(*this._s_WIDGET, *activeTAB._s_TAB)
          Line(lineX, lineY, (*this\x + *this\Width) - lineX, 1, frColor) 
       EndIf
    EndIf
-EndProcedure
+  EndProcedure
 
 ; Главная циклическая процедура отрисовки Canvas панели
 Procedure ReDraw(*this._s_WIDGET)
@@ -685,26 +700,131 @@ Procedure ReDraw(*this._s_WIDGET)
 EndProcedure
 
 ;-
-Procedure.i AddTabButton(*this._s_WIDGET, *tab._s_TAB, btnType.l = #__BTN_Close, round.a = 1)
+Procedure.i AddTabBTN(*tab._s_TAB, btnType.l = #__BTN_Close, round.a = 1)
+   Protected *btn._s_BTN
    If *tab
-      AddElement(*tab\btn())
-      *tab\btn()\Type  = btnType
-      *tab\btn()\round = round
-      If *this : *this\mask | #__MASK_UpdateTotalSize | #__MASK_Redraw : EndIf
-      ProcedureReturn @*tab\btn()
+      *btn = AddElement(*tab\btn())
+      If *btn
+         *btn\Type   = btnType
+         *btn\round  = round
+         *btn\Width  = DesktopScaledX(16)
+         *btn\Height = *btn\Width
+        ; *tab\txt\change = 1 ; Сигнал для DrawTabs пересчитать ширину вкладки
+      EndIf
+      ProcedureReturn *btn
    EndIf
    ProcedureReturn #Null
 EndProcedure
 
-Procedure RemoveTabButton(*tab._s_TAB)
-   ;    If *tab
-   ;       *tab\btn\Width  = 0
-   ;       *tab\btn\Height = 0
-   ;    EndIf
+Procedure RemoveTabBTN(*tab._s_TAB, *btn._s_BTN = 0)
+   If Not *tab
+      ProcedureReturn #False
+   EndIf
+   
+   If ListSize(*tab\btn())
+      If *btn
+         ChangeCurrentElement(*tab\btn(), *btn)
+         DeleteElement(*tab\btn())
+      Else
+         ClearList(*tab\btn())
+      EndIf
+     ; *tab\txt\change = 1 ; Сигнал для DrawTabs пересчитать ширину вкладки
+   EndIf
+   
+   ProcedureReturn #True
 EndProcedure
 
+
 ;-
-Procedure CloseTab(*this._s_WIDGET, *tabtoclose._s_TAB)
+Procedure CloseTab(*this._s_WIDGET, *tab._s_TAB, *mouse._s_MOUSE = 0)
+   If Not *this Or Not *tab
+      ProcedureReturn #False
+   EndIf
+ 
+   ChangeCurrentElement( *this\tab\_s(), *tab)
+   
+   ; Сбрасываем состояния мыши, если курсор был на этой вкладке или её тащили
+   If *mouse
+      If *mouse\press = *tab : *mouse\press = 0 : EndIf
+      If *mouse\enter = *tab : *mouse\enter = 0 : EndIf
+   EndIf
+   
+   Protected isActive.b = Bool(*this\Tab\active = *tab)
+   Protected *nextActive._s_TAB = 0
+   
+   ; Определяем следующую активную вкладку (сначала правую/нижнюю, затем левую/верхнюю)
+   If isActive
+      If NextElement(*this\Tab\_s())
+         *nextActive = @*this\Tab\_s()
+         PreviousElement(*this\Tab\_s())
+      ElseIf PreviousElement(*this\Tab\_s())
+         *nextActive = @*this\Tab\_s()
+         NextElement(*this\Tab\_s())
+      EndIf
+   EndIf
+   
+   ; Если к вкладке привязан PureBasic-контейнер — скрываем или удаляем его (по вашей логике)
+   If *tab\ContainerID And IsGadget(*tab\ContainerID)
+      HideGadget(*tab\ContainerID, #True) ; или FreeGadget(*tab\ContainerID), если контейнеры создаются динамически
+   EndIf
+   
+   ; Очищаем список кнопок вкладки и удаляем саму вкладку
+   ClearList(*tab\btn())
+   DeleteElement(*this\Tab\_s())
+   
+   ; Передаем фокус новой активной вкладке и показываем её контейнер
+   If isActive
+      *this\Tab\active = *nextActive
+      If *nextActive
+         *nextActive\mask | #__MASK_active
+         If *nextActive\ContainerID And IsGadget(*nextActive\ContainerID)
+            HideGadget(*nextActive\ContainerID, #False)
+         EndIf
+      EndIf
+   EndIf
+   
+   ; Сигнализируем DrawTabs о необходимости пересчитать позиции и общую ширину
+   If  *this\mask & #__MASK_UpdateTotalSize = 0
+      *this\mask | #__MASK_UpdateTotalSize
+      ReDraw(*this)
+   EndIf
+   *this\mask | #__MASK_redraw
+   ProcedureReturn #True
+EndProcedure
+
+Procedure AddTab(*this._s_WIDGET, ID.i, Text.s, size.i, Image.i = 0, align.q = #__MASK_Left, closeBtn.b = #True)
+   Protected *tab._s_TAB = AddElement(*this\tab\_s())
+   
+   *tab\ID   = ID
+   *tab\mask = align
+   *tab\size = DesktopScaledX(size)
+   
+   If Text
+      *tab\txt\text   = Text
+      *tab\txt\change = 1
+   EndIf
+   If IsImage(Image)
+      *tab\img\image  = Image 
+      *tab\img\change = 1
+   EndIf
+   
+   ; Добавляем кнопку закрытия (крестик), если closeBtn = #True
+   If closeBtn
+     ; AddTabBTN( *tab, #__BTN_Close, 10)
+   EndIf
+   
+   If ListSize(*this\Tab\_s()) = 1
+      *this\tab\active = *tab
+      *this\tab\active\mask | #__MASK_active
+      AddTabBTN( *tab, #__BTN_Close, 10)
+   EndIf
+   
+   *tab\data = RGBA(Random(50)+200, Random(50)+200, Random(50)+200, 255)
+   *this\mask | #__MASK_UpdateTotalSize
+   ProcedureReturn *tab
+EndProcedure
+
+Procedure FreeTab(*this._s_WIDGET, *tabtoclose._s_TAB)
    ; 1. Переводим список на удаляемую вкладку
    ChangeCurrentElement(*this\tab\_s(), *tabtoclose)
    
@@ -731,40 +851,6 @@ Procedure CloseTab(*this._s_WIDGET, *tabtoclose._s_TAB)
       HideGadget(*this\tab\active\containerID, #False)
    EndIf
 EndProcedure
-
-Procedure AddTab(*this._s_WIDGET, ID.i, Text.s, size.i, Image.i = 0, align.q = #__MASK_Left, closeBtn.b = #True)
-   Protected *tab._s_TAB = AddElement(*this\tab\_s())
-   
-   *tab\ID   = ID
-   *tab\mask = align
-   *tab\size = DesktopScaledX(size)
-   
-   If Text
-      *tab\txt\text   = Text
-      *tab\txt\change = 1
-   EndIf
-   If IsImage(Image)
-      *tab\img\image  = Image 
-      *tab\img\change = 1
-   EndIf
-   
-   ; Добавляем кнопку закрытия (крестик), если closeBtn = #True
-   If closeBtn
-      AddElement(*tab\btn())
-      *tab\btn()\Type  = #__BTN_Close
-      *tab\btn()\round = 1
-   EndIf
-   
-   If ListSize(*this\Tab\_s()) = 1
-      *this\tab\active = *tab
-      *this\tab\active\mask | #__MASK_active
-   EndIf
-   
-   *tab\data = RGBA(Random(50)+200, Random(50)+200, Random(50)+200, 255)
-   *this\mask | #__MASK_UpdateTotalSize
-   ProcedureReturn *tab
-EndProcedure
-
 
 Procedure CreateTab( Canvas, X.l,Y.l,Width.l,Height.l )
    Protected *this._s_WIDGET = AllocateStructure(_s_WIDGET)
@@ -872,15 +958,20 @@ Procedure.i GetTabAtPoint(*this._s_WIDGET, mx.i, my.i)
    ProcedureReturn #Null
 EndProcedure
 
-Procedure DoEventBTN( *btn._s_BTN, event )
+Procedure DoEventBTN( *this._s_WIDGET, *tab._s_TAB, *btn._s_BTN, event )
    Protected windowID = EventWindow()
    
    Select event
+      Case #PB_EventType_LeftButtonDown
+         Select *btn\Type
+            Case #__BTN_Close
+               CloseTab( *this, *tab )
+               
+         EndSelect        
+         
       Case #PB_EventType_MouseEnter
          
       Case #PB_EventType_MouseLeave
-         
-      Case #PB_EventType_LeftButtonDown
          
       Case  #PB_EventType_LeftDoubleClick
          
@@ -935,10 +1026,15 @@ Procedure DoEventTAB(*this._s_WIDGET, *hoverTAB._s_TAB, event.i, mousePos.i)
             If *this\tab\active <> *current_tab
                If *this\tab\active
                   *this\tab\active\mask &~ #__MASK_active
+                  RemoveTabBTN( *this\tab\active)
                EndIf
                
                *this\tab\active = *current_tab
                *current_tab\mask | #__MASK_active
+               If AddTabBTN( *current_tab, #__BTN_Close, 10)
+                  *this\mask | #__MASK_UpdateTotalSize
+                  ReDraw( *this)
+               EndIf
             EndIf
             
             stepSize = *current_tab\size + *this\tab\spacing
@@ -1046,14 +1142,14 @@ Procedure DoEvent( *this._s_WIDGET, event, mx, my)
             If *hoverBTN <> *newHoverBTN
                If *hoverBTN
                   *hoverBTN\mask &~ #__MASK_Hover
-                  DoEventBTN(*hoverBTN, #PB_EventType_MouseLeave)
+                  DoEventBTN(*this, *hoverTAB, *hoverBTN, #PB_EventType_MouseLeave)
                EndIf
                
                *hoverBTN = *newHoverBTN
                
                If *hoverBTN
                   *hoverBTN\mask | #__MASK_Hover
-                  DoEventBTN(*hoverBTN, #PB_EventType_MouseEnter)
+                  DoEventBTN(*this, *hoverTAB, *hoverBTN, #PB_EventType_MouseEnter)
                EndIf
                
                *this\mask | #__MASK_Redraw
@@ -1080,7 +1176,7 @@ Procedure DoEvent( *this._s_WIDGET, event, mx, my)
          
       Case #PB_EventType_LeftButtonDown
          If *hoverBTN
-            DoEventBTN( *hoverBTN, event )
+             DoEventBTN( *this, EnteredTAB( ), *hoverBTN, event )
          EndIf
          
    EndSelect
@@ -1101,7 +1197,7 @@ Procedure DoEvent( *this._s_WIDGET, event, mx, my)
    
    If *this\mask & #__MASK_Redraw
       *this\mask &~ #__MASK_Redraw
-      ReDraw(*this)
+     ReDraw(*this)
       ProcedureReturn #True
    EndIf
    
@@ -1127,12 +1223,13 @@ EndProcedure
 
 If OpenWindow(#Win, 0,0,0,0, "Наглядный Демо-Пример", #PB_Window_SystemMenu | #PB_Window_ScreenCentered)
    CanvasGadget(#Canvas, 10, 10, 0, 0)
+   
    Define *this._s_WIDGET = CreateTab(#Canvas, 10,10,240,40 )
    ; Наполняем вашим тестовым набором
-   AddTab(*this, 0, "0 - 76", 76)
-   AddTab(*this, 1, "1 - 176", 176, (1), #__MASK_Center)
-   AddTab(*this, 2, "2 - 166", 166, (1), #__MASK_Right)
-   AddTab(*this, 3, "3 - 106", 106, (1))
+   AddTab(*this, 0, "0 - 60", 0)
+   AddTab(*this, 1, "1 - 160", 160, (1), #__MASK_Center)
+   AddTab(*this, 2, "2 - 150", 150, (1), #__MASK_Right)
+   AddTab(*this, 3, "3 - 90", 90, (1))
    ;
    ResizeCanvas(*this)
    
@@ -1145,10 +1242,10 @@ If OpenWindow(#Win, 0,0,0,0, "Наглядный Демо-Пример", #PB_Win
             *this\tab\vertical ! 1
             Swap *this\Width, *this\Height
             ClearList(*this\Tab\_s())
-            AddTab(*this, 0, "0 - 76", 76)
-            AddTab(*this, 1, "1 - 176", 176, (1), #__MASK_Center)
-            AddTab(*this, 2, "2 - 166", 166, (1), #__MASK_Right)
-            AddTab(*this, 3, "3 - 106", 106, (1))
+            AddTab(*this, 0, "0 - 60", 60)
+            AddTab(*this, 1, "1 - 160", 160, (1), #__MASK_Center)
+            AddTab(*this, 2, "2 - 150", 150, (1), #__MASK_Right)
+            AddTab(*this, 3, "3 - 90", 90, (1))
             ;
             ResizeCanvas( *this )
          EndIf
@@ -1162,8 +1259,8 @@ If OpenWindow(#Win, 0,0,0,0, "Наглядный Демо-Пример", #PB_Win
    Until Event = #PB_Event_CloseWindow
 EndIf
 ; IDE Options = PureBasic 6.40 (Windows - x64)
-; CursorPosition = 220
-; FirstLine = 213
-; Folding = -----v---------------------
+; CursorPosition = 1035
+; FirstLine = 728
+; Folding = ------84-+--P-0---f-----------
 ; EnableXP
 ; DPIAware

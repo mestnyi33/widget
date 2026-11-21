@@ -862,7 +862,7 @@ Procedure CreateTab( Canvas, X.l,Y.l,Width.l,Height.l )
    *this\Width = DesktopScaledX(Width)
    *this\Height = DesktopScaledY(Height)
    
-   *this\tab\slant = DesktopScaledX(20)
+  ; *this\tab\slant = DesktopScaledX(20)
    *this\tab\indent = DesktopScaledX(50) ; Отступ панели слева
    ;*this\tab\spacing = DesktopScaledX(20) ; Расстояние между вкладками
    *this\fontid  = LoadFont(0, "tahoma", 12)
@@ -926,8 +926,8 @@ If OpenWindow(#Win, 0,0,0,0, "Наглядный Демо-Пример", #PB_Win
    Until Event = #PB_Event_CloseWindow
 EndIf
 ; IDE Options = PureBasic 6.40 (Windows - x64)
-; CursorPosition = 864
-; FirstLine = 842
+; CursorPosition = 854
+; FirstLine = 831
 ; Folding = ------------0---------
 ; EnableXP
 ; DPIAware
