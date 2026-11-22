@@ -383,14 +383,14 @@ CompilerIf #PB_Compiler_IsMainFile
    ; EndMacro
    
    CompilerIf #PB_Compiler_DPIAware And #PB_Compiler_OS = #PB_OS_Windows
-      Procedure LoadImage__( _image_, _filename_.s, _flags_=-1 )
-         Protected result = PB(LoadImage)( _image_, _filename_, _flags_ )
-         ResizeImage(_image_, DPIScaled(ImageWidth(_image_)), DPIScaled(ImageHeight(_image_)))
-         ProcedureReturn result
-      EndProcedure
-      Macro LoadImage( _image_, _filename_, _flags_=-1 )
-         LoadImage__( _image_, _filename_, _flags_ )
-      EndMacro
+;       Procedure LoadImage__( _image_, _filename_.s, _flags_=-1 )
+;          Protected result = PB(LoadImage)( _image_, _filename_, _flags_ )
+;          ResizeImage(_image_, DPIScaled(ImageWidth(_image_)), DPIScaled(ImageHeight(_image_)))
+;          ProcedureReturn result
+;       EndProcedure
+;       Macro LoadImage( _image_, _filename_, _flags_=-1 )
+;          LoadImage__( _image_, _filename_, _flags_ )
+;       EndMacro
       
       Macro CreateImage( _image_, _width_, _height_, _depth_=24, _backcolor_= -1)
          PB(CreateImage)( _image_, DesktopScaledX(_width_), DesktopScaledY(_height_), _depth_, _backcolor_ )
@@ -470,14 +470,14 @@ CompilerIf #PB_Compiler_IsMainFile
                         Protected img =- 1
                         ;
                         SelectElement(EventWidget( )\__rows( ), SourceItem)
-                        img = CreateImage(#PB_Any, EventWidget( )\__rows( )\text\width, EventWidget( )\__rows( )\text\height, 32, #PB_Image_Transparent )
+                        img = CreateImage(#PB_Any, EventWidget( )\__rows( )\txt(0)\width, EventWidget( )\__rows( )\txt(0)\height, 32, #PB_Image_Transparent )
                         StartDrawing(ImageOutput(img))
                         DrawingMode( #PB_2DDrawing_AllChannels)
-                        DrawText(0, 0, EventWidget( )\__rows( )\text\Str(0), $ff000000)
+                        DrawText(0, 0, EventWidget( )\__rows( )\txt(0)\text, $ff000000)
                         StopDrawing()
                         
                         If IsImage(img)
-                           ChangeCursor( GADGET_SourceItem, Cursor::Create( ImageID(img), EventWidget( )\__rows( )\text\width/2, EventWidget( )\__rows( )\text\height/2 ))
+                           ChangeCursor( GADGET_SourceItem, Cursor::Create( ImageID(img), EventWidget( )\__rows( )\txt(0)\width/2, EventWidget( )\__rows( )\txt(0)\height/2 ))
                         EndIf
                      EndIf
                   EndIf
@@ -697,7 +697,7 @@ CompilerIf #PB_Compiler_IsMainFile
                      ;ClearDebugOutput()
                      Define *this._s_widget = GADGET_TargetItem
                      ForEach *this\__rows( )
-                        Debug ""+ *this\__rows( )\index +" "+ ListIndex(*this\__rows( )) +" "+ *this\__rows( )\text\Str(0) +""
+                        Debug ""+ *this\__rows( )\index +" "+ ListIndex(*this\__rows( )) +" "+ *this\__rows( )\txt(0)\text +""
                      Next
                   EndIf
                   
@@ -841,8 +841,8 @@ CompilerIf #PB_Compiler_IsMainFile
    End
 CompilerEndIf
 ; IDE Options = PureBasic 6.40 (Windows - x64)
-; CursorPosition = 223
-; FirstLine = 241
-; Folding = -------------G0+
+; CursorPosition = 699
+; FirstLine = 690
+; Folding = -------------xv-
 ; EnableXP
 ; DPIAware

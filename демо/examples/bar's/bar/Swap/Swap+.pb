@@ -736,6 +736,30 @@ EndProcedure
 
 
 ;-
+Procedure ActivateTab(*this._s_WIDGET, *NewActive._s_TAB)
+   If *this\tab\active <> *NewActive
+      ; Прячем старый контейнер
+      If *this\tab\active
+         *this\tab\active\mask &~ #__MASK_active
+         If IsGadget(*this\tab\active\ContainerID)
+            HideGadget(*this\tab\active\ContainerID, #True)
+         EndIf
+         RemoveTabBTN( *this\tab\active)
+      EndIf
+      
+      ; Переключаем простой указатель
+      *this\tab\active = *NewActive
+      *NewActive\mask | #__MASK_active
+               
+      ; Показываем новый контейнер
+      If IsGadget(*NewActive\ContainerID)
+         HideGadget(*NewActive\ContainerID, #False)
+      EndIf
+      AddTabBTN( *NewActive, #__BTN_Close, 10)
+      ProcedureReturn #True
+   EndIf
+EndProcedure
+
 Procedure CloseTab(*this._s_WIDGET, *tab._s_TAB, *mouse._s_MOUSE = 0)
    If Not *this Or Not *tab
       ProcedureReturn #False
@@ -761,27 +785,14 @@ Procedure CloseTab(*this._s_WIDGET, *tab._s_TAB, *mouse._s_MOUSE = 0)
          *nextActive = @*this\Tab\_s()
          NextElement(*this\Tab\_s())
       EndIf
+      
+      ActivateTab( *this, *nextActive)
    EndIf
    
-   ; Если к вкладке привязан PureBasic-контейнер — скрываем или удаляем его (по вашей логике)
-   If *tab\ContainerID And IsGadget(*tab\ContainerID)
-      HideGadget(*tab\ContainerID, #True) ; или FreeGadget(*tab\ContainerID), если контейнеры создаются динамически
-   EndIf
    
    ; Очищаем список кнопок вкладки и удаляем саму вкладку
    ClearList(*tab\btn())
    DeleteElement(*this\Tab\_s())
-   
-   ; Передаем фокус новой активной вкладке и показываем её контейнер
-   If isActive
-      *this\Tab\active = *nextActive
-      If *nextActive
-         *nextActive\mask | #__MASK_active
-         If *nextActive\ContainerID And IsGadget(*nextActive\ContainerID)
-            HideGadget(*nextActive\ContainerID, #False)
-         EndIf
-      EndIf
-   EndIf
    
    ; Сигнализируем DrawTabs о необходимости пересчитать позиции и общую ширину
    If  *this\mask & #__MASK_UpdateTotalSize = 0
@@ -1023,20 +1034,11 @@ Procedure DoEventTAB(*this._s_WIDGET, *hoverTAB._s_TAB, event.i, mousePos.i)
             PressedTAB() = *current_tab
             *current_tab\mask | #__MASK_press
             
-            If *this\tab\active <> *current_tab
-               If *this\tab\active
-                  *this\tab\active\mask &~ #__MASK_active
-                  RemoveTabBTN( *this\tab\active)
-               EndIf
-               
-               *this\tab\active = *current_tab
-               *current_tab\mask | #__MASK_active
-               If AddTabBTN( *current_tab, #__BTN_Close, 10)
-                  *this\mask | #__MASK_UpdateTotalSize
-                  ReDraw( *this)
-               EndIf
-            EndIf
-            
+           If ActivateTab( *this, *current_tab)
+              *this\mask | #__MASK_UpdateTotalSize
+              ReDraw(*this)
+           EndIf
+      
             stepSize = *current_tab\size + *this\tab\spacing
             
             ForEach *this\tab\_s()
@@ -1259,8 +1261,8 @@ If OpenWindow(#Win, 0,0,0,0, "Наглядный Демо-Пример", #PB_Win
    Until Event = #PB_Event_CloseWindow
 EndIf
 ; IDE Options = PureBasic 6.40 (Windows - x64)
-; CursorPosition = 1035
-; FirstLine = 728
-; Folding = ------84-+--P-0---f-----------
+; CursorPosition = 1038
+; FirstLine = 855
+; Folding = ------84----P-0----+----------
 ; EnableXP
 ; DPIAware
