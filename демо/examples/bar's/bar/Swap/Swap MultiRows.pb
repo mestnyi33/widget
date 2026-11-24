@@ -784,20 +784,20 @@ If StartDrawing(ImageOutput(2)) : Box(0,0,16,16, RGB(50, 150, 255)) : StopDrawin
 If OpenWindow(0, 0, 0, windoww, windowh, "chrome tabs with container logic", #PB_Window_SystemMenu | #PB_Window_ScreenCentered | #PB_Window_SizeGadget)
    Create(@MyThis, 0, 0, windoww, 40,"")
    
-;    ; добавляем вкладки (последним параметром передаем ID созданных картинок)
-;    AddTab(@MyThis, -1, "google (с иконкой)", 1, RGB(255, 255, 255))
-;   AddTab(@MyThis, -1, "код проекта (с иконкой)", 2, RGB(210, 245, 225))
-;    AddTab(@MyThis, -1, "без иконки", 0, RGB(255, 220, 230))
-;    ; добавляем вкладки, передавая ID окна и начальную высоту холста
-;    AddTab(@MyThis, -1, "вкладка 1")
-;    ;AddTab(@MyThis, -1, "вкладка с длинным текстом 2")
-;    AddTab(@MyThis, -1, "опции 3")
-;    AddTab(@MyThis, -1, "система 4")
-;    AddTab(@MyThis, -1, "логи работы 5")
-     AddTab(@MyThis, 0, "0 - 60", 0)
-   AddTab(@MyThis, 1, "1 - 160", 160);, (1), #__MASK_Center)
-   AddTab(@MyThis, 2, "2 - 150", 150);, (1), #__MASK_Right)
-   AddTab(@MyThis, 3, "3 - 90", 90);, (1))
+   ; добавляем вкладки (последним параметром передаем ID созданных картинок)
+   AddTab(@MyThis, -1, "google (с иконкой)", 1, 0, RGB(255, 255, 255))
+  AddTab(@MyThis, -1, "код проекта (с иконкой)", 2, 0, RGB(210, 245, 225))
+   AddTab(@MyThis, -1, "без иконки", 0, 0, RGB(255, 220, 230))
+   ; добавляем вкладки, передавая ID окна и начальную высоту холста
+   AddTab(@MyThis, -1, "вкладка 1")
+   ;AddTab(@MyThis, -1, "вкладка с длинным текстом 2")
+   AddTab(@MyThis, -1, "опции 3")
+   AddTab(@MyThis, -1, "система 4")
+   AddTab(@MyThis, -1, "логи работы 5")
+;      AddTab(@MyThis, 0, "0 - 60", 0)
+;    AddTab(@MyThis, 1, "1 - 160", 160);, (1), #__MASK_Center)
+;    AddTab(@MyThis, 2, "2 - 150", 150);, (1), #__MASK_Right)
+;    AddTab(@MyThis, 3, "3 - 90", 90);, (1))
   ;
    
    ; наполним первый и второй контейнер чем-нибудь для теста
@@ -835,8 +835,8 @@ If OpenWindow(0, 0, 0, windoww, windowh, "chrome tabs with container logic", #PB
    ForEver
 EndIf
 ; IDE Options = PureBasic 6.40 (Windows - x64)
-; CursorPosition = 96
-; FirstLine = 86
-; Folding = ------8--8--------
+; CursorPosition = 789
+; FirstLine = 525
+; Folding = --4---8--8--------
 ; EnableXP
 ; DPIAware

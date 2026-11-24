@@ -153,7 +153,7 @@ Structure _s_WIDGET Extends _s_COORDINATE
 EndStructure
 
 Declare ResizeCanvas(*this._s_WIDGET)
-Global bottomSpacing.i = DesktopScaledX(3) 
+Global bottomSpacing.i = 2
 Global mouse._s_MOUSE
 Macro PressedTAB( )
    mouse\press
@@ -369,150 +369,189 @@ Procedure UpdateTabPos(*this._s_WIDGET, *tab._s_TAB, position, row.i = 0)
 EndProcedure
 
 Procedure.i UpdateTotalSize(*this._s_WIDGET, gWidth, widgetChanged)
-   Protected *tab._s_TAB
-   Protected indent = DesktopScaledX(4)
-   Protected TopSpacing = DesktopScaledX(6)
-   Protected RowSpacing = DesktopScaledX(2)
-   Protected BottomSpacing = RowSpacing
-   Protected currentx = 0
-   Protected currentrow = 0
-   Protected maxheight = 0
-   Protected i.i, k.i, startIDx.i, endIDx.i
-   Protected totalrowWidth.i, extraspace.i, addpixels.i, remainder.i
-   Protected tabcount = ListSize(*this\tab\_s())
+   ; --- ОБЪЯВЛЕНИЕ ПЕРЕМЕННЫХ И ПАРАМЕТРОВ ИЗ СТРУКТУРЫ ВИДЖЕТА ---
+   Protected *tab._s_TAB                         ; Указатель на текущую обрабатываемую вкладку
+   Protected indent = *this\tab\indent             ; Внешний отступ полосы вкладок от левого и правого краев виджета
+   Protected spacing = *this\tab\spacing           ; Зазор между центральными частями соседних вкладок (как в однорядном режиме)
+   Protected localslant = *this\tab\slant          ; Ширина одного скоса (трапеции) вкладки
+   Protected TopSpacing = indent;DesktopScaledX(6)      ; Отступ сверху над самым верхним рядом вкладок
+   Protected RowSpacing = DesktopScaledX(1)      ; Вертикальный зазор между рядами вкладок
+   Protected currentx = 0                        ; Текущая накопленная координата X при заполнении ряда
+   Protected currentrow = 0                      ; Индекс текущего формируемого ряда (0 — нижний ряд до инверсии)
+   Protected maxheight = 0                       ; Итоговая вычисленная высота области вкладок
+   Protected i.i, k.i, startIDx.i, endIDx.i      ; Счетчики циклов и индексы первой/последней вкладки в текущем ряду
+   Protected totalrowWidth.i                     ; Полная фактическая ширина сформированного ряда (с учетом внешних скосов)
+   Protected extraspace.i                        ; Свободные пиксели справа до границы maxWidth (для выравнивания Justify)
+   Protected addpixels.i                         ; Целая часть прибавки ширины на каждую вкладку в ряду
+   Protected remainder.i                         ; Остаток от деления свободных пикселей (раздается по 1px первым вкладкам)
+   Protected tabcount = ListSize(*this\tab\_s()) ; Общее количество вкладок в списке
+   bottomSpacing = RowSpacing
    
-   Protected RowStep = *this\tab\size + RowSpacing
-   Protected SlantOffset = *this\tab\slant * 4 / 3
-  
-   ; Задаем правую границу для вкладок с учетом места под кнопку "Плюс" и зазора
-   Protected plusGap = DesktopScaledX(4)
+   ; Шаг сетки по вертикали: высота одной вкладки + зазор между рядами
+   Protected RowStep = (*this\tab\size - bottomSpacing) + RowSpacing
+
+   ; --- РАСЧЕТ ДОСТУПНОЙ ШИРИНЫ ДЛЯ ВКЛАДОК ---
+   Protected plusGap = -*this\tab\plus\Width/2 ;  DesktopScaledX(4)         ; Минимальный зазор между крайней вкладкой и кнопкой "+"
+   ; Правая граница для вкладок: ширина виджета минус правый отступ, ширина кнопки "+" и зазор до нее
    Protected maxWidth = gWidth - indent - *this\tab\plus\Width - plusGap
-  
+   
+   ; --- ОБРАБОТКА ПУСТОГО СПИСКА ВКЛАДОК ---
    If tabcount = 0 
-      *this\tab\plus\x = indent
-      *this\tab\plus\y = TopSpacing
+      ; Ставим кнопку "+" в начальную позицию с учетом смещения самого виджета (*this\x, *this\y)
+      *this\tab\plus\x = *this\x + indent
+      *this\tab\plus\y = *this\y + TopSpacing
       *this\Width = gWidth
-      *this\Height = *this\tab\size + TopSpacing ;+ BottomSpacing
+      *this\Height = *this\tab\size + TopSpacing
+      ; Возвращаем высоту в логических (немасштабированных) пикселях для ResizeGadget
       ProcedureReturn DesktopUnscaledY(*this\Height)
    EndIf
    
+   ; Временный массив указателей на вкладки для удобного разбиения на ряды и выравнивания
    Dim *rowtabs._s_TAB(tabcount - 1)
    i = 0
    
-   ; --- ЭТАП 1: Замер контента и расчет базовой ширины вкладок ---
+   ; =========================================================================
+   ; ЭТАП 1: Замер контента и расчет минимальной (базовой) ширины вкладок
+   ; =========================================================================
    ForEach *this\tab\_s()
       *tab = @*this\tab\_s()
       Protected._s_TXT *txt = *tab\txt
       Protected._s_IMG *img = *tab\img
       
+      ; Если изменился шрифт или масштаб виджета, принудительно помечаем контент на перерасчет
       If widgetChanged
          *txt\change = #True
          *img\change = #True
       EndIf
       
+      ; Замеряем текст и иконку (вызывается внутри активного блока StartDrawing/StopDrawing)
       If *txt\change Or *img\change
          UpdateContentSize(*tab)
       EndIf
       
-      ; Сбрасываем size, чтобы вкладка могла сжиматься при уменьшении текста/кнопок
+      ; Сбрасываем size в 0, чтобы вкладка могла сжаться при уменьшении текста или удалении кнопки
       *tab\size = 0
+      ; Вычисляем минимальный размер *tab\size (без скосов) и габаритную ширину *tab\Width (со скосами)
       UpdateTabPos(*this, *tab, 0)
       
       *rowtabs(i) = *tab
       i + 1
    Next
    
-   startIDx = 0
-   currentx = indent
+   startIDx = 0       ; Индекс первой вкладки текущего ряда
+   currentx = indent  ; Начинаем заполнение ряда с левого внешнего отступа
    
-   ; --- ЭТАП 2: Раскладка по рядам и выравнивание (Justify) ---
+   ; =========================================================================
+   ; ЭТАП 2: Раскладка по рядам (шаг = size + spacing, как в однорядном коде)
+   ; =========================================================================
+   ; Идем до tabcount включительно: виртуальная итерация i = tabcount закрывает последний ряд
    For i = 0 To tabcount
-      Protected tabw = 0
+      ; Полная габаритная ширина проверяемой вкладки (включая оба скоса: size + localslant * 2)
+      Protected tabFullWidth = 0
       If i < tabcount
-         tabw = *rowtabs(i)\Width
+         tabFullWidth = *rowtabs(i)\Width
       EndIf
       
-      If (i = tabcount) Or (currentx + tabw > maxWidth And i > startIDx)
-         endIDx = i - 1
+      ; Закрываем ряд, если дошли до конца списка ИЛИ текущая вкладка (вместе со скосами) не влезает в maxWidth
+      ; Проверка (i > startIDx) гарантирует, что хотя бы одна вкладка попадет в ряд, даже если окно очень узкое
+      If (i = tabcount) Or (currentx + tabFullWidth > maxWidth And i > startIDx)
+         endIDx = i - 1 ; Индекс последней вкладки, вошедшей в этот ряд
          
-         ; Растягиваем только полные ряды (не последний)
+         ; Растягиваем по ширине (Justify) ТОЛЬКО полные ряды (i < tabcount). Последний "хвост" не растягиваем
          If i < tabcount
-            totalrowWidth = indent
+            ; Считаем фактическую ширину ряда по формуле однорядного режима:
+            ; отступ + оба внешних скоса ряда (localslant * 2) + сумма центральных частей (size) и зазоров (spacing)
+            totalrowWidth = indent + (localslant * 2)
             For k = startIDx To endIDx
-               totalrowWidth + *rowtabs(k)\Width
-               If k < endIDx : totalrowWidth - SlantOffset : EndIf
+               totalrowWidth + *rowtabs(k)\size
+               If k < endIDx : totalrowWidth + spacing : EndIf
             Next
             
+            ; Вычисляем свободное место до границы maxWidth и делим его поровну между вкладками ряда
             extraspace = maxWidth - totalrowWidth
             Protected tabsinrow = (endIDx - startIDx) + 1
             
             If extraspace > 0 And tabsinrow > 0
-               addpixels = extraspace / tabsinrow
-               remainder = extraspace % tabsinrow
+               addpixels = extraspace / tabsinrow ; Базовая прибавка каждой вкладке
+               remainder = extraspace % tabsinrow ; Остаток пикселей (распределяется по 1px первым вкладкам)
                
                For k = startIDx To endIDx
+                  ; Увеличиваем именно внутренний size, чтобы сохранить корректную геометрию скосов
                   *rowtabs(k)\size + addpixels
                   If remainder > 0
                      *rowtabs(k)\size + 1
                      remainder - 1
                   EndIf
                   
-                  ; Пересчитываем внутреннюю верстку (кнопки закрытия и текст) под новую ширину
+                  ; Повторно вызываем UpdateTabPos, чтобы кнопки закрытия и текст внутри вкладки
+                  ; выровнялись по новой растянутой ширине
                   UpdateTabPos(*this, *rowtabs(k), 0)
                Next
             EndIf
          EndIf
          
-         ; Записываем X и индекс ряда
-         Protected tempx = indent + *this\x
+         ; Записываем финальные горизонтальные координаты для всех вкладок закрытого ряда
+         Protected localPos = 0 ; Локальная позиция от начала ряда (для совместимости с DoEventTAB)
          For k = startIDx To endIDx
-            *rowtabs(k)\x = tempx
-            *rowtabs(k)\ID = currentrow
-            tempx + *rowtabs(k)\Width - SlantOffset
+            *rowtabs(k)\pos = localPos                  ; Чистый локальный сдвиг (без *this\x и indent)
+            *rowtabs(k)\x = *this\x + indent + localPos ; Абсолютная координата X на экране для отрисовки
+            *rowtabs(k)\ID = currentrow                 ; Номер ряда, в который попала вкладка
+            ; Сдвигаем позицию на центральную часть + зазор (скосы соседних вкладок идут внахлест)
+            localPos + *rowtabs(k)\size + spacing
          Next
          
+         ; Сбрасываем счетчики для формирования следующего ряда
          currentrow + 1
          currentx = indent
          startIDx = i
       EndIf
       
+      ; Накапливаем шаг текущей вкладки для проверки следующей итерации
       If i < tabcount
-         currentx + *rowtabs(i)\Width - SlantOffset
+         currentx + *rowtabs(i)\size + spacing
       EndIf
    Next
    
+   ; Индекс самого последнего (нижнего после инверсии) ряда
    Protected TotalRows = currentrow - 1
    
-     ; --- ЭТАП 3: Инверсия рядов и позиционирование кнопки "Плюс" ---
+   ; =========================================================================
+   ; ЭТАП 3: Инверсия рядов по вертикали и позиционирование кнопки "Плюс"
+   ; =========================================================================
    Protected lastTabRight = 0
    For k = 0 To tabcount - 1
+      ; Инвертируем ряды: ряд 0 уходит наверх, а последний ряд с "хвостом" (TotalRows) оказывается внизу
       Protected InvertedRow = TotalRows - *rowtabs(k)\ID
       *rowtabs(k)\y = *this\y + TopSpacing + InvertedRow * RowStep
       
+      ; Запоминаем правый край самой последней вкладки в нижнем ряду
       If *rowtabs(k)\ID = TotalRows
          lastTabRight = *rowtabs(k)\x + *rowtabs(k)\Width
       EndIf
    Next
    
-   ; Приводим plusX к той же системе координат, что и *tab\x (добавляем *this\x)
+;    ; Координата X кнопки "+" (всегда прижата к правому краю виджета с отступом indent)
    Protected plusX = *this\x + gWidth - *this\tab\plus\Width - indent
-   If lastTabRight + DesktopScaledX(4) > plusX
+   
+   ; Страховка: если единственная очень широкая вкладка в нижнем ряду всё же дотянулась до кнопки "+",
+   ; переносим кнопку "+" на дополнительную строку ниже
+   If lastTabRight + plusGap > plusX
       TotalRows + 1
    EndIf
    
+   ; Записываем итоговые координаты кнопки "+"
    *this\tab\plus\x = plusX
    *this\tab\plus\y = *this\y + TopSpacing + TotalRows * RowStep
    
-   ; Высоту самого виджета считаем локально (без *this\y)
+   ; Вычисляем итоговую высоту виджета (локально, без *this\y; последний RowSpacing вычитается)
    maxheight = TopSpacing + (TotalRows + 1) * RowStep - RowSpacing
    
    *this\Width = gWidth
    *this\Height = maxheight
    
+   ; Возвращаем итоговую высоту в DPI-независимых единицах
    ProcedureReturn DesktopUnscaledY(*this\Height)
 EndProcedure
-
-
 
 ;-
 Procedure DrawBTN(*btn._s_BTN, offsetX.l = 0, offsetY.l = 0)
@@ -814,15 +853,6 @@ Procedure DrawTabs(*this._s_WIDGET, *activeTAB._s_TAB)
       EndIf
    EndIf
    
-   ForEach *this\tab\_s()
-      *tab = @*this\tab\_s()
-      
-      ; Слой 1: Статичные
-      If *tab <> *activeTAB
-         DrawTAB(*tab, bgColor, frColor, vertical, localslant)
-      EndIf
-   Next
-   
    ; 2. Отрисовка кнопки ПЛЮС (вызываем её личную изолированную процедуру)
    If *this\tab\plus
       If *this\tab\plus\txt\change Or *this\tab\plus\img\change
@@ -838,6 +868,15 @@ Procedure DrawTabs(*this._s_WIDGET, *activeTAB._s_TAB)
       DrawTAB(*this\tab\plus, bgColor, frColor, vertical, 8);, *this\tab\plus\ID )      
    EndIf
          
+   
+   ; Слой 1: Статичные
+   ForEach *this\tab\_s()
+      *tab = @*this\tab\_s()
+      If *tab <> *activeTAB
+         DrawTAB(*tab, bgColor, frColor, vertical, localslant)
+      EndIf
+   Next
+   
    ; Слой 2: Летящая поверх
    If *activeTAB
       If IsGadget(*activeTAB\containerID)
@@ -1522,8 +1561,8 @@ If OpenWindow(#Win, 0,0,400,300, "Наглядный Демо-Пример", #PB
    Until Event = #PB_Event_CloseWindow
 EndIf
 ; IDE Options = PureBasic 6.40 (Windows - x64)
-; CursorPosition = 1088
-; FirstLine = 1006
-; Folding = ---8---0---------0-----------------
+; CursorPosition = 541
+; FirstLine = 389
+; Folding = ---8-4-0---8---8-0-----------------
 ; EnableXP
 ; DPIAware
