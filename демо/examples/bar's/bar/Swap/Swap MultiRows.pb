@@ -75,15 +75,15 @@ Structure _s_TABS
    align.a               
    indent.a 
    spacing.a             
-    
+    padding.a
+   
    vertical.b
-   TotalSize.l          
+   size.l          
    List _s._s_TAB()  ; Заголовки вкладок
 EndStructure
 
 Structure _s_WIDGET Extends _s_COORDINATE
    change.b
-   padding.a
    ;    spacing.a             
    Tab._s_TABS
    dragOffSet.i     ; Точка захвата мыши
@@ -94,9 +94,7 @@ Structure _s_WIDGET Extends _s_COORDINATE
 EndStructure
 
 Global MyThis._s_WIDGET
-Global TopSpacing = DesktopScaledX(6)
-Global RowSpacing = DesktopScaledX(2)
-Global BottonSpacing = RowSpacing
+Global BottonSpacing
 LoadFont(0, "tahoma", 12)
 
 Procedure.l MakeColor(bgColor.l, value.l = 0)
@@ -129,7 +127,10 @@ EndProcedure
 Procedure.i TotalSize(*this._s_WIDGET, gWidth)
    gWidth = DesktopScaledX(gWidth)
    Protected indent = DesktopScaledX(4)
-   Protected currentx = indent
+   Protected TopSpacing = DesktopScaledX(6)
+Protected RowSpacing = DesktopScaledX(2)
+ BottonSpacing = RowSpacing
+Protected currentx = indent
    Protected currenty = TopSpacing
    Protected currentrow = 0
    Protected maxheight = 0
@@ -139,10 +140,10 @@ Procedure.i TotalSize(*this._s_WIDGET, gWidth)
    Protected tabcount = ListSize(*this\tab\_s())
    
    ; Предварительный расчет шагов
-   Protected RowStep = *this\tab\TotalSize + RowSpacing
+   Protected RowStep = *this\tab\size + RowSpacing
    Protected SlantOffset = *this\tab\slant * 4 / 3
    
-   If tabcount = 0 : ProcedureReturn DesktopUnscaledY(*this\tab\TotalSize + BottonSpacing) : EndIf
+   If tabcount = 0 : ProcedureReturn DesktopUnscaledY(*this\tab\size + BottonSpacing) : EndIf
    
    If StartDrawing(CanvasOutput(*this\canvasID))
       DrawingFont(*this\fontID)
@@ -151,12 +152,12 @@ Procedure.i TotalSize(*this._s_WIDGET, gWidth)
       i = 0
       ForEach *this\tab\_s()
          *rowtabs(i) = @*this\tab\_s()
-         Protected baseWidth = TextWidth(*rowtabs(i)\txt\text) + (*this\padding * 2) + (*this\tab\slant * 2)
+         Protected baseWidth = TextWidth(*rowtabs(i)\txt\text) + (*this\tab\padding * 2) + (*this\tab\slant * 2)
          If *rowtabs(i)\img\image <> 0
             baseWidth + DesktopScaledX(20)
          EndIf
          baseWidth + DesktopScaledX(16)
-         *rowtabs(i)\Height = *this\tab\TotalSize 
+         *rowtabs(i)\Height = *this\tab\size 
          *rowtabs(i)\Width = baseWidth
          i + 1
       Next
@@ -229,11 +230,11 @@ Procedure.i TotalSize(*this._s_WIDGET, gWidth)
       
       ; --- КОРРЕКТИРОВКА ПЛЮСА И ФИНАЛЬНЫЙ РАСЧЕТ ВЫСОТЫ ---
       *this\tab\plus\Width = (*this\tab\slant * 2)
-      *this\tab\plus\Height = *this\tab\TotalSize 
+      *this\tab\plus\Height = *this\tab\size 
       *this\tab\plus\y = TopSpacing + TotalRows * RowStep
       *this\tab\plus\x = gWidth - *this\tab\plus\Width - indent
       
-      maxheight = *this\tab\plus\y + *this\tab\TotalSize
+      maxheight = *this\tab\plus\y + *this\tab\size
       
       StopDrawing()
    EndIf
@@ -252,7 +253,7 @@ Procedure AddBTN( Type.l, size.l)
 EndProcedure
 
 ; добавление вкладки и автоматическое создание её контейнера под холстом
-Procedure AddTab(*this._s_WIDGET, title$,  Image.i = 0, tabcolor.l=0);$ffffffff)
+Procedure AddTab(*this._s_WIDGET, position.i, title$,  size.i=0, Image.i = 0, tabcolor.l=0);$ffffffff)
    Protected._s_TAB *tab = AddElement(*this\tab\_s())
    
    *tab\btn = AddBTN( #__BTN_Close, DesktopScaledX(7))
@@ -608,7 +609,7 @@ Procedure DoEvent(*this._s_WIDGET, event, mx.l,my.l)
    If event = #PB_EventType_MouseMove Or event = #PB_EventType_LeftButtonDown
       
       ; 1. ТЕСТ КНОПКИ ПЛЮС (+): Так как она закреплена справа над контейнером, проверяем её первой
-      If my >= *this\tab\plus\y And my <= *this\tab\plus\y + *this\tab\TotalSize
+      If my >= *this\tab\plus\y And my <= *this\tab\plus\y + *this\tab\size
          If mx >= *this\tab\plus\x And mx <= *this\tab\plus\x + *this\tab\plus\Width
             *hoverTAB = @*this\tab\plus
          EndIf
@@ -619,16 +620,16 @@ Procedure DoEvent(*this._s_WIDGET, event, mx.l,my.l)
          LastElement(*this\tab\_s())
          Repeat : *tab = @*this\tab\_s()
             insIDetab = #False
-            If my >= *tab\y And my <= *tab\y + *this\tab\TotalSize
+            If my >= *tab\y And my <= *tab\y + *this\tab\size
                If mx >= *tab\x And mx <= *tab\x + *tab\Width
                   relx = mx - *tab\x
                   rely = my - *tab\y
-                  If localslant > *this\tab\TotalSize: localslant = *this\tab\TotalSize: EndIf
+                  If localslant > *this\tab\size: localslant = *this\tab\size: EndIf
                   
                   If relx < localslant
-                     If relx >= localslant * (1.0 - (rely / *this\tab\TotalSize)) : insIDetab = #True : EndIf
+                     If relx >= localslant * (1.0 - (rely / *this\tab\size)) : insIDetab = #True : EndIf
                   ElseIf relx > *tab\Width - localslant
-                     If relx <= *tab\Width - (localslant * (1.0 - (rely / *this\tab\TotalSize))) : insIDetab = #True : EndIf
+                     If relx <= *tab\Width - (localslant * (1.0 - (rely / *this\tab\size))) : insIDetab = #True : EndIf
                   Else
                      insIDetab = #True
                   EndIf
@@ -649,7 +650,7 @@ Procedure DoEvent(*this._s_WIDGET, event, mx.l,my.l)
       If *hoverTAB <> 0 And *hoverTAB <> *this\tab\plus
          Protected closex = *hoverTAB\x + *hoverTAB\Width - localslant - DesktopScaledX(14)
          If mx >= closex - h_2 And mx <= closex + h_12 - h_2
-            If my >= *hoverTAB\y + (*this\tab\TotalSize - h_12)/2 And my <= *hoverTAB\y + (*this\tab\TotalSize + h_12)/2 
+            If my >= *hoverTAB\y + (*this\tab\size - h_12)/2 And my <= *hoverTAB\y + (*this\tab\size + h_12)/2 
                ShouldCloseHover = 1
             EndIf 
          EndIf 
@@ -660,7 +661,7 @@ Procedure DoEvent(*this._s_WIDGET, event, mx.l,my.l)
          If *hoverTAB = *this\tab\plus
             ; КЛИК ПО ПЛЮСУ: Добавляем новую вкладку
             Protected NewIDx = ListSize(*this\tab\_s()) + 1
-            AddTab(*this, "Вкладка " + Str(NewIDx))
+            AddTab(*this, -1, "Вкладка " + Str(NewIDx))
             
             ResizeCanvas( *this, windowID)
             needredraw = #False
@@ -745,10 +746,10 @@ Procedure Create( *this._s_WIDGET, X.l, Y.l, Width.l, Height.l, Text.s, flags.l 
       \Width = DesktopScaledX(Width)
       \Height = DesktopScaledY(Height)
       \canvasID  = CanvasGadget(#PB_Any, X, Y, Width, Height)
-      \tab\TotalSize = DesktopScaledY(29)
+      \tab\size = DesktopScaledY(29)
       \tab\slant = DesktopScaledX(20)
 
-      \padding  = DesktopScaledX(6)
+      \tab\padding  = DesktopScaledX(6)
       \change = 1
       \bgcolor     = RGBA(180, 195, 215, 160) ; RGB(Random(255), Random(255), Random(255)) ; твой любимый цвет. сделай его зеленым или серым — и весь интерфейс сам перестроится!
       \tab\plus\txt\text = "+"
@@ -756,8 +757,12 @@ Procedure Create( *this._s_WIDGET, X.l, Y.l, Width.l, Height.l, Text.s, flags.l 
 EndProcedure
 
 Procedure OpenList( *this._s_WIDGET, item.i)
-   SelectElement(*this\tab\_s(), item)
-   OpenGadgetList(*this\tab\_s()\containerID)
+   If ListSize(*this\tab\_s())
+      SelectElement(*this\tab\_s(), item)
+      If IsGadget(*this\tab\_s()\containerID)
+         OpenGadgetList(*this\tab\_s()\containerID)
+      EndIf
+   EndIf
 EndProcedure
 
 Procedure CloseList( )
@@ -779,17 +784,21 @@ If StartDrawing(ImageOutput(2)) : Box(0,0,16,16, RGB(50, 150, 255)) : StopDrawin
 If OpenWindow(0, 0, 0, windoww, windowh, "chrome tabs with container logic", #PB_Window_SystemMenu | #PB_Window_ScreenCentered | #PB_Window_SizeGadget)
    Create(@MyThis, 0, 0, windoww, 40,"")
    
-   ; добавляем вкладки (последним параметром передаем ID созданных картинок)
-   AddTab(@MyThis, "google (с иконкой)", 1, RGB(255, 255, 255))
-   AddTab(@MyThis, "код проекта (с иконкой)", 2, RGB(210, 245, 225))
-   AddTab(@MyThis, "без иконки", 0, RGB(255, 220, 230))
-   ; добавляем вкладки, передавая ID окна и начальную высоту холста
-   AddTab(@MyThis, "вкладка 1")
-   ;AddTab(@MyThis, "вкладка с длинным текстом 2")
-   AddTab(@MyThis, "опции 3")
-   AddTab(@MyThis, "система 4")
-   AddTab(@MyThis, "логи работы 5")
-   ;   
+;    ; добавляем вкладки (последним параметром передаем ID созданных картинок)
+;    AddTab(@MyThis, -1, "google (с иконкой)", 1, RGB(255, 255, 255))
+;   AddTab(@MyThis, -1, "код проекта (с иконкой)", 2, RGB(210, 245, 225))
+;    AddTab(@MyThis, -1, "без иконки", 0, RGB(255, 220, 230))
+;    ; добавляем вкладки, передавая ID окна и начальную высоту холста
+;    AddTab(@MyThis, -1, "вкладка 1")
+;    ;AddTab(@MyThis, -1, "вкладка с длинным текстом 2")
+;    AddTab(@MyThis, -1, "опции 3")
+;    AddTab(@MyThis, -1, "система 4")
+;    AddTab(@MyThis, -1, "логи работы 5")
+     AddTab(@MyThis, 0, "0 - 60", 0)
+   AddTab(@MyThis, 1, "1 - 160", 160);, (1), #__MASK_Center)
+   AddTab(@MyThis, 2, "2 - 150", 150);, (1), #__MASK_Right)
+   AddTab(@MyThis, 3, "3 - 90", 90);, (1))
+  ;
    
    ; наполним первый и второй контейнер чем-нибудь для теста
    ; для этого временно переключаемся на нужный контейнер через opengadgetlist
@@ -826,8 +835,8 @@ If OpenWindow(0, 0, 0, windoww, windowh, "chrome tabs with container logic", #PB
    ForEver
 EndIf
 ; IDE Options = PureBasic 6.40 (Windows - x64)
-; CursorPosition = 739
-; FirstLine = 439
-; Folding = ------8--8-b----0-
+; CursorPosition = 96
+; FirstLine = 86
+; Folding = ------8--8--------
 ; EnableXP
 ; DPIAware
