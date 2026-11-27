@@ -44,7 +44,7 @@ Module key
             EndImport
          CompilerElse
             ImportC "-lglib-2.0"
-               g_object_set_data(object.i, key.p-utf8, Data.i)
+               g_object_set_data(object.i, key.p-utf8, value.i)
                g_object_get_data(object.i, key.p-utf8)
             EndImport
          CompilerEndIf
@@ -102,8 +102,9 @@ CompilerIf #PB_Compiler_IsMainFile
       ForEver
    EndIf
 CompilerEndIf
-; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 7
-; Folding = ---
+; IDE Options = PureBasic 6.30 (Linux - x64)
+; CursorPosition = 46
+; FirstLine = 38
+; Folding = --
 ; EnableXP
 ; DPIAware

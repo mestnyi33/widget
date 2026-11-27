@@ -530,27 +530,10 @@ Procedure DrawTabs(*this._s_WIDGET, *currentTAB._s_TAB, gWidth, gHeight, bgColor
    DrawingMode(#PB_2DDrawing_AlphaBlend|#PB_2DDrawing_Transparent)
    ; линия пола
    Protected floorcolor = RGB(Red(bgColor) * 0.7, Green(bgColor) * 0.7, Blue(bgColor) * 0.7)
-   LineXY(0, gHeight - 1, gWidth, gHeight - 1, floorcolor)
+   LineXY(0, gHeight - 1, gWidth, gHeight - 1, $ff000000);floorcolor)
    
    ; 1. отрисовка неактивных вкладок
    ForEach *this\tab\_s() : *tab = @*this\tab\_s()
-      ;
-      ;       If *tab\txt\change  Or *tab\img\change  Or *this\change
-      ;          
-      ;          UpdateTab(*tab, *this\Width, *this\Height, vertical)
-      ;          *tab\pos = position 
-      ;          
-      ;          If *this\tab\vertical
-      ;             ;*tab\x = *this\x
-      ;             *tab\y =  *this\y + *this\tab\indent  + *tab\pos ;  
-      ;          Else
-      ;             ;*tab\y = *this\y
-      ;             *tab\x =  *this\x + *this\tab\indent  + *tab\pos ; 
-      ;          EndIf
-      ;          
-      ;          position + (*tab\size - *this\tab\slant) + *this\tab\spacing
-      ;       EndIf
-      
       If *tab <> *currentTAB
          draw_tab(#False, *tab, bgColor, *this\tab\plus\ID, *this\tab\slant )
       EndIf
@@ -835,8 +818,8 @@ If OpenWindow(0, 0, 0, windoww, windowh, "chrome tabs with container logic", #PB
    ForEver
 EndIf
 ; IDE Options = PureBasic 6.40 (Windows - x64)
-; CursorPosition = 789
-; FirstLine = 525
+; CursorPosition = 532
+; FirstLine = 269
 ; Folding = --4---8--8--------
 ; EnableXP
 ; DPIAware

@@ -33,23 +33,23 @@ Procedure SetCaretPos(Gadget, Position)
    CompilerEndSelect
 EndProcedure
 
-Procedure GadgetRefresh(gadget)
+Procedure GadgetRefresh(Gadget)
    ; https://www.purebasic.fr/english/viewtopic.php?t=71125
    CompilerSelect #PB_Compiler_OS
          
       CompilerCase #PB_OS_Windows
-         InvalidateRect_(GadgetID(gadget), 0, #True)
+         InvalidateRect_(GadgetID(Gadget), 0, #True)
          ; UpdateWindow_(GadgetID(gadget))
          
       CompilerCase #PB_OS_Linux 
          CompilerIf Subsystem("qt")
-            QtScript("gadget(" + Str(gadget) + ").repaint()")
+            QtScript("gadget(" + Str(Gadget) + ").repaint()")
          CompilerElse
-            gtk_widget_queue_draw_(GadgetID(gadget))
+            gtk_widget_queue_draw_(GadgetID(Gadget))
          CompilerEndIf
          
       CompilerCase #PB_OS_MacOS
-         CocoaMessage(0, GadgetID(gadget), "setNeedsDisplay:", 1)
+         CocoaMessage(0, GadgetID(Gadget), "setNeedsDisplay:", 1)
          
    CompilerEndSelect 
    
@@ -144,7 +144,7 @@ Module func
                ; Для Linux: используем нативные функции библиотеки GTK3
                ; gtk_widget_queue_draw_area помечает область, а gdk_window_process_updates выводит пиксели
                Protected *Widget = GadgetID(Gadget)
-               Protected *Window = gtk_widget_get_window_(*Widget)
+               Protected *Window = gtk_widget_get_window(*Widget)
                gtk_widget_queue_draw_(*Widget)
                If *Window
                   gdk_window_process_updates_(*Window, #True)
@@ -238,7 +238,7 @@ Module func
          #GDK_BLANK_CURSOR = -2
          
          ImportC ""
-            gtk_widget_is_visible(Widget)
+            gtk_widget_is_visible(widget)
             gtk_widget_get_window(*Widget.GtkWidget)
             gtk_entry_set_placeholder_text(*entry, Text.p-utf8)
             gtk_entry_get_placeholder_text(*entry)
@@ -533,8 +533,9 @@ CompilerEndIf
 ;     gtk_main_()
 ;   EndIf
 ; EndIf
-; IDE Options = PureBasic 6.30 - C Backend (MacOS X - x64)
-; CursorPosition = 129
-; FirstLine = 142
-; Folding = ----------
+; IDE Options = PureBasic 6.30 (Linux - x64)
+; CursorPosition = 146
+; FirstLine = 123
+; Folding = 9---------
 ; EnableXP
+; Compiler = PureBasic 6.30 - C Backend (Linux - x64)

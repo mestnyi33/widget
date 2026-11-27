@@ -176,22 +176,6 @@
       #__FrameColor       = 7
       #__ForeColor        = 8
       
-      ;- 
-      ;-\\ state
-      ;#__s_Selected  = 1<<5  ; выделено
-      ;#__s_Expanded  = 1<<6  ; развернуто
-      ;#__s_Checked   = 1<<7  ; выбрано
-      ;#__s_Collapsed = 1<<8  ; свернуто
-      ;#__s_Inbetween = 1<<9
-      ;#__s_Entered   = 1<<10 ; мышь внутри
-      ;#__s_Pressed   = 1<<11 ; нажато
-     ; #__s_nofocus    = -1 
-      
-      ;-\\ resize-state
-      ;       ;#__resize_Restore  = 1<<1 
-      ;       #__resize_Minimize = 1<<2 
-      ;       #__resize_Maximize = 1<<3 
-      
       ;-\\ color-state
       Enumeration
          #__s_0
@@ -210,7 +194,6 @@
          #__BTN_Check
       EndEnumeration
       
-      ;-
       ;-\\ event-type
       Enumeration #PB_EventType_FirstCustomValue
          #PB_EventType_Drop
@@ -219,7 +202,6 @@
          #PB_EventType_ScrollChange
          #PB_EventType_Repaint
       EndEnumeration
-      
       Enumeration 1
          ;#__EVENT_Create
          #__EVENT_Focus
@@ -251,10 +233,7 @@
          #__EVENT_CursorChange
          #__EVENT_StatusChange
          #__EVENT_ScrollChange
-         ;
-         ;#__EVENT_PageDown
-         ;#__EVENT_PageUp
-         ;
+        ;
          #__EVENT_KeyDown
          #__EVENT_Input
          #__EVENT_Return
@@ -265,10 +244,13 @@
          #__EVENT_Drop
          ;
          #__EVENT_Draw
+          ;
+         ;#__EVENT_PageDown
+         ;#__EVENT_PageUp
          ;
          ;#__EVENT_ResizeBegin
-         #__EVENT_Resize
          ;#__EVENT_ResizeEnd
+         #__EVENT_Resize
          #__EVENT_Maximize
          #__EVENT_Minimize
          #__EVENT_Restore
@@ -685,8 +667,8 @@
       EndDeclareModule : Module Constants : EndModule
 CompilerEndIf
 ; IDE Options = PureBasic 6.40 (Windows - x64)
-; CursorPosition = 88
-; FirstLine = 81
+; CursorPosition = 242
+; FirstLine = 234
 ; Folding = ----
 ; Optimizer
 ; EnableXP

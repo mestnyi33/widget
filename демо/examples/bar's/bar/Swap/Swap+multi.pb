@@ -371,10 +371,10 @@ EndProcedure
 Procedure.i UpdateTotalSize(*this._s_WIDGET, gWidth, widgetChanged)
    ; --- ОБЪЯВЛЕНИЕ ПЕРЕМЕННЫХ И ПАРАМЕТРОВ ИЗ СТРУКТУРЫ ВИДЖЕТА ---
    Protected *tab._s_TAB                         ; Указатель на текущую обрабатываемую вкладку
-   Protected indent = *this\tab\indent             ; Внешний отступ полосы вкладок от левого и правого краев виджета
-   Protected spacing = *this\tab\spacing           ; Зазор между центральными частями соседних вкладок (как в однорядном режиме)
-   Protected localslant = *this\tab\slant          ; Ширина одного скоса (трапеции) вкладки
-   Protected TopSpacing = indent;DesktopScaledX(6)      ; Отступ сверху над самым верхним рядом вкладок
+   Protected indent = *this\tab\indent           ; Внешний отступ полосы вкладок от левого и правого краев виджета
+   Protected spacing = *this\tab\spacing         ; Зазор между центральными частями соседних вкладок (как в однорядном режиме)
+   Protected localslant = *this\tab\slant        ; Ширина одного скоса (трапеции) вкладки
+   Protected TopSpacing = indent                 ;DesktopScaledX(6)      ; Отступ сверху над самым верхним рядом вкладок
    Protected RowSpacing = DesktopScaledX(1)      ; Вертикальный зазор между рядами вкладок
    Protected currentx = 0                        ; Текущая накопленная координата X при заполнении ряда
    Protected currentrow = 0                      ; Индекс текущего формируемого ряда (0 — нижний ряд до инверсии)
@@ -389,10 +389,10 @@ Procedure.i UpdateTotalSize(*this._s_WIDGET, gWidth, widgetChanged)
    
    ; Шаг сетки по вертикали: высота одной вкладки + зазор между рядами
    Protected RowStep = (*this\tab\size - bottomSpacing) + RowSpacing
-
+   
    ; --- РАСЧЕТ ДОСТУПНОЙ ШИРИНЫ ДЛЯ ВКЛАДОК ---
    Protected plusGap = -*this\tab\plus\Width/2 ;  DesktopScaledX(4)         ; Минимальный зазор между крайней вкладкой и кнопкой "+"
-   ; Правая граница для вкладок: ширина виджета минус правый отступ, ширина кнопки "+" и зазор до нее
+                                               ; Правая граница для вкладок: ширина виджета минус правый отступ, ширина кнопки "+" и зазор до нее
    Protected maxWidth = gWidth - indent - *this\tab\plus\Width - plusGap
    
    ; --- ОБРАБОТКА ПУСТОГО СПИСКА ВКЛАДОК ---
@@ -496,7 +496,7 @@ Procedure.i UpdateTotalSize(*this._s_WIDGET, gWidth, widgetChanged)
             *rowtabs(k)\pos = localPos                  ; Чистый локальный сдвиг (без *this\x и indent)
             *rowtabs(k)\x = *this\x + indent + localPos ; Абсолютная координата X на экране для отрисовки
             *rowtabs(k)\ID = currentrow                 ; Номер ряда, в который попала вкладка
-            ; Сдвигаем позицию на центральную часть + зазор (скосы соседних вкладок идут внахлест)
+                                                        ; Сдвигаем позицию на центральную часть + зазор (скосы соседних вкладок идут внахлест)
             localPos + *rowtabs(k)\size + spacing
          Next
          
@@ -530,7 +530,7 @@ Procedure.i UpdateTotalSize(*this._s_WIDGET, gWidth, widgetChanged)
       EndIf
    Next
    
-;    ; Координата X кнопки "+" (всегда прижата к правому краю виджета с отступом indent)
+   ;    ; Координата X кнопки "+" (всегда прижата к правому краю виджета с отступом indent)
    Protected plusX = *this\x + gWidth - *this\tab\plus\Width - indent
    
    ; Страховка: если единственная очень широкая вкладка в нижнем ряду всё же дотянулась до кнопки "+",
@@ -867,7 +867,10 @@ Procedure DrawTabs(*this._s_WIDGET, *activeTAB._s_TAB)
       EndIf
       DrawTAB(*this\tab\plus, bgColor, frColor, vertical, 8);, *this\tab\plus\ID )      
    EndIf
-         
+   
+   If *this\tab\multirow
+      LineXY(*this\x, *this\y+*this\Height+1, *this\Width, *this\y+*this\Height+1, $ff000000);floorcolor)
+   EndIf
    
    ; Слой 1: Статичные
    ForEach *this\tab\_s()
@@ -886,16 +889,18 @@ Procedure DrawTabs(*this._s_WIDGET, *activeTAB._s_TAB)
       EndIf
       DrawTAB(*activeTAB, bgColor, frColor, vertical, localslant)
       
-      If vertical
-         lineX = *activeTAB\x + *activeTAB\Width + BottomSpacing - 1
-         lineY = *activeTAB\y + *activeTAB\Height
-         Line(lineX, *this\y, 1, *activeTAB\y - *this\y, frColor) 
-         Line(lineX, lineY, 1, (*this\y + *this\Height) - lineY, frColor)
-      Else
-         lineX = *activeTAB\x + *activeTAB\Width
-         lineY = *activeTAB\y + *activeTAB\Height + BottomSpacing - 1
-         Line(*this\x, lineY, *activeTAB\x - *this\x, 1, frColor) 
-         Line(lineX, lineY, (*this\x + *this\Width) - lineX, 1, frColor) 
+      If Not *this\tab\multirow
+         If vertical
+            lineX = *activeTAB\x + *activeTAB\Width + BottomSpacing - 1
+            lineY = *activeTAB\y + *activeTAB\Height
+            Line(lineX, *this\y, 1, *activeTAB\y - *this\y, frColor) 
+            Line(lineX, lineY, 1, (*this\y + *this\Height) - lineY, frColor)
+         Else
+            lineX = *activeTAB\x + *activeTAB\Width
+            lineY = *activeTAB\y + *activeTAB\Height + BottomSpacing - 1
+            Line(*this\x, lineY, *activeTAB\x - *this\x, 1, frColor) 
+            Line(lineX, lineY, (*this\x + *this\Width) - lineX, 1, frColor) 
+         EndIf
       EndIf
    EndIf
    
@@ -1128,7 +1133,7 @@ Procedure CreateTab( Canvas, X.l,Y.l,Width.l,Height.l )
    *this\tab\plus\Height = *this\tab\size - bottomSpacing
    
    
-  ProcedureReturn *this
+   ProcedureReturn *this
 EndProcedure
 
 
@@ -1235,12 +1240,12 @@ Procedure DoEventTAB(*this._s_WIDGET, *hoverTAB._s_TAB, event.i, mousePos.i)
             ; КЛИК ПО ПЛЮСУ: Добавляем новую вкладку
             Protected NewIDx = ListSize(*this\tab\_s()) + 1
             AddTab(*this, -1, "Вкладка " + Str(NewIDx))
-;                ; Пересчитываем чистые координаты \pos, \x, \y по новому порядку
-;             *this\mask | #__MASK_UpdateTotalSize
-;             *this\mask | #__MASK_Redraw
-         
-             ResizeCanvas( *this)
-;             needredraw = #False
+            ;                ; Пересчитываем чистые координаты \pos, \x, \y по новому порядку
+            ;             *this\mask | #__MASK_UpdateTotalSize
+            ;             *this\mask | #__MASK_Redraw
+            
+            ResizeCanvas( *this)
+            ;             needredraw = #False
          Else
             If *current_tab
                dragOffSet = mousePos
@@ -1252,40 +1257,42 @@ Procedure DoEventTAB(*this._s_WIDGET, *hoverTAB._s_TAB, event.i, mousePos.i)
                   ReDraw(*this)
                EndIf
                
-               stepSize = *current_tab\size + *this\tab\spacing
-               
-               ForEach *this\tab\_s()
-                  *tab = @*this\tab\_s()
+               If Not *this\tab\multirow
+                  stepSize = *current_tab\size + *this\tab\spacing
                   
-                  If *tab = *current_tab
-                     isBeforeDragged = #False 
-                     *tab\offset = 0
-                     Continue ; Лимиты для dragged запишем сразу после цикла
-                  EndIf
+                  ForEach *this\tab\_s()
+                     *tab = @*this\tab\_s()
+                     
+                     If *tab = *current_tab
+                        isBeforeDragged = #False 
+                        *tab\offset = 0
+                        Continue ; Лимиты для dragged запишем сразу после цикла
+                     EndIf
+                     
+                     ; 1. Сдвигаем базовую позицию только для вкладок левее/выше нажатой
+                     If isBeforeDragged
+                        *tab\pos + stepSize
+                     EndIf
+                     
+                     ; 2. Расчет лимитов хода
+                     *tab\minOffset = accumulatedSize - *tab\pos
+                     *tab\maxOffset = accumulatedSize - *tab\pos + stepSize
+                     accumulatedSize + *tab\size + *this\tab\spacing
+                     
+                     ; 3. Инициализация offset
+                     *tab\offset = *tab\pos - *current_tab\pos - stepSize
+                     *tab\offset * stepSize / (*tab\size + *this\tab\spacing)
+                     
+                     If *tab\offset < *tab\minOffset : *tab\offset = *tab\minOffset : EndIf
+                     If *tab\offset > *tab\maxOffset : *tab\offset = *tab\maxOffset : EndIf
+                  Next
                   
-                  ; 1. Сдвигаем базовую позицию только для вкладок левее/выше нажатой
-                  If isBeforeDragged
-                     *tab\pos + stepSize
-                  EndIf
+                  ; Лимиты для самой перетаскиваемой вкладки
+                  *current_tab\minOffset = -*current_tab\pos 
+                  *current_tab\maxOffset = -*current_tab\pos + accumulatedSize 
                   
-                  ; 2. Расчет лимитов хода
-                  *tab\minOffset = accumulatedSize - *tab\pos
-                  *tab\maxOffset = accumulatedSize - *tab\pos + stepSize
-                  accumulatedSize + *tab\size + *this\tab\spacing
-                  
-                  ; 3. Инициализация offset
-                  *tab\offset = *tab\pos - *current_tab\pos - stepSize
-                  *tab\offset * stepSize / (*tab\size + *this\tab\spacing)
-                  
-                  If *tab\offset < *tab\minOffset : *tab\offset = *tab\minOffset : EndIf
-                  If *tab\offset > *tab\maxOffset : *tab\offset = *tab\maxOffset : EndIf
-               Next
-               
-               ; Лимиты для самой перетаскиваемой вкладки
-               *current_tab\minOffset = -*current_tab\pos 
-               *current_tab\maxOffset = -*current_tab\pos + accumulatedSize 
-               
-               *this\mask | #__MASK_Redraw
+                  *this\mask | #__MASK_Redraw
+               EndIf
             EndIf
          EndIf
          
@@ -1294,22 +1301,24 @@ Procedure DoEventTAB(*this._s_WIDGET, *hoverTAB._s_TAB, event.i, mousePos.i)
          If *current_tab
             *current_tab\mask &~ #__MASK_press
             *current_tab\mask &~ #__MASK_drag
-            
-            ; Считаем ТЕКУЩИЙ визуальный центр каждой вкладки (с учетом её сдвига offset!)
-            ForEach *this\tab\_s()
-               *tab = @*this\tab\_s()
-               *tab\pos = *tab\pos + *tab\offset + (*tab\size >> 1)
-               *tab\offset = 0
-            Next
-            
-            ; Сортируем вкладки по их текущим визуальным центрам
-            SortStructuredList(*this\tab\_s(), #PB_Sort_Ascending, OffsetOf(_s_tab\pos), TypeOf(_s_tab\pos))
-            
+            ;
+            If Not *this\tab\multirow
+               ; Считаем ТЕКУЩИЙ визуальный центр каждой вкладки (с учетом её сдвига offset!)
+               ForEach *this\tab\_s()
+                  *tab = @*this\tab\_s()
+                  *tab\pos = *tab\pos + *tab\offset + (*tab\size >> 1)
+                  *tab\offset = 0
+               Next
+               
+               ; Сортируем вкладки по их текущим визуальным центрам
+               SortStructuredList(*this\tab\_s(), #PB_Sort_Ascending, OffsetOf(_s_tab\pos), TypeOf(_s_tab\pos))
+               
+               ; Пересчитываем чистые координаты \pos, \x, \y по новому порядку
+               *this\mask | #__MASK_UpdateTotalSize
+               *this\mask | #__MASK_Redraw
+            EndIf
+            ;
             PressedTAB() = #Null
-            
-            ; Пересчитываем чистые координаты \pos, \x, \y по новому порядку
-            *this\mask | #__MASK_UpdateTotalSize
-            *this\mask | #__MASK_Redraw
          EndIf
          
       Case #PB_EventType_MouseMove
@@ -1341,7 +1350,8 @@ Procedure DoEventTAB(*this._s_WIDGET, *hoverTAB._s_TAB, event.i, mousePos.i)
                Next
                *this\mask | #__MASK_Redraw
             EndIf
-            *current_tab\mask | #__MASK_drag
+            
+             *current_tab\mask | #__MASK_drag
          EndIf
          
    EndSelect
@@ -1371,14 +1381,14 @@ Procedure DoEvent( *this._s_WIDGET, event, mx, my)
             If event <> #PB_EventType_MouseLeave
                *hoverTAB = GetTabAtPoint(*this, mx, my)
                
-              ; 1. ТЕСТ КНОПКИ ПЛЮС (+): Так как она закреплена справа над контейнером, проверяем её первой
+               ; 1. ТЕСТ КНОПКИ ПЛЮС (+): Так как она закреплена справа над контейнером, проверяем её первой
                If my >= *this\tab\plus\y And my <= *this\tab\plus\y + *this\tab\plus\Height
                   If mx >= *this\tab\plus\x And mx <= *this\tab\plus\x + *this\tab\plus\Width
                      *hoverTAB = @*this\tab\plus
                   EndIf
                EndIf
                
-                ; Если мы над вкладкой проверяем её кнопку закрытия
+               ; Если мы над вкладкой проверяем её кнопку закрытия
                If *hoverTAB 
                   If *hoverTAB
                      ForEach *hoverTAB\btn()
@@ -1561,8 +1571,8 @@ If OpenWindow(#Win, 0,0,400,300, "Наглядный Демо-Пример", #PB
    Until Event = #PB_Event_CloseWindow
 EndIf
 ; IDE Options = PureBasic 6.40 (Windows - x64)
-; CursorPosition = 541
-; FirstLine = 389
-; Folding = ---8-4-0---8---8-0-----------------
+; CursorPosition = 871
+; FirstLine = 861
+; Folding = ---------------------------n-------
 ; EnableXP
 ; DPIAware
